@@ -12,23 +12,23 @@ NC Political Realignment Map (2008-2024) is a comprehensive, interactive web app
 
 ## Live Demo & Screenshots
 See a preview of the interactive map below.  
-![Map Screenshot](preview.jpg)
+![Map Screenshot](preview.jpeg)
 
 Try the live demo: [https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html](https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html)
 
 ### Screenshots
 
 **Statewide County Map**
-![Statewide County Map](screenshot_county_map.jpg)
+![Statewide County Map](screenshot_county_map.jpeg)
 
 **Main Controls Panel**
-![Main Controls Panel](screenshot_controls_panel.jpg)
+![Main Controls Panel](screenshot_controls_panel.jpeg)
 
 **Political Categories Legend**
-![Political Categories Legend](screenshot_legend.jpg)
+![Political Categories Legend](screenshot_legend.jpeg)
 
 **County Details Sidebar**
-![County Details Sidebar](screenshot_county_details.jpg)
+![County Details Sidebar](screenshot_county_details.jpeg)
 
 ## Installation & Setup
 1. Clone the repository or download the files.
@@ -112,4 +112,5 @@ This project was developed by Shamar (90%) with the assistance of GitHub Copilot
 
 ## License
 MIT License
+
 

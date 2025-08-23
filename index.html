@@ -1,30 +1,28 @@
-// Zoom to county by name using Mapbox and turf.js
-function zoomToCounty(countyName) {
-    // Get counties GeoJSON from map source
-    const countiesSource = map.getSource('counties');
-    if (!countiesSource || !countiesSource._data || !countiesSource._data.features) {
-        updateStatus('❌ County data not loaded');
-        return;
-    }
-    const counties = countiesSource._data.features;
-    // Find county feature by name (case-insensitive)
-    const countyFeature = counties.find(f => f.properties && f.properties.County && f.properties.County.toLowerCase() === countyName.toLowerCase());
-    if (!countyFeature) {
-        updateStatus(`❌ County "${countyName}" not found`);
-        return;
-    }
-    // Get bounding box using turf.js
-    const bbox = turf.bbox(countyFeature);
-    if (!bbox || bbox.length !== 4 || bbox.some(coord => isNaN(coord))) {
-        updateStatus('❌ Could not find valid geometry for this county.');
-        return;
-    }
-    map.fitBounds(bbox, { padding: 40, maxZoom: 10 });
-    updateStatus(`🔎 Zoomed to ${countyName} County`);
-}
 <!DOCTYPE html>
 <html>
 <head>
+    <script>
+    // Zoom to county by name using Mapbox and turf.js
+    function zoomToCounty(countyName) {
+        // Get counties GeoJSON from map source
+        const countiesSource = map.getSource('counties');
+        if (!countiesSource || !countiesSource._data || !countiesSource._data.features) {
+            updateStatus('❌ County data not loaded');
+            return;
+        }
+        const counties = countiesSource._data.features;
+        // Find county feature by name (case-insensitive)
+        const countyFeature = counties.find(f => f.properties && f.properties.County && f.properties.County.toLowerCase() === countyName.toLowerCase());
+        if (!countyFeature) {
+            updateStatus(`❌ County "${countyName}" not found`);
+            return;
+        }
+        // Get bounding box using turf.js
+        const bbox = turf.bbox(countyFeature);
+        map.fitBounds(bbox, { padding: 40, maxZoom: 10 });
+        updateStatus(`🔎 Zoomed to ${countyName} County`);
+    }
+    </script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
     <script src='scripts/common.js'></script>
@@ -1028,21 +1026,6 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             center: [-79.0, 35.5],
             zoom: 6.5
         });
-
-    // Load election data from Cloudflare R2
-    fetch('https://pub-051e3f6d4d054348868bb51af05852a2.r2.dev/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json')
-        .then(response => response.json())
-        .then(json => {
-            electionData = json;
-            countiesLoaded = true;
-            updateStatus('✅ Election data loaded!');
-            // Optionally, initialize categories or UI here
-            // applyCategories();
-        })
-        .catch(err => {
-            updateStatus('❌ Error loading election data');
-            console.error('Error loading JSON:', err);
-        });
         
         let electionData = null;
         let currentMode = 'county';
@@ -1380,31 +1363,43 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 // Fit to North Carolina
                 map.fitBounds([[-84.5, 33.8], [-75.5, 36.6]], { padding: 50 });
                 
-                // Load comprehensive election data
-                const electionResponse = await fetch('./data/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json');
+                // Load election data for selected year
+                const yearSelect = document.getElementById('year-select');
+                let selectedYear = '2024'; // Default year if selector not present
+                if (yearSelect) {
+                    selectedYear = yearSelect.value;
+                }
+                const electionResponse = await fetch('./data/split_by_year/results_' + selectedYear + '.json');
                 electionData = await electionResponse.json();
                 loadingManager.setProgress(100);
-                
+
                 // updateStatus removed to hide contest count window
                 loadingManager.completeTask();
-                
+
                 // Track successful load
                 analyticsManager.trackEvent('map', 'load', 'success');
-            } catch (error) {
-                updateStatus(`❌ Error loading data: ${error.message}`);
-                console.error(error);
-                loadingManager.hide();
-                analyticsManager.trackEvent('error', 'map_load_failed', error.message);
+            } catch (err) {
+                updateStatus('❌ Failed to load counties or election data: ' + err);
+                loadingManager.completeTask();
             }
-
-            // Ensure county click handler is reliably attached inside map load event
-            map.on('click', 'county-fill', (e) => {
-        const countyName = e.features[0].properties.County;
-        lastSelectedCounty = countyName;
-        showCountyDetails(countyName);
-    });
         });
-        
+
+<!-- Year selector for lazy loading JSON data -->
+<div id="year-selector-container" style="position:absolute;top:10px;left:10px;z-index:2000;background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <label for="year-select"><b>Year:</b></label>
+    <select id="year-select" onchange="reloadElectionData()">
+        <option value="2008">2008</option>
+        <option value="2010">2010</option>
+        <option value="2012">2012</option>
+        <option value="2014">2014</option>
+        <option value="2016">2016</option>
+        <option value="2018">2018</option>
+        <option value="2020">2020</option>
+        <option value="2022">2022</option>
+        <option value="2024" selected>2024</option>
+    </select>
+</div>
+
         function applyCategories() {
             if (!electionData || !countiesLoaded) {
                 updateStatus('❌ Data not ready yet!');
@@ -2174,7 +2169,7 @@ function showCountyDetails(countyName) {
             } else if (actualMarginPct >= 0.5) {
                 competitiveness = winner === 'Republican' ? "Tilt Republican" : "Tilt Democratic";
             } else {
-                competitiveness = `Tossup (${winner} win)}`;
+                competitiveness = `Tossup (${winner} win)`;
             }
             let compColor = '#6b7280';
             if (competitiveness.includes('Rep')) {
@@ -2269,7 +2264,28 @@ fetch('./data/nc_precincts.geojson')
     .catch(err => {
         console.error('Error loading precincts:', err);
     });
-
-    </script>
+</script>
+<script>
+function reloadElectionData() {
+    const year = document.getElementById('year-select').value;
+    loadingManager.startTask();
+        fetch('./data/split_by_year/results_' + year + '.json')
+        .then(function(response) {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(function(data) {
+            electionData = data;
+            updateStatus(`✅ Loaded data for ${year}`);
+            loadingManager.completeTask();
+            // Optionally trigger map/contest update here
+            applyCategories();
+        })
+        .catch(function(err) {
+            updateStatus(`❌ Failed to load data for ${year}: ${err}`);
+            loadingManager.hide();
+        });
+}
+</script>
 </body>
 </html>

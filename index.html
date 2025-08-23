@@ -11,7 +11,6 @@
     <meta property="og:description" content="Interactive visualization of North Carolina's political trends from 2008 to 2024, showing county-level and precinct-level voting patterns.">
     <meta property="og:image" content="preview.png">
     <meta name="twitter:card" content="summary_large_image">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet'>
     <link href='styles/common.css' rel='stylesheet'>
     <style>
@@ -1030,11 +1029,13 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             if (sidebar.classList.contains('minimized')) {
                 sidebar.classList.remove('minimized');
                 btn.textContent = '−';
-                floatBtn.style.display = 'none';
+                floatBtn.textContent = '−';
+                floatBtn.style.display = 'none'; // Hide floating button when sidebar is open
             } else {
                 sidebar.classList.add('minimized');
                 btn.textContent = '+';
-                floatBtn.style.display = 'flex';
+                floatBtn.textContent = '+';
+                floatBtn.style.display = 'flex'; // Show floating button when sidebar is minimized
             }
         }
 
@@ -2028,6 +2029,15 @@ function showCountyDetails(countyName) {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.remove('minimized');
+        // Always hide floating expand button and set icon to '−' when sidebar is open
+        const floatBtn = document.getElementById('sidebar-float-toggle');
+        if (floatBtn) {
+            floatBtn.style.display = 'none';
+            floatBtn.textContent = '−';
+        }
+        // Also ensure header button is set to '−'
+        const btn = document.getElementById('sidebar-minimize-btn');
+        if (btn) btn.textContent = '−';
     }
     const countyDetails = document.getElementById('county-details');
     const countyNameElement = document.getElementById('county-name');
@@ -2209,8 +2219,4 @@ fetch('./data/nc_precincts.geojson')
 
     </script>
 </body>
-    <div style="background: #f0f0f0; padding: 1em; margin-bottom: 1em; border-radius: 8px; text-align: center;">
-        <strong>Want to try the full interactive version?</strong>
-        <a href="https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html" target="_blank" style="color: #0074d9; text-decoration: underline; font-weight: bold;">Click here for the live prototype</a>
-    </div>
 </html>

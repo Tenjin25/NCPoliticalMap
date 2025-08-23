@@ -23,16 +23,19 @@ Try the live demo: [https://trickconfidence.addictiveservers.com/ultimate_nc_pol
 ### Screenshots
 
 **Statewide County Map**
-![Statewide County Map](screenshot_county_map.png)
+![Statewide County Map](Screenshots/Screenshot_County_Map.png)
 
 **Main Controls Panel**
-![Main Controls Panel](screenshot_controls_panel.png)
+![Main Controls Panel](Screenshots/screenshot_controls_panel.png)
 
 **Political Categories Legend**
-![Political Categories Legend](screenshot_legend.png)
+![Political Categories Legend](Screenshots/screenshot_legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](screenshot_county_details.png)
+![County Details Sidebar](Screenshots/screenshot_county_details.png)
+
+**County Zoom**
+![County Zoom](Screenshots/county_zoom.png)
 
 ## Installation & Setup
 1. Clone the repository or download the files.
@@ -119,3 +122,4 @@ This project was developed by Shamar (90%) with the assistance of GitHub Copilot
 
 ## License
 MIT License
+

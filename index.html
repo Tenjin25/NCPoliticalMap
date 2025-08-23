@@ -15,6 +15,10 @@ function zoomToCounty(countyName) {
     }
     // Get bounding box using turf.js
     const bbox = turf.bbox(countyFeature);
+    if (!bbox || bbox.length !== 4 || bbox.some(coord => isNaN(coord))) {
+        updateStatus('❌ Could not find valid geometry for this county.');
+        return;
+    }
     map.fitBounds(bbox, { padding: 40, maxZoom: 10 });
     updateStatus(`🔎 Zoomed to ${countyName} County`);
 }
@@ -1377,8 +1381,8 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 map.fitBounds([[-84.5, 33.8], [-75.5, 36.6]], { padding: 50 });
                 
                 // Load comprehensive election data
-                // const electionResponse = await fetch('./data/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json');
-                // electionData = await electionResponse.json();
+                const electionResponse = await fetch('./data/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json');
+                electionData = await electionResponse.json();
                 loadingManager.setProgress(100);
                 
                 // updateStatus removed to hide contest count window

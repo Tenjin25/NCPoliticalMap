@@ -9,26 +9,30 @@ NC Political Realignment Map (2008-2024) is a comprehensive, interactive web app
 - Contest selection and category coloring
 - Swing arrow visualization for election comparisons
 - Robust backend data merging and normalization
+- County zoom via search bar: Quickly zoom to any county by typing its name in the sidebar search box.
+- Responsive UI controls: Minimize or expand the sidebar, legend, and main controls for a customizable layout.
+- Status panel: See real-time feedback on loading, analysis, and map actions.
+- Social sharing buttons: Easily share the map view with others.
 
 ## Live Demo & Screenshots
 See a preview of the interactive map below.  
-![Map Screenshot](preview.jpeg)
+![Map Screenshot](preview.png)
 
 Try the live demo: [https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html](https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html)
 
 ### Screenshots
 
 **Statewide County Map**
-![Statewide County Map](screenshot_county_map.jpeg)
+![Statewide County Map](screenshot_county_map.png)
 
 **Main Controls Panel**
-![Main Controls Panel](screenshot_controls_panel.jpeg)
+![Main Controls Panel](screenshot_controls_panel.png)
 
 **Political Categories Legend**
-![Political Categories Legend](screenshot_legend.jpeg)
+![Political Categories Legend](screenshot_legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](screenshot_county_details.jpeg)
+![County Details Sidebar](screenshot_county_details.png)
 
 ## Installation & Setup
 1. Clone the repository or download the files.
@@ -39,14 +43,17 @@ Try the live demo: [https://trickconfidence.addictiveservers.com/ultimate_nc_pol
 ## Data Sources
 Election data is sourced from the North Carolina State Board of Elections and other official public datasets. All data is normalized and merged for consistency.
 
-## Technologies Used
-- Mapbox GL JS (interactive mapping)
-- Turf.js (geospatial analysis)
-- Python (data merging and normalization)
-- HTML/CSS/JavaScript (frontend)
+## Technologies
+- Mapbox GL JS
+- Turf.js for geospatial calculations
+- Custom JavaScript for UI and data management
+- Responsive CSS for modern look and feel
 
 ## Customization & Extensibility
 You can add new contests or update results by editing the JSON data and re-running the merge script. The map and sidebar will automatically reflect new data.
+
+## Credits
+Created by Shamar Davis
 
 ## Usage
 1. Open ultimate_nc_political_map_CLEAN.html in a modern web browser.
@@ -112,5 +119,3 @@ This project was developed by Shamar (90%) with the assistance of GitHub Copilot
 
 ## License
 MIT License
-
-

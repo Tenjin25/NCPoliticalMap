@@ -1,3 +1,23 @@
+// Zoom to county by name using Mapbox and turf.js
+function zoomToCounty(countyName) {
+    // Get counties GeoJSON from map source
+    const countiesSource = map.getSource('counties');
+    if (!countiesSource || !countiesSource._data || !countiesSource._data.features) {
+        updateStatus('❌ County data not loaded');
+        return;
+    }
+    const counties = countiesSource._data.features;
+    // Find county feature by name (case-insensitive)
+    const countyFeature = counties.find(f => f.properties && f.properties.County && f.properties.County.toLowerCase() === countyName.toLowerCase());
+    if (!countyFeature) {
+        updateStatus(`❌ County "${countyName}" not found`);
+        return;
+    }
+    // Get bounding box using turf.js
+    const bbox = turf.bbox(countyFeature);
+    map.fitBounds(bbox, { padding: 40, maxZoom: 10 });
+    updateStatus(`🔎 Zoomed to ${countyName} County`);
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -804,6 +824,20 @@ body {
         <div style="margin-bottom: 16px;">
             <label for="county-search" style="font-weight:600;">Search County:</label>
             <input type="text" id="county-search" placeholder="Type to search..." style="width:100%;padding:8px;border-radius:6px;margin-top:6px;margin-bottom:6px;" />
+<script>
+// Tie county search bar to zoom function
+document.addEventListener('DOMContentLoaded', function() {
+    const countySearch = document.getElementById('county-search');
+    if (countySearch) {
+        countySearch.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const countyName = countySearch.value.trim();
+                if (countyName) zoomToCounty(countyName);
+            }
+        });
+    }
+});
+</script>
         </div>
         <div class="statewide-results" id="statewide-results">
             <h4>🏛️ North Carolina Statewide</h4>
@@ -989,6 +1023,21 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             style: 'mapbox://styles/mapbox/light-v11',
             center: [-79.0, 35.5],
             zoom: 6.5
+        });
+
+    // Load election data from Cloudflare R2
+    fetch('https://pub-051e3f6d4d054348868bb51af05852a2.r2.dev/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json')
+        .then(response => response.json())
+        .then(json => {
+            electionData = json;
+            countiesLoaded = true;
+            updateStatus('✅ Election data loaded!');
+            // Optionally, initialize categories or UI here
+            // applyCategories();
+        })
+        .catch(err => {
+            updateStatus('❌ Error loading election data');
+            console.error('Error loading JSON:', err);
         });
         
         let electionData = null;

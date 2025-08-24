@@ -153,11 +153,110 @@ The map uses color-coded categories to represent the competitiveness and margin 
 - **Tossup (±0.5% margin):** The margin is less than half a percentage point, indicating a true battleground with no clear favorite.
 
 These categories help users quickly identify which areas are safe for each party, which are competitive, and where political realignment is occurring.
+
+## Notable Political Realignments (2008–2024)
+
+Over the past 16–17 years, North Carolina has experienced significant political shifts at the county level, with especially notable realignments in rural and suburban areas. This map highlights key realignments, including:
+
+- **Rural counties that shifted from reliably Democratic to Republican, or vice versa, in major statewide or national elections.**  
+  Examples: Robeson County (Democratic to Republican), Bladen County (Democratic to Republican), Surry County (Republican stronghold).
+
+- **Suburban regions that have become more competitive, moving from “Safe” or “Stronghold” status to “Lean,” “Tilt,” or “Tossup.”**  
+  Examples: Johnston County (suburban growth, especially in the Clayton area), Cabarrus County (shift toward battleground status due to Charlotte spillover), Union County (stagnant, has barely moved and its Republican lean may have been reinforced even with all of the growth in communities such as Indian Trail and Monroe).
+
+- **Notable swings in voter turnout or partisan margins, particularly in areas experiencing demographic change or suburban growth.**  
+  Examples: Wake County (suburban Democratic gains), Mecklenburg County (urban/suburban Democratic consolidation).
+
+- **Emerging battleground counties where margins have narrowed considerably, reflecting evolving political attitudes and population shifts.**  
+  Examples: New Hanover County (swing county), Pitt County (competitive margins), Craven County (narrowing margins since 2008), Alamance County (stagnant but more competitive).
+
+For further research and verification, users are encouraged to cross-reference county-level trends and election results with Ballotpedia’s comprehensive coverage of North Carolina elections and local politics: https://ballotpedia.org/North_Carolina
+
+These realignments are visualized through dynamic swing arrows and color-coded categories, allowing users to explore how North Carolina’s political landscape has evolved since 2008.
+
 ## Attribution
 This project was developed by Shamar Davis (90%) with the assistance of GitHub Copilot, an AI-powered coding assistant by Microsoft (10%).
 
 ## License
 MIT License
+
+## Percentage Display Method
+
+All election result percentages shown in the sidebar are rounded to two decimal places using standard rounding (e.g., 53.47%). This matches the convention used by Ballotpedia and most official sources. No truncation is applied—values are rounded to the nearest hundredth for clarity and consistency.
+
+If you compare results with Ballotpedia, you should see matching percentages for each county and precinct.
+
+> **Note:** Truncation of percentages was briefly tested, but the map now uses standard rounding to two decimal places for all sidebar results, matching Ballotpedia's convention. This ensures consistency with official sources and a familiar presentation for users.
+
+## Data Accuracy & Limitations
+
+While every effort has been made to ensure the accuracy of county and precinct-level results, some limitations may exist:
+- Occasional missing precincts or contests due to incomplete public datasets
+- Historical changes in county or precinct boundaries
+- Data normalization challenges when merging sources
+- Minor discrepancies may occur when comparing with other sources due to rounding conventions or updates
+
+## Comparison Guidance
+
+Users can compare map results with Ballotpedia or official state sources. Small differences may arise from rounding, data updates, or normalization. For best results, cross-reference contest, year, and county/precinct names.
+
+## User Feedback & Feature Requests
+
+Feedback is welcome! If you spot discrepancies, want to request additional contests/years, or suggest new features, please open an issue or contact the author directly.
+
+## Accessibility & Browser Support
+
+The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supports keyboard navigation and screen readers for improved accessibility. For best performance, use the latest browser version.
+
+## Update Log / Changelog
+
+- **Early July 2025:** Initial release of interactive map and county/precinct analysis features
+- **Early July 2025:** Added dynamic swing arrow visualizations and color-coded competitiveness categories
+- **Mid July 2025:** Added Ballotpedia reference and expanded realignment examples in README
+- **Late July 2025:** Added dynamic swing arrow visualizations and color-coded competitiveness categories
+- **Mid August 2025:** Improved sidebar UI to show more decimal precision for results
+- **August 24, 2025:** Switched sidebar percentage display from truncation to standard rounding (matches Ballotpedia)
+- **August 23, 2025:** Adjusted map layer opacity for improved visual clarity and accessibility
+
+## FAQ
+
+**Q: Why do some counties or precincts show missing data?**
+A: Data gaps may result from incomplete public datasets or historical changes in boundaries. See the Data Accuracy section for details.
+
+**Q: How do I compare results with Ballotpedia?**
+A: All sidebar percentages use standard rounding to two decimal places, matching Ballotpedia. Cross-reference contest, year, and county/precinct names for best results.
+
+**Q: What browsers are supported?**
+A: The map works best in Chrome, Firefox, Edge, and Safari. For optimal performance, use the latest version.
+
+## Performance Tips
+- For best experience, use a modern computer and a high-speed internet connection.
+- If the map loads slowly, try refreshing or clearing your browser cache.
+- Mobile devices are supported, but desktop browsers offer the best performance and full feature set.
+
+## Future Roadmap
+- Add support for additional election years and contests
+- Enhance precinct-level analysis and visualizations
+- Integrate demographic overlays and turnout trends
+- Improve accessibility and mobile experience
+- Enable user-submitted corrections and feedback directly in the app
+
+## Community & Social Links
+- Project website: https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html
+- Contact: Shamard415@gmail.com
+
+## Demo Video
+A short walkthrough video will be available soon to help new users explore the map and sidebar features.
+
+## Social Sharing Options
+
+The interactive map includes built-in social sharing buttons. Users can easily share their current map view or analysis via:
+- Twitter (X)
+- Facebook
+- Email
+- Direct link (copy to clipboard)
+
+These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
 
 
 

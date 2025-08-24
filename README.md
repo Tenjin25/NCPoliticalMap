@@ -71,7 +71,7 @@ See a preview of the interactive map below.
 ![County Details Sidebar](Screenshots/screenshot_county_details.png)
 
 **County Zoom**
-![County Zoom](Screenshots/county_zoom.png)
+![County Zoom](Screenshots/Robeson_zoom.png)
 
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).
@@ -158,6 +158,7 @@ This project was developed by Shamar Davis (90%) with the assistance of GitHub C
 
 ## License
 MIT License
+
 
 
 

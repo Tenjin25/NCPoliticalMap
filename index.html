@@ -1021,41 +1021,6 @@ function aggregateCountyArrows(arrows, countyGeojson) {
         let precinctsLoaded = false;
         let currentElectionResults = null;
         let lastSelectedCounty = null;
-
-        // Robust contest mapping: menu name to contestType and contestId for each year
-        const contestMap = {
-            'US President': {
-                '2008': { contestType: 'presidential', contestId: 'presidential_2008_1' },
-                '2012': { contestType: 'presidential', contestId: 'presidential_2012_1' },
-                '2016': { contestType: 'presidential', contestId: 'presidential_2016_1' },
-                '2020': { contestType: 'presidential', contestId: 'presidential_2020_1' },
-                '2024': { contestType: 'presidential', contestId: 'presidential_2024_1' }
-            },
-            'US Senate': {
-                '2008': { contestType: 'us_senate', contestId: 'us_senate_2008_1' },
-                '2010': { contestType: 'us_senate', contestId: 'us_senate_2010_1' },
-                '2014': { contestType: 'us_senate', contestId: 'us_senate_2014_1' },
-                '2016': { contestType: 'us_senate', contestId: 'us_senate_2016_1' },
-                '2020': { contestType: 'us_senate', contestId: 'us_senate_2020_1' },
-                '2022': { contestType: 'us_senate', contestId: 'us_senate_2022_1' }
-            },
-            'NC Governor': {
-                '2008': { contestType: 'governor', contestId: 'governor_2008_1' },
-                '2012': { contestType: 'governor', contestId: 'governor_2012_1' },
-                '2016': { contestType: 'governor', contestId: 'governor_2016_1' },
-                '2020': { contestType: 'governor', contestId: 'governor_2020_1' },
-                '2024': { contestType: 'governor', contestId: 'governor_2024_1' }
-            }
-            // ...add more contests as needed
-        };
-
-        // Helper to get contest info from mapping
-        function getContestInfo(menuName, year) {
-            if (contestMap[menuName] && contestMap[menuName][year]) {
-                return contestMap[menuName][year];
-            }
-            return null;
-        }
         
         function updateStatus(message) {
             // If message contains [object HTMLSelectElement], replace with a more user-friendly text
@@ -1386,9 +1351,8 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 // Fit to North Carolina
                 map.fitBounds([[-84.5, 33.8], [-75.5, 36.6]], { padding: 50 });
                 
-                // Load split election data for the default year (e.g., 2008)
-                const defaultYear = "2008";
-                const electionResponse = await fetch(`./data/results_${defaultYear}.json`);
+                // Load comprehensive election data
+                const electionResponse = await fetch('./data/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json');
                 electionData = await electionResponse.json();
                 loadingManager.setProgress(100);
                 
@@ -1412,93 +1376,108 @@ function aggregateCountyArrows(arrows, countyGeojson) {
     });
         });
         
-        async function applyCategories() {
-
-            if (!countiesLoaded) {
-                updateStatus('❌ County data not ready yet!');
+        function applyCategories() {
+            if (!electionData || !countiesLoaded) {
+                updateStatus('❌ Data not ready yet!');
                 return;
             }
-
+            
             loadingManager.startTask();
-
+            
             const contestElement = document.getElementById('contest');
+            
             if (!contestElement) {
                 updateStatus('❌ Contest dropdown not found!');
                 return;
             }
-
+            
             const contest = contestElement.value;
+            
             if (!contest) {
                 updateStatus('❌ Please select a contest!');
                 return;
             }
-
-            // Extract year from contest value
+            
+            // Extract year from contest (e.g., "presidential_2024_1" -> "2024")
             const yearMatch = contest.match(/_(\d{4})_/);
             if (!yearMatch) {
                 updateStatus('❌ Could not determine year from contest selection!');
                 return;
             }
             const year = yearMatch[1];
-
-            // Find menu name from dropdown text
-            const menuName = contestElement.options[contestElement.selectedIndex].text.split('(')[0].trim();
-            const contestInfo = getContestInfo(menuName, year);
-            if (!contestInfo) {
-                updateStatus(`❌ No contest mapping for ${menuName} in ${year}`);
-                return;
-            }
-
+            
             updateStatus(`🔍 Loading ${year} precinct and county data...`);
-            try {
-                const electionResponse = await fetch(`./data/results_${year}.json`);
-                electionData = await electionResponse.json();
-            } catch (err) {
-                updateStatus(`❌ Could not load data for year ${year}: ${err.message}`);
-                return;
+            
+            // Extract contest type from the dropdown value and handle different contest formats
+            const contestParts = contest.split('_');
+            let contestType = contestParts[0];
+            
+            // Handle different contest type formats
+            if (contestType === 'us') {
+                contestType = 'us_senate';
+            } else if (contestType === 'attorney') {
+                contestType = 'attorney_general';
+            } else if (contestType === 'lt') {
+                contestType = 'lt_governor';
+            } else if (contestType === 'commissioner') {
+                contestType = contestParts[0] + '_' + contestParts[1];
+            } else if (contestType === 'state' || contestType === 'auditor' || contestType === 'auditor_state' || contestType === 'stateauditor') {
+                contestType = 'state_auditor';
+            } else if (contestType === 'treasurer') {
+                contestType = 'treasurer';
+            } else if (contestType === 'secretary') {
+                contestType = 'secretary_of_state';
+            } else if (contestType === 'superintendent') {
+                contestType = 'superintendent_instruction';
             }
-
-            // Use contestType and contestId from mapping
-            const contestType = contestInfo.contestType;
-            const contestId = contestInfo.contestId;
-
+            
+            console.log('Contest type:', contestType, 'from value:', contest);
+            
+            updateStatus(`🔍 Loading ${contestType} ${year}...`);
+            
+            // Debug: Check what data structure exists
+            console.log('Available years:', Object.keys(electionData.results_by_year || {}));
+            if (electionData.results_by_year[year]) {
+                console.log(`Available contests for ${year}:`, Object.keys(electionData.results_by_year[year]));
+            }
+            
             if (!electionData.results_by_year[year]) {
                 updateStatus(`❌ No data for year ${year}`);
                 return;
             }
+            
             if (!electionData.results_by_year[year][contestType]) {
                 updateStatus(`❌ No ${contestType} data for ${year}`);
                 return;
             }
-            if (!electionData.results_by_year[year][contestType][contestId]) {
-                updateStatus(`❌ No contest ID ${contestId} for ${contestType} in ${year}`);
-                return;
-            }
-
-            const contestData = electionData.results_by_year[year][contestType][contestId];
+            
+            const contestGroup = electionData.results_by_year[year][contestType];
+            const contestKey = Object.keys(contestGroup)[0];
+            const contestData = contestGroup[contestKey];
+            
             if (!contestData.results) {
-                updateStatus(`❌ No results found for ${contestId}`);
+                updateStatus(`❌ No results found for ${contestKey}`);
                 return;
             }
-
+            
             const results = contestData.results;
             currentElectionResults = results;
             const precinctCount = Object.keys(results).length;
-            updateStatus(`📊 Processing ${precinctCount} precincts for ${menuName} ${year}...`);
-
+            updateStatus(`📊 Processing ${precinctCount} precincts for ${contestType} ${year}...`);
+            
             // Calculate and display statewide results
             updateStatewideResults(results, contestType, year);
-
+            
             // Track contest view
             analyticsManager.trackEvent('visualization', 'view_contest', `${contestType}_${year}`);
-            console.log(`Found ${precinctCount} precincts for ${menuName} ${year}`);
-
+            console.log(`Found ${precinctCount} precincts for ${contestType} ${year}`);
+            
             if (currentMode === 'county') {
                 applyCountyCategories(results, contestType, year);
             } else {
                 applyPrecinctCategories(results, contestType, year);
             }
-
+            
             // After updating categories, auto-update county details if a county was previously selected
             if (lastSelectedCounty) {
                 showCountyDetails(lastSelectedCounty);
@@ -1632,7 +1611,7 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             
             // Apply colors to county layer
             map.setPaintProperty('county-fill', 'fill-color', colorExpression);
-            map.setPaintProperty('county-fill', 'fill-opacity', 0.55);
+                map.setPaintProperty('county-fill', 'fill-opacity', 0.38);
             
             if (currentMode === 'county') {
                 updateStatus(`✅ ${contest} ${year} applied! ${coloredCount} counties colored by county-level results.`);

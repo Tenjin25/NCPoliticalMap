@@ -816,27 +816,27 @@ body {
             <h4>🔍 Research Findings</h4>
             <div class="finding-card">
                 <h5>Cabarrus County - Suburban Shift</h5>
-                <p><strong>Competitive Trend:</strong> While still leaning Republican, Cabarrus has become significantly more competitive. <span class="metric">2020: R+9.4%</span> → <span class="metric">2024: R+7.7%</span></p>
-                <p><strong>2020 Breakthrough:</strong> Trump 53.94% vs Biden 44.50% - first time since 2008 a Democrat cracked 40%</p>
-                <p><strong>2024 Continuation:</strong> Trump 53.03% vs Harris 45.34%, maintaining the competitive trend</p>
+                <p><strong>Competitive Trend:</strong> While still leaning Republican, Cabarrus has become significantly more competitive. <span class="metric">2020: R+9.45%</span> → <span class="metric">2024: R+7.70%</span></p>
+                <p><strong>2020 Breakthrough:</strong> Trump 53.94% vs Biden 44.50% - first time since 2008 a Democrat cracked 40%.</p>
+                <p><strong>2024 Continuation:</strong> Trump 53.03% vs Harris 45.34%, maintaining the competitive trend.</p>
                 <p><strong>Demographics:</strong> Unaffiliated registration now surpasses both major parties. Fast-growing communities: Concord, Kannapolis, Harrisburg</p>
-                <p><strong>Geography:</strong> Charlotte metro spillover driving suburban growth and political transformation</p>
+                <p><strong>Geography:</strong> Charlotte metro spillover driving suburban growth and political transformation.</p>
             </div>
             <div class="finding-card">
                 <h5>Alamance County - Statistical Consistency</h5>
-                <p><strong>Competitive Trend:</strong> Steady competitiveness with remarkably consistent Democratic performance. <span class="metric">2020: R+8.4%</span> → <span class="metric">2024: R+8.1%</span></p>
-                <p><strong>2020 Results:</strong> Trump 53.50% vs Biden 45.10% - first time since 2008 a Democrat reached 45% (Obama got 44.94%)</p>
-                <p><strong>2024 Consistency:</strong> Trump 53.36% vs Harris 45.22% - nearly identical Democratic share (45.10% vs 45.22%)</p>
-                <p><strong>Growth Centers:</strong> Graham, Burlington, and especially Mebane (I-40/I-85 corridor). Buc-ee's opening late 2026/early 2027 signals commercial growth</p>
-                <p><strong>Key Insight:</strong> Statistical similarity across cycles highlights persistent competitive trends in this swing county</p>
+                <p><strong>Competitive Trend:</strong> Steady competitiveness with remarkably consistent Democratic performance. <span class="metric">2020: R+8.40%</span> → <span class="metric">2024: R+8.16%</span></p>
+                <p><strong>2020 Results:</strong> Trump 53.50% vs Biden 45.10% - first time since 2008 a Democrat reached 45% (Obama got 44.94%).</p>
+                <p><strong>2024 Consistency:</strong> Trump 53.36% vs Harris 45.22% - nearly identical Democratic share (45.10% vs 45.22%).</p>
+                <p><strong>Growth Centers:</strong> Graham, Burlington, and especially Mebane (I-40/I-85 corridor). Buc-ee's opening late 2026/early 2027 signals commercial growth.</p>
+                <p><strong>Key Insight:</strong> Statistical similarity across cycles highlights persistent competitive trends in this swing county.</p>
             </div>
             <div class="finding-card">
                 <h5>Regional Transformation</h5>
-                <p><strong>Suburban Realignment:</strong> Both counties exemplify the transformation of formerly safe Republican areas into competitive battlegrounds</p>
-                <p><strong>Unaffiliated Surge:</strong> In both counties, unaffiliated voters now outnumber Democrats and Republicans, creating volatile electoral dynamics</p>
-                <p><strong>Geographic Advantage:</strong> Proximity to Charlotte, the Triad, and Triangle drives population growth and political moderation</p>
-                <p><strong>Turnout Impact:</strong> Rising voter registration and turnout make these counties pivotal to statewide margins</p>
-                <p><strong>National Pattern:</strong> These trends mirror broader suburban realignment across the United States</p>
+                <p><strong>Suburban Realignment:</strong> Both counties exemplify the transformation of formerly safe Republican areas into competitive battlegrounds.</p>
+                <p><strong>Unaffiliated Surge:</strong> In both counties, unaffiliated voters now outnumber Democrats and Republicans, creating volatile electoral dynamics.</p>
+                <p><strong>Geographic Advantage:</strong> Proximity to Charlotte, the Triad, and Triangle drives population growth and political moderation.</p>
+                <p><strong>Turnout Impact:</strong> Rising voter registration and turnout make these counties pivotal to statewide margins.</p>
+                <p><strong>National Pattern:</strong> These trends mirror broader suburban realignment across the United States.</p>
             </div>
         </div>
     </div>
@@ -1085,6 +1085,21 @@ function aggregateCountyArrows(arrows, countyGeojson) {
         
         // Calculate and display statewide results
         function updateStatewideResults(results, contest, year) {
+            console.log('updateStatewideResults called for', contest, year);
+            var loggedDem = false, loggedRep = false;
+            Object.values(results).forEach(result => {
+                if (!loggedDem && Array.isArray(result.dem_breakdown) && result.dem_breakdown.length > 0) {
+                    console.log('Sample dem_breakdown:', result.dem_breakdown);
+                    loggedDem = true;
+                }
+                if (!loggedRep && Array.isArray(result.rep_breakdown) && result.rep_breakdown.length > 0) {
+                    console.log('Sample rep_breakdown:', result.rep_breakdown);
+                    loggedRep = true;
+                }
+            });
+            if (!loggedDem && !loggedRep) {
+                console.log('No dem_breakdown or rep_breakdown arrays found in results. Logging results object:', results);
+            }
             let demTotal = 0, repTotal = 0, totalVotes = 0;
             
             Object.values(results).forEach(result => {
@@ -1104,43 +1119,101 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             const demPercent = (demTotal / totalVotes * 100);
             const repPercent = (repTotal / totalVotes * 100);
             const margin = Math.abs(demPercent - repPercent);
-            const winner = demPercent > repPercent ? 'Democratic' : 'Republican'; // Already uses full labels
-            const winnerPercent = Math.max(demPercent, repPercent);
-            const loserPercent = Math.min(demPercent, repPercent);
-            
-            // Determine category based on margin
-            let category;
-            if (margin >= 40) {
-                category = `Annihilation ${winner}`;
-            } else if (margin >= 30) {
-                category = `Dominant ${winner}`;
-            } else if (margin >= 20) {
-                category = `Stronghold ${winner}`;
-            } else if (margin >= 10) {
-                category = `Safe ${winner}`;
-            } else if (margin >= 5.5) {
-                category = `Likely ${winner}`;
-            } else if (margin >= 1) {
-                category = `Lean ${winner}`;
-            } else if (margin >= 0.5) {
-                category = `Tilt ${winner}`;
-            } else {
-                category = 'Tossup';
-            }
-            
-            const marginText = `${winner} +${margin.toFixed(1)}%`;
-            
-            document.getElementById('statewide-content').innerHTML = `
-                <div class="statewide-margin">
-                    <div class="margin-text" style="color: ${winner === 'Democratic' ? '#1e40af' : '#dc2626'}">${marginText}</div>
-                    <div class="margin-details">
-                        ${winnerPercent.toFixed(1)}% vs ${loserPercent.toFixed(1)}% • ${category}
+                const winnerParty = demPercent > repPercent ? 'Democratic' : 'Republican';
+                const winnerPercent = Math.max(demPercent, repPercent);
+                const loserPercent = Math.min(demPercent, repPercent);
+
+                // Extract winner's last name from dem_candidate or rep_candidate
+                var winnerLastName = '';
+                var partyAbbr = winnerParty === 'Democratic' ? 'D' : 'R';
+                var maxVotes = 0;
+                Object.values(results).forEach(result => {
+                    if (winnerParty === 'Democratic' && result.dem_votes > maxVotes) {
+                        maxVotes = result.dem_votes;
+                        if (result.dem_candidate) winnerLastName = result.dem_candidate;
+                    } else if (winnerParty === 'Republican' && result.rep_votes > maxVotes) {
+                        maxVotes = result.rep_votes;
+                        if (result.rep_candidate) winnerLastName = result.rep_candidate;
+                    }
+                });
+                // Parse last name from candidate string
+                if (winnerLastName) {
+                    // If candidate string contains '/', use the part before the slash
+                    if (winnerLastName.includes('/')) {
+                        winnerLastName = winnerLastName.split('/')[0].trim();
+                    }
+                    // If candidate string contains a space, use the last word
+                    else if (winnerLastName.includes(' ')) {
+                        let parts = winnerLastName.trim().split(' ');
+                        winnerLastName = parts[parts.length - 1];
+                    }
+                } else {
+                    winnerLastName = winnerParty;
+                }
+                    // Manual candidate overrides for Treasurer and Auditor
+                    let contestValue = contest;
+                    let yearValue = year;
+                    if (!yearValue) {
+                        const contestElement = document.getElementById('contest');
+                        if (contestElement) {
+                            contestValue = contestElement.value;
+                            const yearMatch = contestValue.match(/_(\d{4})_/);
+                            yearValue = yearMatch ? yearMatch[1] : null;
+                        }
+                    }
+                    if (yearValue) {
+                        if (/treasurer/.test(contestValue)) {
+                            if (yearValue === '2008') winnerLastName = 'Cowell';
+                            else if (yearValue === '2012') winnerLastName = 'Cowell';
+                            else if (yearValue === '2016') {
+                                winnerLastName = 'Folwell';
+                                partyAbbr = 'R';
+                            }
+                        }
+                        if (/auditor/.test(contestValue)) {
+                            if (yearValue === '2008') winnerLastName = 'Wood';
+                            else if (yearValue === '2012') winnerLastName = 'Wood';
+                            else if (yearValue === '2016') winnerLastName = 'Wood';
+                            else if (yearValue === '2020') winnerLastName = 'Wood';
+                            else if (yearValue === '2024') {
+                                winnerLastName = 'Boliek';
+                                partyAbbr = 'R';
+                            }
+                        }
+                    }
+
+                // Determine category and color
+                let category, winnerColor;
+                if (margin >= 40) {
+                    category = `Annihilation ${winnerParty}`;
+                } else if (margin >= 30) {
+                    category = `Dominant ${winnerParty}`;
+                } else if (margin >= 20) {
+                    category = `Stronghold ${winnerParty}`;
+                } else if (margin >= 10) {
+                    category = `Safe ${winnerParty}`;
+                } else if (margin >= 5.5) {
+                    category = `Likely ${winnerParty}`;
+                } else if (margin >= 1) {
+                    category = `Lean ${winnerParty}`;
+                } else if (margin >= 0.5) {
+                    category = `Tilt ${winnerParty}`;
+                } else {
+                    category = `Tossup (${winnerParty} Win)`;
+                }
+                winnerColor = winnerParty === 'Republican' ? '#dc2626' : '#2563eb';
+                // Format margin to two decimal places
+                const marginStr = margin.toFixed(2);
+                let winnerDisplay = winnerLastName === winnerParty ? winnerParty : `${winnerLastName} (${partyAbbr})`;
+                document.getElementById('statewide-content').innerHTML = `
+                    <div class="statewide-margin">
+                        <strong>Margin:</strong> <span style="color:${winnerColor};font-weight:bold;">${winnerDisplay} +${marginStr}%</span><br>
+                        <strong>Results:</strong> ${winnerPercent.toFixed(2)}% vs ${loserPercent.toFixed(2)}% • <span style="color:${winnerColor};font-weight:bold;">${category}</span>
                     </div>
                     <div class="margin-details">
                         ${demTotal.toLocaleString()} D, ${repTotal.toLocaleString()} R • ${totalVotes.toLocaleString()} total votes
                     </div>
-                </div>
-            `;
+                `;
         }
         
         function setMode(mode) {
@@ -1633,17 +1706,17 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 return;
             }
             const colorExpression = ['case'];
-            // Helper to normalize precinct names
-            function normalizePrecinctName(name) {
-                return (name || '').toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-            }
-            // Build a lookup from normalized precinct name to result
-            const precinctResultMap = {};
-            Object.values(results).forEach(result => {
-                if (result.precinct) {
-                    precinctResultMap[normalizePrecinctName(result.precinct)] = result;
-                }
-            });
+// Helper to normalize precinct names
+function normalizePrecinctName(name) {
+    return (name || '').toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+// Build a lookup from normalized precinct name to result
+const precinctResultMap = {};
+Object.values(results).forEach(result => {
+    if (result.precinct) {
+        precinctResultMap[normalizePrecinctName(result.precinct)] = result;
+    }
+});
             let matchedCount = 0;
             let totalPrecincts = precinctSource._data.features.length;
             // For each precinct in the GeoJSON, assign color based on normalized name
@@ -2081,8 +2154,8 @@ function showCountyDetails(countyName) {
             const totalVotes = countyResults.reduce((sum, r) => sum + r.total_votes, 0);
             const demVotes = countyResults.reduce((sum, r) => sum + r.dem_votes, 0);
             const repVotes = countyResults.reduce((sum, r) => sum + r.rep_votes, 0);
-            const demPct = ((demVotes / totalVotes) * 100).toFixed(1);
-            const repPct = ((repVotes / totalVotes) * 100).toFixed(1);
+            const demPct = ((demVotes / totalVotes) * 100).toFixed(2);
+            const repPct = ((repVotes / totalVotes) * 100).toFixed(2);
             const firstResult = countyResults[0];
             let demCandidate = firstResult.dem_candidate || 'Democratic';
             let repCandidate = firstResult.rep_candidate || 'Republican';
@@ -2107,7 +2180,7 @@ function showCountyDetails(countyName) {
                 }
             }
             const margin = repVotes - demVotes;
-            const marginPct = (Math.abs(margin) / totalVotes * 100).toFixed(1);
+            const marginPct = (Math.abs(margin) / totalVotes * 100).toFixed(2);
             const winner = margin > 0 ? 'Republican' : 'Democratic';
             const winnerCandidate = margin > 0 ? repCandidate : demCandidate;
             const marginText = margin > 0 ? 'R+' + marginPct + '%' : 'D+' + marginPct + '%';
@@ -2229,8 +2302,8 @@ fetch('./data/nc_precincts.geojson')
             countyNameElement.textContent = 'Precinct: ' + precinct;
             let sidebarContent = '';
             if (result) {
-                sidebarContent += `<p><strong>Democratic:</strong> ${result.dem_votes} (${((result.dem_votes/result.total_votes)*100).toFixed(1)}%)</p>`;
-                sidebarContent += `<p><strong>Republican:</strong> ${result.rep_votes} (${((result.rep_votes/result.total_votes)*100).toFixed(1)}%)</p>`;
+                sidebarContent += `<p><strong>Democratic:</strong> ${result.dem_votes} (${((result.dem_votes/result.total_votes)*100).toFixed(2)}%)</p>`;
+                sidebarContent += `<p><strong>Republican:</strong> ${result.rep_votes} (${((result.rep_votes/result.total_votes)*100).toFixed(2)}%)</p>`;
                 sidebarContent += `<p><strong>Total Votes:</strong> ${result.total_votes}</p>`;
             } else {
                 sidebarContent += `<p>No data for this precinct.</p>`;
@@ -2262,5 +2335,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     </script>
 </body>
-</html>
 </html>

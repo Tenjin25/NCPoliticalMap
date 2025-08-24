@@ -3,6 +3,37 @@ NC Political Realignment Map (2008-2024) is a comprehensive, interactive web app
 
 **This project is an interactive visualization of North Carolina's political trends from 2008 to 2024, showing county-level and precinct-level voting patterns. It uses Mapbox GL JS for map rendering and Python scripts for data merging and normalization.**
 
+## Academic & Research Applications
+
+This project is ideal for use in university courses, research projects, and outreach initiatives focused on political science, data analysis, geography, and North Carolina studies. Faculty and students can leverage the interactive map and data tools for:
+
+- Classroom demonstrations of electoral trends and realignment
+- Student research projects and presentations
+- Comparative analysis of county and precinct-level voting patterns
+- Outreach and civic engagement programs
+
+## How to Cite
+
+If you use this project in research or coursework, please cite as follows:
+
+> Davis, S. (2025). NC Political Realignment Map (2008-2024). Interactive web application. https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html
+
+## Contact & Collaboration
+
+For questions, collaboration opportunities, or to request data access, contact:
+
+- Shamar Davis: [Shamard415@gmail.com]
+
+## Educational Value
+
+This tool provides a hands-on resource for exploring the evolving political landscape of North Carolina. It supports:
+
+- Data-driven learning and analysis
+- Visual storytelling in political science
+- Interdisciplinary research across geography, history, and public policy
+
+Universities are encouraged to integrate the map into their curriculum and research activities.
+
 ## Features
 - Interactive county and precinct map
 - Sidebar with county analysis and research findings
@@ -23,6 +54,7 @@ See a preview of the interactive map below.
     <img src="https://img.shields.io/badge/LIVE%20DEMO-Click%20Here-brightgreen?style=for-the-badge&logo=mapbox" alt="Live Demo Button">
   </a>
 </p>
+
 
 ### Screenshots
 
@@ -122,14 +154,10 @@ The map uses color-coded categories to represent the competitiveness and margin 
 
 These categories help users quickly identify which areas are safe for each party, which are competitive, and where political realignment is occurring.
 ## Attribution
-This project was developed by Shamar (90%) with the assistance of GitHub Copilot, an AI-powered coding assistant by Microsoft (10%).
+This project was developed by Shamar Davis (90%) with the assistance of GitHub Copilot, an AI-powered coding assistant by Microsoft (10%).
 
 ## License
 MIT License
-
-
-
-
 
 
 

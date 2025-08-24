@@ -178,7 +178,20 @@ These realignments are visualized through dynamic swing arrows and color-coded c
 This project was developed by Shamar Davis (90%) with the assistance of GitHub Copilot, an AI-powered coding assistant by Microsoft (10%).
 
 ## License
-MIT License
+
+This project is licensed under the Apache License, Version 2.0. You may use, modify, and distribute the code, including for commercial purposes, as long as you comply with the terms of the license. See the LICENSE file for full details.
+
+Copyright 2025 Shamar Davis
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 ## Percentage Display Method
 

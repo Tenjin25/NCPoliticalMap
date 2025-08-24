@@ -80,11 +80,10 @@ See a preview of the interactive map below.
 ![Political Categories Legend](Screenshots/screenshot_legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](Screenshots/screenshot_county_details.png)
+![County Details Sidebar](Screenshots/Updated_County_Details.png)
 
 **County Zoom**
-![County Zoom](Screenshots/Robeson_zoom.png)
-
+![County Zoom](Screenshots/Updated_Robeson_Zoom.png)
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).
 Use the contest dropdown to select an election.
@@ -284,6 +283,7 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
 
 
 

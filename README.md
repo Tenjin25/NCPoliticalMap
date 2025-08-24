@@ -27,7 +27,7 @@ See a preview of the interactive map below.
 ### Screenshots
 
 **Statewide County Map**
-![Statewide County Map](Screenshots/Screenshot_County_Map.png)
+![Statewide County Map]()
 
 **Main Controls Panel**
 ![Main Controls Panel](Screenshots/screenshot_controls_panel.png)
@@ -126,6 +126,7 @@ This project was developed by Shamar (90%) with the assistance of GitHub Copilot
 
 ## License
 MIT License
+
 
 
 

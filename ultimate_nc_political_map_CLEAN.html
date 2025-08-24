@@ -11,7 +11,6 @@
     <meta property="og:description" content="Interactive visualization of North Carolina's political trends from 2008 to 2024, showing county-level and precinct-level voting patterns.">
     <meta property="og:image" content="preview.png">
     <meta name="twitter:card" content="summary_large_image">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet'>
     <link href='styles/common.css' rel='stylesheet'>
     <style>
@@ -59,8 +58,8 @@ body {
 }
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 20px;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
@@ -223,14 +222,15 @@ body {
         
         .sidebar-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             padding: 20px;
             border-bottom: 1px solid #e5e7eb;
             background: #f9fafb;
         }
         
-        .sidebar.minimized .sidebar-header {
+        /* Remove or adjust this block for minimized state so it doesn't override normal sidebar-header */
+        /* .sidebar.minimized .sidebar-header {
             padding: 10px;
             justify-content: center;
             background: rgba(255, 255, 255, 0.9);
@@ -241,17 +241,27 @@ body {
             top: 50%;
             transform: translateY(-50%);
             box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        }
+        } */
         
         .sidebar-header h3 {
             margin: 0;
-            color: #1f2937;
             font-size: 18px;
             font-weight: 600;
+            color: #1f2937;
         }
         
         .sidebar-content {
             padding: 20px;
+            padding-top: 0;
+        }
+        
+        .author-credit {
+            padding: 12px 0 8px 0;
+            text-align: center;
+            color: #888;
+            font-size: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
         }
         
         /* County Details */
@@ -611,22 +621,20 @@ body {
     display: none !important;
 }
 .sidebar-header {
-    position: fixed !important;
-    top: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    display: flex !important;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    background: #2563eb;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    z-index: 9999;
-    padding: 0;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
 }
 .sidebar-header h3 {
-    display: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    color: #1f2937;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
 }
 .sidebar-header .minimize-btn {
     color: #fff;
@@ -665,7 +673,7 @@ body {
 <!-- Main Controls Dropdown (Contest Selector) -->
 <div class="main-controls" id="main-controls">
     <div class="controls-header">
-        <h3>🗳️ NC Political Categories</h3>
+        <h3>🗳️ NC Political Contests</h3>
         <button class="minimize-btn" onclick="toggleMainControls()" id="controls-minimize-btn">−</button>
     </div>
     <div class="controls-content" id="controls-content">
@@ -832,6 +840,9 @@ body {
             </div>
         </div>
     </div>
+    <div style="padding: 16px 0; text-align: center; color: #888; font-size: 15px; border-top: 1px solid #e5e7eb; background: #f9fafb;">
+        Created by Shamar Davis
+    </div>
     <!-- Floating expand button removed: sidebar toggle is only via header +/- button -->
     <div class="status-panel" id="status" style="display:none;">
         <button id="status-exit" title="Close" style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:6px;border:none;background:#eee;cursor:pointer;font-weight:bold;font-size:18px;">×</button>
@@ -865,6 +876,30 @@ body {
 </div>
 
     <script>
+// Zoom to county by name using Mapbox and turf.js
+function zoomToCounty(countyName) {
+    const countiesSource = map.getSource('counties');
+    if (!countiesSource || !countiesSource._data || !countiesSource._data.features) {
+        updateStatus('❌ County data not loaded');
+        return;
+    }
+    const counties = countiesSource._data.features;
+    const countyFeature = counties.find(f => f.properties && f.properties.County && f.properties.County.toLowerCase() === countyName.toLowerCase());
+    if (!countyFeature) {
+        updateStatus(`❌ County "${countyName}" not found`);
+        return;
+    }
+    const bbox = turf.bbox(countyFeature);
+    map.fitBounds(bbox, { padding: 40, maxZoom: 10 });
+    updateStatus(`🔎 Zoomed to ${countyName} County`);
+    // Ensure a contest is selected and results are loaded
+    const contestElement = document.getElementById('contest');
+    if (contestElement && !contestElement.value && contestElement.options.length > 0) {
+        contestElement.selectedIndex = 0;
+        applyCategories();
+    }
+    showCountyDetails(countyName);
+}
                 // Canvas swing arrow rendering
                 function resizeCanvas() {
                     const canvas = document.getElementById('swingCanvas');
@@ -1018,11 +1053,13 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             if (sidebar.classList.contains('minimized')) {
                 sidebar.classList.remove('minimized');
                 btn.textContent = '−';
-                floatBtn.style.display = 'none';
+                floatBtn.textContent = '−';
+                floatBtn.style.display = 'none'; // Hide floating button when sidebar is open
             } else {
                 sidebar.classList.add('minimized');
                 btn.textContent = '+';
-                floatBtn.style.display = 'flex';
+                floatBtn.textContent = '+';
+                floatBtn.style.display = 'flex'; // Show floating button when sidebar is minimized
             }
         }
 
@@ -1107,26 +1144,28 @@ function aggregateCountyArrows(arrows, countyGeojson) {
         }
         
         function setMode(mode) {
-            console.log(`Setting mode to: ${mode}`);
             currentMode = mode;
             document.getElementById('county-mode').classList.toggle('active', mode === 'county');
             document.getElementById('precinct-mode').classList.toggle('active', mode === 'precinct');
             analyticsManager.trackEvent('visualization', 'change_mode', mode);
-            
             if (mode === 'county') {
-                updateStatus(`Switched to County Results mode - shows actual county winners`);
+                if (map.getLayer('county-fill')) {
+                    map.setLayoutProperty('county-fill', 'visibility', 'visible');
+                }
+                if (map.getLayer('precinct-fill')) {
+                    map.setLayoutProperty('precinct-fill', 'visibility', 'none');
+                }
+                updateStatus('Switched to County Results mode - shows actual county winners');
+                if (currentElectionResults) applyCategories();
             } else {
-                updateStatus(`Switched to Precinct Patterns mode - shows dominant precinct categories`);
-            }
-            
-            // Automatically reapply current selection if data is loaded
-            if (currentElectionResults) {
-                console.log('Reapplying categories after mode change');
-                const contest = document.getElementById('contest').value;
-                console.log(`Current contest: ${contest}`);
-                applyCategories();
-            } else {
-                console.log('No election results loaded yet');
+                if (map.getLayer('county-fill')) {
+                    map.setLayoutProperty('county-fill', 'visibility', 'none');
+                }
+                if (map.getLayer('precinct-fill')) {
+                    map.setLayoutProperty('precinct-fill', 'visibility', 'visible');
+                }
+                updateStatus('Switched to Precinct Patterns mode - shows dominant precinct categories');
+                if (currentElectionResults) applyPrecinctCategories(currentElectionResults);
             }
         }
         
@@ -1190,6 +1229,45 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                         'fill-color': '#e0e0e0',
                         'fill-opacity': 0.4
                     }
+                });
+                // Attach county click handlers after layer is added
+                map.on('click', 'county-fill', (e) => {
+                    const countyName = e.features[0].properties.County;
+                    console.log('[county-fill click] County:', countyName);
+                    lastSelectedCounty = countyName;
+                    showCountyDetails(countyName);
+                });
+                map.on('click', function(e) {
+                    const features = map.queryRenderedFeatures(e.point, { layers: ['county-fill'] });
+                    if (features.length > 0 && features[0].properties && features[0].properties.County) {
+                        const countyName = features[0].properties.County;
+                        console.log('[generic click] County:', countyName);
+                        lastSelectedCounty = countyName;
+                        showCountyDetails(countyName);
+                    } else {
+                        console.log('[generic click] No county detected at click point.');
+                    }
+                });
+
+                // Fallback: If 'county-fill' layer is missing or not interactive, use a generic click handler
+                map.on('click', function(e) {
+                    const features = map.queryRenderedFeatures(e.point, { layers: ['county-fill'] });
+                    if (features.length > 0 && features[0].properties && features[0].properties.County) {
+                        const countyName = features[0].properties.County;
+                        console.log('[generic click] County:', countyName);
+                        lastSelectedCounty = countyName;
+                        showCountyDetails(countyName);
+                    } else {
+                        console.log('[generic click] No county detected at click point.');
+                    }
+                });
+
+                // Also add a direct handler for 'county-fill' layer
+                map.on('click', 'county-fill', (e) => {
+                    const countyName = e.features[0].properties.County;
+                    console.log('[county-fill click] County:', countyName);
+                    lastSelectedCounty = countyName;
+                    showCountyDetails(countyName);
                 });
                 
                 // County outline layer
@@ -1543,64 +1621,69 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             loadingManager.completeTask();
         }
         
-        function applyPrecinctCategories(results, contestType, year) {
-            console.log(`Applying precinct categories for ${contestType} in ${year}`);
-            if (!precinctsLoaded) {
-                updateStatus('❌ Precinct data not available');
+        function applyPrecinctCategories(results) {
+            // Check if both data and layer are ready
+            if (!results || !map.getLayer('precinct-fill')) {
+                updateStatus('❌ Data not ready yet!');
                 return;
             }
-            
-            // Create color expression for precincts
+            const precinctSource = map.getSource('precincts');
+            if (!precinctSource || !precinctSource._data || !precinctSource._data.features) {
+                updateStatus('❌ Precinct GeoJSON not loaded yet!');
+                return;
+            }
             const colorExpression = ['case'];
-            let coloredCount = 0;
-            
-            // Debug info for precinct data
-            console.log('Precinct results count:', Object.keys(results).length);
-            console.log('Sample result:', Object.values(results)[0]);
-            
-            Object.entries(results).forEach(([precinctId, result]) => {
-                const demVotes = result.dem_votes || 0;
-                const repVotes = result.rep_votes || 0;
-                const totalVotes = demVotes + repVotes;
-                
-                if (totalVotes > 0) {
-                    const demPercent = (demVotes / totalVotes) * 100;
-                    const repPercent = (repVotes / totalVotes) * 100;
-                    const margin = Math.abs(demPercent - repPercent);
-                    const winner = repPercent > demPercent ? 'REP' : 'DEM';
-                    
-                    let color;
-                    if (margin >= 40) {
-                        color = winner === 'REP' ? '#67000d' : '#08306b';
-                    } else if (margin >= 30) {
-                        color = winner === 'REP' ? '#a50f15' : '#08519c';
-                    } else if (margin >= 20) {
-                        color = winner === 'REP' ? '#cb181d' : '#3182bd';
-                    } else if (margin >= 10) {
-                        color = winner === 'REP' ? '#ef3b2c' : '#6baed6';
-                    } else if (margin >= 5.5) {
-                        color = winner === 'REP' ? '#fb6a4a' : '#9ecae1';
-                    } else if (margin >= 1) {
-                        color = winner === 'REP' ? '#fcae91' : '#c6dbef';
-                    } else if (margin >= 0.5) {
-                        color = winner === 'REP' ? '#fee8c8' : '#e1f5fe';
-                    } else {
-                        color = '#f7f7f7';
-                    }
-                    
-                    colorExpression.push(['==', ['get', 'GEOID'], precinctId]);
-                    colorExpression.push(color);
-                    coloredCount++;
+            // Helper to normalize precinct names
+            function normalizePrecinctName(name) {
+                return (name || '').toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            }
+            // Build a lookup from normalized precinct name to result
+            const precinctResultMap = {};
+            Object.values(results).forEach(result => {
+                if (result.precinct) {
+                    precinctResultMap[normalizePrecinctName(result.precinct)] = result;
                 }
             });
-            
+            let matchedCount = 0;
+            let totalPrecincts = precinctSource._data.features.length;
+            // For each precinct in the GeoJSON, assign color based on normalized name
+            precinctSource._data.features.forEach(feature => {
+                const precinctName = feature.properties.PRECINCT;
+                const normName = normalizePrecinctName(precinctName);
+                let color = '#e0e0e0'; // Default color
+                if (normName) {
+                    const result = precinctResultMap[normName];
+                    if (result) {
+                        matchedCount++;
+                        if (result.competitiveness && typeof result.competitiveness.color === 'string' && result.competitiveness.color) {
+                            color = result.competitiveness.color;
+                        } else if (typeof result.rep_votes === 'number' && typeof result.dem_votes === 'number' && typeof result.total_votes === 'number') {
+                            let margin = result.rep_votes - result.dem_votes;
+                            let marginPct = (Math.abs(margin) / result.total_votes) * 100;
+                            if (margin > 0) {
+                                if (marginPct > 20) color = '#cb181d';
+                                else if (marginPct > 10) color = '#ef3b2c';
+                                else color = '#fb6a4a';
+                            } else {
+                                if (marginPct > 20) color = '#3182bd';
+                                else if (marginPct > 10) color = '#6baed6';
+                                else color = '#9ecae1';
+                            }
+                        }
+                    }
+                }
+                // Always push a valid color string
+                colorExpression.push(['==', ['get', 'PRECINCT'], precinctName || ''], color);
+            });
             colorExpression.push('#e0e0e0'); // Default color
-            
-            // Apply colors to precinct layer
             map.setPaintProperty('precinct-fill', 'fill-color', colorExpression);
+            map.setLayoutProperty('precinct-fill', 'visibility', 'visible');
             map.setPaintProperty('precinct-fill', 'fill-opacity', 0.7);
-            
-            updateStatus(`✅ ${contest} ${year} applied! ${coloredCount} precincts colored by category.`);
+            if (map.getLayer('county-fill')) {
+                map.setLayoutProperty('county-fill', 'visibility', 'none');
+            }
+            console.log(`Precincts colored: ${matchedCount} / ${totalPrecincts}`);
+            updateStatus('✅ Precinct patterns applied!');
         }
         
         function resetView() {
@@ -1650,14 +1733,12 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 updateStatus('❌ Apply categories first to analyze swing counties');
                 return;
             }
-            
             loadingManager.startTask();
             updateStatus('🔍 Analyzing swing counties...');
             analyticsManager.trackEvent('analysis', 'find_swing_counties');
-            // Implement swing county analysis here
+            // Implement swing county analysis here.
         }
-
-        // Swing arrow functionality
+                // Swing arrow functionality
         let swingArrows = [];
         
         function calculateSwing(currentResults, previousResults, county) {
@@ -1700,11 +1781,13 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             };
         }
 
-        function showSwingArrows() {
+        function showSwingArrows(triggeredByUser = false) {
             const compareValue = document.getElementById('compare-election').value;
             if (!compareValue || !currentElectionResults) {
-                updateStatus('❌ Please select both a current and comparison election');
-                analyticsManager.trackEvent('error', 'swing_comparison_missing_data');
+                if (triggeredByUser) {
+                    updateStatus('❌ Please select both a current and comparison election');
+                    analyticsManager.trackEvent('error', 'swing_comparison_missing_data');
+                }
                 return;
             }
             loadingManager.startTask();
@@ -1726,7 +1809,6 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             } else if (effectiveContestType === 'lt') {
                 effectiveContestType = 'lt_governor';
             } else if (effectiveContestType === 'commissioner') {
-                // For commissioner races, include the department
                 effectiveContestType = contestParts[0] + '_' + contestParts[1];
             }
             
@@ -1949,7 +2031,7 @@ function aggregateCountyArrows(arrows, countyGeojson) {
             const sidebar = document.getElementById('sidebar');
             const btn = document.getElementById('sidebar-minimize-btn');
             sidebar.classList.add('minimized');
-            btn.textContent = '+';
+            btn.textContent = '+'; 
         });
 
 
@@ -1959,19 +2041,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('sidebar-minimize-btn');
     const floatBtn = document.getElementById('sidebar-float-toggle');
     sidebar.classList.add('minimized');
-    btn.textContent = '+';
+    btn.textContent = '+'; 
     floatBtn.style.display = 'flex';
 });
 
 // Show sidebar when a county is clicked
-function showCountyDetails(countyName) {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.remove('minimized');
-  // ...existing code for showing county details...
-}
+// (Duplicate function removed to avoid errors)
         
         // Unified function to show county details in sidebar
 function showCountyDetails(countyName) {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.classList.remove('minimized');
+        // Always hide floating expand button and set icon to '−' when sidebar is open
+        const floatBtn = document.getElementById('sidebar-float-toggle');
+        if (floatBtn) {
+            floatBtn.style.display = 'none';
+            floatBtn.textContent = '−';
+        }
+        // Also ensure header button is set to '−'
+        const btn = document.getElementById('sidebar-minimize-btn');
+        if (btn) btn.textContent = '−';
+    }
     const countyDetails = document.getElementById('county-details');
     const countyNameElement = document.getElementById('county-name');
     const countyInfoContent = document.getElementById('county-info-content');
@@ -1982,7 +2073,10 @@ function showCountyDetails(countyName) {
     countyNameElement.textContent = countyName + ' County';
     let sidebarContent = '';
     if (currentElectionResults) {
-        const countyResults = Object.values(currentElectionResults).filter(r => countyNameMap[r.county.toUpperCase()] === countyName);
+        const countyResults = Object.values(currentElectionResults).filter(r => {
+            const mapped = countyNameMap[r.county.toUpperCase()];
+            return mapped && mapped.toLowerCase() === countyName.toLowerCase();
+        });
         if (countyResults.length > 0) {
             const totalVotes = countyResults.reduce((sum, r) => sum + r.total_votes, 0);
             const demVotes = countyResults.reduce((sum, r) => sum + r.dem_votes, 0);
@@ -2054,7 +2148,7 @@ function showCountyDetails(countyName) {
             } else if (actualMarginPct >= 0.5) {
                 competitiveness = winner === 'Republican' ? "Tilt Republican" : "Tilt Democratic";
             } else {
-                    competitiveness = `Tossup (${winner} win)`;
+                competitiveness = `Tossup (${winner} win)}`;
             }
             let compColor = '#6b7280';
             if (competitiveness.includes('Rep')) {
@@ -2091,14 +2185,82 @@ function showCountyDetails(countyName) {
     }
     countyInfoContent.innerHTML = sidebarContent;
     countyDetails.style.display = 'block';
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar.classList.contains('minimized')) {
-        toggleSidebar();
-    }
     const contest = document.getElementById('contest').value;
     analyticsManager.trackEvent('interaction', 'select_county', `${countyName}_${contest}`);
     updateStatus(`📍 Selected: ${countyName} County`);
 }
-</script>
+
+// Load precincts and add precinct-fill layer (inside map.on('load', ...))
+fetch('./data/nc_precincts.geojson')
+    .then(response => response.json())
+    .then(precincts => {
+        if (!precincts || !precincts.features) throw new Error('Precinct GeoJSON is invalid');
+        map.addSource('precincts', {
+            type: 'geojson',
+            data: precincts
+        });
+        map.addLayer({
+            id: 'precinct-fill',
+            type: 'fill',
+            source: 'precincts',
+            paint: {
+                'fill-color': '#e0e0e0',
+                'fill-opacity': 0.7
+            },
+            layout: {
+                visibility: 'none' // Start hidden, show in precinct mode
+            }
+        });
+        precinctsLoaded = true;
+        console.log('Precincts loaded and layer added');
+        // Add click handler for precincts
+        map.on('click', 'precinct-fill', (e) => {
+            const precinct = e.features[0].properties.PRECINCT;
+            let result = null;
+            if (currentElectionResults) {
+                result = currentElectionResults[precinct];
+            }
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('minimized');
+            const countyDetails = document.getElementById('county-details');
+            const countyNameElement = document.getElementById('county-name');
+            const countyInfoContent = document.getElementById('county-info-content');
+            if (!countyDetails || !countyNameElement || !countyInfoContent) return;
+            countyNameElement.textContent = 'Precinct: ' + precinct;
+            let sidebarContent = '';
+            if (result) {
+                sidebarContent += `<p><strong>Democratic:</strong> ${result.dem_votes} (${((result.dem_votes/result.total_votes)*100).toFixed(1)}%)</p>`;
+                sidebarContent += `<p><strong>Republican:</strong> ${result.rep_votes} (${((result.rep_votes/result.total_votes)*100).toFixed(1)}%)</p>`;
+                sidebarContent += `<p><strong>Total Votes:</strong> ${result.total_votes}</p>`;
+            } else {
+                sidebarContent += `<p>No data for this precinct.</p>`;
+            }
+            countyInfoContent.innerHTML = sidebarContent;
+            countyDetails.style.display = 'block';
+            updateStatus(`📍 Selected: Precinct ${precinct}`);
+        });
+    })
+    .catch(err => {
+        console.error('Error loading precincts:', err);
+    });
+
+
+    // Enable county zoom via search bar
+document.addEventListener('DOMContentLoaded', function() {
+    var countySearch = document.getElementById('county-search');
+    if (countySearch) {
+        countySearch.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                var countyName = this.value.trim();
+                if (countyName) zoomToCounty(countyName);
+            }
+        });
+    }
+});
+
+
+
+    </script>
 </body>
+</html>
 </html>

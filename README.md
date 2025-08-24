@@ -37,11 +37,11 @@ Try the live demo: [https://trickconfidence.addictiveservers.com/ultimate_nc_pol
 **County Zoom**
 ![County Zoom](Screenshots/county_zoom.png)
 
-## Installation & Setup
-1. Clone the repository or download the files.
-2. Run the Python script `merge_geojson_to_json.py` to prepare the data.
-3. Open `ultimate_nc_political_map_CLEAN.html` in your browser.
-4. (Optional) Host the files on a local or remote web server for sharing.
+## Usage
+Open index.html in a modern web browser (or visit the live demo link above).
+Use the contest dropdown to select an election.
+Click counties on the map for detailed analysis.
+Use the +/- button in the top right to toggle the sidebar.
 
 ## Data Sources
 Election data is sourced from the North Carolina State Board of Elections and other official public datasets. All data is normalized and merged for consistency.
@@ -122,5 +122,6 @@ This project was developed by Shamar (90%) with the assistance of GitHub Copilot
 
 ## License
 MIT License
+
 
 

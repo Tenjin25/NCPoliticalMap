@@ -44,9 +44,11 @@ Universities are encouraged to integrate the map into their curriculum and resea
 - County zoom via search bar: Quickly zoom to any county by typing its name in the sidebar search box.
 - Responsive UI controls: Minimize or expand the sidebar, legend, and main controls for a customizable layout.
 - Status panel: See real-time feedback on loading, analysis, and map actions.
-- Social sharing buttons: Easily share the map view with others.
+
 
 ### Recent Updates (August 24,2025)
+- **Codebase Cleanup:** Removed references to missing external scripts (LoadingManager.js, AnalyticsManager.js, etc.) for improved reliability and to resolve 404 errors.
+- **Permissions-Policy Header Warnings:** If you see browser console warnings about Permissions-Policy features, these do not affect map functionality and can be ignored unless you control the server configuration.
 
 - **Statewide Margin Display:** The statewide results section now shows the winner’s last name and party abbreviation (e.g., `Obama (D) +0.34%`).
 - **Manual Candidate Overrides:** For contests like Treasurer and Auditor, manual overrides ensure the correct winner name and party are shown, even if data is ambiguous (e.g., `Boliek (R)` for 2024 Auditor, `Folwell (R)` for 2016 Treasurer).
@@ -78,10 +80,10 @@ See a preview of the interactive map below.
 ![Political Categories Legend](Screenshots/screenshot_legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](Screenshots/Updated_County_Details.png)
+![County Details Sidebar](Screenshots/screenshot_county_details.png)
 
 **County Zoom**
-![County Zoom](Screenshots/Updated_Robeson_Zoom.png)
+![County Zoom](Screenshots/Robeson_zoom.png)
 
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).
@@ -138,6 +140,8 @@ To add missing county results (e.g., for Treasurer or Auditor):
 
 
 ## Troubleshooting
+- If you see 404 errors for missing scripts (e.g., LoadingManager.js, AnalyticsManager.js, SocialShare.js, MobileWarning.js), these have been removed from the codebase for improved reliability. No action is needed unless you plan to restore those features.
+- Permissions-Policy header warnings in the browser console are informational and do not affect the map's operation.
 - If county names do not match, check for normalization issues (e.g., spelling, capitalization).
 - If the map does not display new data, ensure the JSON structure matches the example above.
 - For script errors, verify Python dependencies and file paths.
@@ -280,7 +284,6 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
-
 
 
 

@@ -35,6 +35,7 @@ This tool provides a hands-on resource for exploring the evolving political land
 Universities are encouraged to integrate the map into their curriculum and research activities.
 
 ## Features
+
 - Interactive county and precinct map
 - Sidebar with county analysis and research findings
 - Contest selection and category coloring
@@ -44,6 +45,15 @@ Universities are encouraged to integrate the map into their curriculum and resea
 - Responsive UI controls: Minimize or expand the sidebar, legend, and main controls for a customizable layout.
 - Status panel: See real-time feedback on loading, analysis, and map actions.
 - Social sharing buttons: Easily share the map view with others.
+
+### Recent Updates (August 24,2025)
+
+- **Statewide Margin Display:** The statewide results section now shows the winner’s last name and party abbreviation (e.g., `Obama (D) +0.34%`).
+- **Manual Candidate Overrides:** For contests like Treasurer and Auditor, manual overrides ensure the correct winner name and party are shown, even if data is ambiguous (e.g., `Boliek (R)` for 2024 Auditor, `Folwell (R)` for 2016 Treasurer).
+- **Winner Formatting:** Winner display uses the format `LastName (D)` or `LastName (R)` for clarity.
+- **Statewide Rating Format:** Statewide rating categories now use the format `Lean Republican`, `Safe Democratic`, etc., for improved readability.
+- **Tossup Category:** In very close contests, the statewide section displays `Tossup (Democratic Win)` or `Tossup (Republican Win)` to clarify the winning party.
+- **Improved Error Handling:** Reference errors and duplicate variable declarations in the results logic have been resolved for robust operation.
 
 ## Live Demo & Screenshots
 See a preview of the interactive map below.  
@@ -68,10 +78,10 @@ See a preview of the interactive map below.
 ![Political Categories Legend](Screenshots/screenshot_legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](Screenshots/Updated_County_Details.png)
+![County Details Sidebar](Screenshots/screenshot_county_details.png)
 
 **County Zoom**
-![County Zoom](Screenshots/Updated_Robeson_Zoom.png)
+![County Zoom](Screenshots/Robeson_zoom.png)
 
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).
@@ -270,8 +280,6 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
-
-
 
 
 

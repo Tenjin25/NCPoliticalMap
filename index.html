@@ -1409,7 +1409,7 @@ function aggregateCountyArrows(arrows, countyGeojson) {
                 
                 // Load precincts (initially hidden)
                 try {
-                    const precinctResponse = await fetch('./data/nc_precincts_enhanced_2024.geojson');
+                    const precinctResponse = await fetch('https://myelectiondatabucket.s3.us-east-2.amazonaws.com/nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json');
                     const precincts = await precinctResponse.json();
                     
                     map.addSource('precincts', {
@@ -2308,4 +2308,5 @@ function showCountyDetails(countyName) {
     });
     </script>
 </body>
+
 </html>

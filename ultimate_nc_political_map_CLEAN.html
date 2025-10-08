@@ -515,7 +515,8 @@ body {
         .legend {
             position: absolute;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
+            right: auto;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             padding: 15px;
@@ -685,7 +686,7 @@ body {
         </div>
         <div class="control-group">
             <label>📊 Contest Type:</label>
-            <select id="contest" onchange="applyCategories()">
+            <select id="contest">
                 <option value="">Select a Contest...</option>
                 <option value="presidential_2008_1">US President (2008)</option>
                 <option value="presidential_2012_1">US President (2012)</option>
@@ -900,6 +901,7 @@ function zoomToCounty(countyName) {
         contestElement.selectedIndex = 0;
         applyCategories();
     }
+    lastSelectedCounty = countyName;
     showCountyDetails(countyName);
 }
                 // Canvas swing arrow rendering
@@ -1086,164 +1088,182 @@ function aggregateCountyArrows(arrows, countyGeojson) {
         }
         
         // Calculate and display statewide results
-        function updateStatewideResults(results, contest, year) {
-            console.log('updateStatewideResults called for', contest, year);
-            var loggedDem = false, loggedRep = false;
-            Object.values(results).forEach(result => {
-                if (!loggedDem && Array.isArray(result.dem_breakdown) && result.dem_breakdown.length > 0) {
-                    console.log('Sample dem_breakdown:', result.dem_breakdown);
-                    loggedDem = true;
-                }
-                if (!loggedRep && Array.isArray(result.rep_breakdown) && result.rep_breakdown.length > 0) {
-                    console.log('Sample rep_breakdown:', result.rep_breakdown);
-                    loggedRep = true;
-                }
-            });
-            if (!loggedDem && !loggedRep) {
-                console.log('No dem_breakdown or rep_breakdown arrays found in results. Logging results object:', results);
+            function updateStatewideResults(results, contest, year) {
+        let demTotal = 0, repTotal = 0, totalVotes = 0;
+        Object.values(results).forEach(result => {
+            if (result.dem_votes && result.rep_votes) {
+                demTotal += result.dem_votes;
+                repTotal += result.rep_votes;
+                totalVotes += result.dem_votes + result.rep_votes;
             }
-            let demTotal = 0, repTotal = 0, totalVotes = 0;
-            
-            Object.values(results).forEach(result => {
-                if (result.dem_votes && result.rep_votes) {
-                    demTotal += result.dem_votes;
-                    repTotal += result.rep_votes;
-                    totalVotes += result.dem_votes + result.rep_votes;
-                }
-            });
-            
-            if (totalVotes === 0) {
-                document.getElementById('statewide-content').innerHTML = 
-                    '<p>No statewide data available for this contest.</p>';
-                return;
+        });
+        if (totalVotes === 0) {
+            document.getElementById('statewide-content').innerHTML = '<p>No statewide data available for this contest.</p>';
+            return;
+        }
+        let demPercent = (demTotal / totalVotes) * 100;
+        let repPercent = (repTotal / totalVotes) * 100;
+        let margin = Math.abs(demPercent - repPercent);
+        let winnerParty = demPercent > repPercent ? 'Democratic' : 'Republican';
+        let loserParty = demPercent > repPercent ? 'Republican' : 'Democratic';
+        let winnerPercent = Math.max(demPercent, repPercent);
+        let loserPercent = Math.min(demPercent, repPercent);
+        // Extract winner's last name from dem_candidate or rep_candidate
+        let winnerLastName = '';
+        let partyAbbr = winnerParty === 'Democratic' ? 'D' : 'R';
+        let maxVotes = 0;
+        Object.values(results).forEach(result => {
+            if (winnerParty === 'Democratic' && result.dem_votes > maxVotes) {
+                maxVotes = result.dem_votes;
+                if (result.dem_candidate) winnerLastName = result.dem_candidate;
+            } else if (winnerParty === 'Republican' && result.rep_votes > maxVotes) {
+                maxVotes = result.rep_votes;
+                if (result.rep_candidate) winnerLastName = result.rep_candidate;
             }
-            
-            const demPercent = (demTotal / totalVotes * 100);
-            const repPercent = (repTotal / totalVotes * 100);
-            const margin = Math.abs(demPercent - repPercent);
-                const winnerParty = demPercent > repPercent ? 'Democratic' : 'Republican';
-                const winnerPercent = Math.max(demPercent, repPercent);
-                const loserPercent = Math.min(demPercent, repPercent);
-
-                // Extract winner's last name from dem_candidate or rep_candidate
-                var winnerLastName = '';
-                var partyAbbr = winnerParty === 'Democratic' ? 'D' : 'R';
-                var maxVotes = 0;
-                Object.values(results).forEach(result => {
-                    if (winnerParty === 'Democratic' && result.dem_votes > maxVotes) {
-                        maxVotes = result.dem_votes;
-                        if (result.dem_candidate) winnerLastName = result.dem_candidate;
-                    } else if (winnerParty === 'Republican' && result.rep_votes > maxVotes) {
-                        maxVotes = result.rep_votes;
-                        if (result.rep_candidate) winnerLastName = result.rep_candidate;
-                    }
-                });
-                // Parse last name from candidate string
-                if (winnerLastName) {
-                    // If candidate string contains '/', use the part before the slash
-                    if (winnerLastName.includes('/')) {
-                        winnerLastName = winnerLastName.split('/')[0].trim();
-                    }
-                    // If candidate string contains a space, use the last word
-                    else if (winnerLastName.includes(' ')) {
-                        let parts = winnerLastName.trim().split(' ');
-                        winnerLastName = parts[parts.length - 1];
-                    }
-                } else {
-                    winnerLastName = winnerParty;
-                }
-                    // Manual candidate overrides for Treasurer and Auditor
-                    let contestValue = contest;
-                    let yearValue = year;
-                    if (!yearValue) {
-                        const contestElement = document.getElementById('contest');
-                        if (contestElement) {
-                            contestValue = contestElement.value;
-                            const yearMatch = contestValue.match(/_(\d{4})_/);
-                            yearValue = yearMatch ? yearMatch[1] : null;
-                        }
-                    }
-                    if (yearValue) {
-                        if (/treasurer/.test(contestValue)) {
-                            if (yearValue === '2008') winnerLastName = 'Cowell';
-                            else if (yearValue === '2012') winnerLastName = 'Cowell';
-                            else if (yearValue === '2016') {
-                                winnerLastName = 'Folwell';
-                                partyAbbr = 'R';
-                            }
-                        }
-                        if (/auditor/.test(contestValue)) {
-                            if (yearValue === '2008') winnerLastName = 'Wood';
-                            else if (yearValue === '2012') winnerLastName = 'Wood';
-                            else if (yearValue === '2016') winnerLastName = 'Wood';
-                            else if (yearValue === '2020') winnerLastName = 'Wood';
-                            else if (yearValue === '2024') {
-                                winnerLastName = 'Boliek';
-                                partyAbbr = 'R';
-                            }
-                        }
-                    }
-
-                // Determine category and color
-                let category, winnerColor;
-                if (margin >= 40) {
-                    category = `Annihilation ${winnerParty}`;
-                } else if (margin >= 30) {
-                    category = `Dominant ${winnerParty}`;
-                } else if (margin >= 20) {
-                    category = `Stronghold ${winnerParty}`;
-                } else if (margin >= 10) {
-                    category = `Safe ${winnerParty}`;
-                } else if (margin >= 5.5) {
-                    category = `Likely ${winnerParty}`;
-                } else if (margin >= 1) {
-                    category = `Lean ${winnerParty}`;
-                } else if (margin >= 0.5) {
-                    category = `Tilt ${winnerParty}`;
-                } else {
-                    category = `Tossup (${winnerParty} Win)`;
-                }
-                winnerColor = winnerParty === 'Republican' ? '#dc2626' : '#2563eb';
-                // Format margin to two decimal places
-                const marginStr = margin.toFixed(2);
-                let winnerDisplay = winnerLastName === winnerParty ? winnerParty : `${winnerLastName} (${partyAbbr})`;
-                document.getElementById('statewide-content').innerHTML = `
-                    <div class="statewide-margin">
-                        <strong>Margin:</strong> <span style="color:${winnerColor};font-weight:bold;">${winnerDisplay} +${marginStr}%</span><br>
-                        <strong>Results:</strong> ${winnerPercent.toFixed(2)}% vs ${loserPercent.toFixed(2)}% • <span style="color:${winnerColor};font-weight:bold;">${category}</span>
-                    </div>
-                    <div class="margin-details">
-                        ${demTotal.toLocaleString()} D, ${repTotal.toLocaleString()} R • ${totalVotes.toLocaleString()} total votes
-                    </div>
-                `;
-
-            // Manual override for 2024 governor statewide margin and results
-            if (/governor/.test(contest) && year === '2024') {
-                // Use same structure and style as other contests
-                const demTotal = 3069256;
-                const repTotal = 2241309;
-                const totalVotes = demTotal + repTotal;
-                const demPercent = 54.90;
-                const repPercent = 40.08;
-                const margin = 14.82;
-                const winnerParty = 'Democratic';
-                const winnerLastName = 'Stein';
-                const partyAbbr = 'D';
-                const winnerColor = '#2563eb';
-                const winnerDisplay = `${winnerLastName} (${partyAbbr})`;
-                const category = 'Safe Democratic';
-                document.getElementById('statewide-content').innerHTML = `
-                    <div class="statewide-margin">
-                        <strong>Margin:</strong> <span style="color:${winnerColor};font-weight:bold;">${winnerDisplay} +${margin.toFixed(2)}%</span><br>
-                        <strong>Results:</strong> ${demPercent.toFixed(2)}% vs ${repPercent.toFixed(2)}% • <span style="color:${winnerColor};font-weight:bold;">${category}</span>
-                    </div>
-                    <div class="margin-details">
-                        ${demTotal.toLocaleString()} D, ${repTotal.toLocaleString()} R • ${totalVotes.toLocaleString()} total votes
-                    </div>
-                `;
-                return;
+        });
+        // Parse last name from candidate string
+        if (winnerLastName) {
+            if (winnerLastName.includes('/')) {
+                winnerLastName = winnerLastName.split('/')[0].trim();
+            } else if (winnerLastName.includes(' ')) {
+                let parts = winnerLastName.trim().split(' ');
+                winnerLastName = parts[parts.length - 1];
             }
-        } // <-- Add this closing brace to properly end updateStatewideResults
+        } else {
+            winnerLastName = winnerParty;
+        }
+        // Manual candidate overrides for Treasurer and Auditor
+        let contestValue = contest;
+        let yearValue = year;
+        if (!yearValue) {
+            const contestElement = document.getElementById('contest');
+            if (contestElement) {
+                contestValue = contestElement.value;
+                const yearMatch = contestValue.match(/_(\d{4})_/);
+                yearValue = yearMatch ? yearMatch[1] : null;
+            }
+        }
+        if (yearValue) {
+            if (/treasurer/.test(contestValue)) {
+                if (yearValue === '2008') winnerLastName = 'Cowell';
+                else if (yearValue === '2012') winnerLastName = 'Cowell';
+                else if (yearValue === '2016') {
+                    winnerLastName = 'Folwell';
+                    partyAbbr = 'R';
+                }
+            }
+            if (/auditor/.test(contestValue)) {
+                if (yearValue === '2008') winnerLastName = 'Wood';
+                else if (yearValue === '2012') winnerLastName = 'Wood';
+                else if (yearValue === '2016') winnerLastName = 'Wood';
+                else if (yearValue === '2020') winnerLastName = 'Wood';
+                else if (yearValue === '2024') {
+                    winnerLastName = 'Boliek';
+                    partyAbbr = 'R';
+                }
+            }
+        }
+        // Competitiveness label and color
+        let compLabel = '';
+        let compColor = '#6b7280';
+        if (margin >= 40) {
+            compLabel = winnerParty === 'Republican' ? "Annihilation Republican (40%+)" : "Annihilation Democratic (40%+)";
+            compColor = winnerParty === 'Republican' ? '#450a0a' : '#0c1d56';
+        } else if (margin >= 30) {
+            compLabel = winnerParty === 'Republican' ? "Dominant Republican (30-40%)" : "Dominant Democratic (30-40%)";
+            compColor = winnerParty === 'Republican' ? '#7f1d1d' : '#1e3a8a';
+        } else if (margin >= 20) {
+            compLabel = winnerParty === 'Republican' ? "Stronghold Republican (20-30%)" : "Stronghold Democratic (20-30%)";
+            compColor = winnerParty === 'Republican' ? '#991b1b' : '#1e40af';
+        } else if (margin >= 10) {
+            compLabel = winnerParty === 'Republican' ? "Safe Republican (10-20%)" : "Safe Democratic (10-20%)";
+            compColor = winnerParty === 'Republican' ? '#dc2626' : '#3b82f6';
+        } else if (margin >= 5.5) {
+            compLabel = winnerParty === 'Republican' ? "Likely Republican (5.5-10%)" : "Likely Democratic (5.5-10%)";
+            compColor = winnerParty === 'Republican' ? '#ef4444' : '#60a5fa';
+        } else if (margin >= 1) {
+            compLabel = winnerParty === 'Republican' ? "Lean Republican (1-5.5%)" : "Lean Democratic (1-5.5%)";
+            compColor = winnerParty === 'Republican' ? '#f87171' : '#93c5fd';
+        } else if (margin >= 0.5) {
+            compLabel = winnerParty === 'Republican' ? "Tilt Republican (0.5-1%)" : "Tilt Democratic (0.5-1%)";
+            compColor = winnerParty === 'Republican' ? '#fca5a5' : '#bfdbfe';
+        } else {
+            compLabel = winnerParty === 'Democratic' ? 'Tossup (Democratic Win)' : 'Tossup (Republican Win)';
+            compColor = winnerParty === 'Democratic' ? '#2563eb' : '#dc2626';
+        }
+        // Winner display
+        let winnerDisplay = winnerLastName === winnerParty ? winnerParty : `${winnerLastName} (${partyAbbr})`;
+        // Sidebar HTML (FL style)
+        document.getElementById('statewide-content').innerHTML = `
+            <div class="statewide-margin" style="margin-bottom:0;">
+              <div class="margin-text" style="color: ${winnerParty === 'Republican' ? '#dc2626' : '#2563eb'};font-size:18px;font-weight:700;text-align:left;">
+                Winner: <span style="color:${winnerParty === 'Republican' ? '#dc2626' : '#2563eb'}">${winnerDisplay}</span><br>
+                Margin: <span style="color:${winnerParty === 'Republican' ? '#dc2626' : '#2563eb'}">${winnerParty === 'Republican' ? 'R+' : 'D+'}${margin.toFixed(2)}%</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repTotal-demTotal).toLocaleString()} votes)</span>
+              </div>
+              <div style="margin-top:8px;">
+                <div style="width:100%;height:32px;border-radius:16px;display:flex;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                  <div style="width:${demPercent}%;background:#2563eb;"></div>
+                  <div style="width:${repPercent}%;background:#dc2626;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:6px;">
+                  <div style="color:#2563eb;font-size:15px;font-weight:700;">
+                    D: ${demTotal.toLocaleString()} (${demPercent.toFixed(2)}%)
+                  </div>
+                  <div style="color:#dc2626;font-size:15px;font-weight:700;">
+                    R: ${repTotal.toLocaleString()} (${repPercent.toFixed(2)}%)
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:10px;font-size:15px;color:#374151;font-weight:600;">
+                Total Votes: ${totalVotes.toLocaleString()}
+              </div>
+              <div style="margin-top:4px;font-size:15px;font-weight:600;color:${compColor};">
+                Competitiveness: ${compLabel}
+              </div>
+            </div>
+        `;
+        console.log('updateStatewideResults called for', contest, year);
+        var loggedDem = false, loggedRep = false;
+        Object.values(results).forEach(result => {
+            if (!loggedDem && Array.isArray(result.dem_breakdown) && result.dem_breakdown.length > 0) {
+                console.log('Sample dem_breakdown:', result.dem_breakdown);
+                loggedDem = true;
+            }
+            if (!loggedRep && Array.isArray(result.rep_breakdown) && result.rep_breakdown.length > 0) {
+                console.log('Sample rep_breakdown:', result.rep_breakdown);
+                loggedRep = true;
+            }
+        });
+        if (!loggedDem && !loggedRep) {
+            console.log('No dem_breakdown or rep_breakdown arrays found in results. Logging results object:', results);
+        }
+        // Manual override for 2024 governor statewide margin and results
+        if (/governor/.test(contest) && year === '2024') {
+            // Use same structure and style as other contests
+            let demTotal = 3069256;
+            let repTotal = 2241309;
+            let totalVotes = demTotal + repTotal;
+            let demPercent = 54.90;
+            let repPercent = 40.08;
+            let margin = 14.82;
+            let winnerParty = 'Democratic';
+            let winnerLastName = 'Stein';
+            let partyAbbr = 'D';
+            let winnerColor = '#2563eb';
+            let winnerDisplay = `${winnerLastName} (${partyAbbr})`;
+            let category = 'Safe Democratic';
+            document.getElementById('statewide-content').innerHTML = `
+                <div class="statewide-margin">
+                    <strong>Margin:</strong> <span style="color:${winnerColor};font-weight:bold;">${winnerDisplay} +${margin.toFixed(2)}%</span><br>
+                    <strong>Results:</strong> ${demPercent.toFixed(2)}% vs ${repPercent.toFixed(2)}% • <span style="color:${winnerColor};font-weight:bold;">${category}</span>
+                </div>
+                <div class="margin-details">
+                    ${demTotal.toLocaleString()} D, ${repTotal.toLocaleString()} R • ${totalVotes.toLocaleString()} total votes
+                </div>
+            `;
+            return;
+        }
+    }
         
         function setMode(mode) {
             currentMode = mode;
@@ -1637,6 +1657,7 @@ window.applyCategories = applyCategories;
                 
                 let category, code, color;
                 if (margin >= 40) {
+                   
                     category = `Annihilation ${winner}`;
                     code = winner === 'Republican' ? 'R_ANNIHILATION' : 'D_ANNIHILATION';
                     color = winner === 'Republican' ? '#67000d' : '#08306b';
@@ -2300,12 +2321,36 @@ function showCountyDetails(countyName) {
         if (countySearch) {
             countySearch.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
+                    // Always update results for the selected contest/year before zooming
+                    if (typeof applyCategories === 'function') {
+                        applyCategories();
+                    }
                     var countyName = this.value.trim();
                     if (countyName) zoomToCounty(countyName);
                 }
             });
         }
     });
+
+document.getElementById('contest').addEventListener('change', function() {
+    applyCategories();
+    // If a county was previously selected, refresh its details for the new contest/year
+    if (lastSelectedCounty) {
+        showCountyDetails(lastSelectedCounty);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var contestSelect = document.getElementById('contest');
+    if (contestSelect) {
+        contestSelect.onchange = function() {
+            applyCategories();
+            if (lastSelectedCounty) {
+                showCountyDetails(lastSelectedCounty);
+            }
+        };
+    }
+});
     </script>
 </body>
 </html>

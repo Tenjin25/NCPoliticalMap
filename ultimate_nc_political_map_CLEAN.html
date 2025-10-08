@@ -1239,29 +1239,48 @@ function aggregateCountyArrows(arrows, countyGeojson) {
         }
         // Manual override for 2024 governor statewide margin and results
         if (/governor/.test(contest) && year === '2024') {
-            // Use same structure and style as other contests
-            let demTotal = 3069256;
-            let repTotal = 2241309;
-            let totalVotes = demTotal + repTotal;
-            let demPercent = 54.90;
-            let repPercent = 40.08;
-            let margin = 14.82;
-            let winnerParty = 'Democratic';
-            let winnerLastName = 'Stein';
-            let partyAbbr = 'D';
-            let winnerColor = '#2563eb';
-            let winnerDisplay = `${winnerLastName} (${partyAbbr})`;
-            let category = 'Safe Democratic';
-            document.getElementById('statewide-content').innerHTML = `
-                <div class="statewide-margin">
-                    <strong>Margin:</strong> <span style="color:${winnerColor};font-weight:bold;">${winnerDisplay} +${margin.toFixed(2)}%</span><br>
-                    <strong>Results:</strong> ${demPercent.toFixed(2)}% vs ${repPercent.toFixed(2)}% • <span style="color:${winnerColor};font-weight:bold;">${category}</span>
-                </div>
-                <div class="margin-details">
-                    ${demTotal.toLocaleString()} D, ${repTotal.toLocaleString()} R • ${totalVotes.toLocaleString()} total votes
-                </div>
-            `;
-            return;
+                        // Use same FL-style margin bar as other contests
+                        let demTotal = 3069256;
+                        let repTotal = 2241309;
+                        let totalVotes = demTotal + repTotal;
+                        let demPercent = 54.90;
+                        let repPercent = 40.08;
+                        let margin = 14.82;
+                        let winnerParty = 'Democratic';
+                        let winnerLastName = 'Stein';
+                        let partyAbbr = 'D';
+                        let compLabel = 'Safe Democratic';
+                        let compColor = '#3b82f6';
+                        let winnerDisplay = `${winnerLastName} (${partyAbbr})`;
+                        document.getElementById('statewide-content').innerHTML = `
+                                <div class="statewide-margin" style="margin-bottom:0;">
+                                    <div class="margin-text" style="color: #2563eb;font-size:18px;font-weight:700;text-align:left;">
+                                        Winner: <span style="color:#2563eb">${winnerDisplay}</span><br>
+                                        Margin: <span style="color:#2563eb">D+${margin.toFixed(2)}%</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repTotal-demTotal).toLocaleString()} votes)</span>
+                                    </div>
+                                    <div style="margin-top:8px;">
+                                        <div style="width:100%;height:32px;border-radius:16px;display:flex;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                                            <div style="width:${demPercent}%;background:#2563eb;"></div>
+                                            <div style="width:${repPercent}%;background:#dc2626;"></div>
+                                        </div>
+                                        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+                                            <div style="color:#2563eb;font-size:15px;font-weight:700;">
+                                                D: ${demTotal.toLocaleString()} (${demPercent.toFixed(2)}%)
+                                            </div>
+                                            <div style="color:#dc2626;font-size:15px;font-weight:700;">
+                                                R: ${repTotal.toLocaleString()} (${repPercent.toFixed(2)}%)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:10px;font-size:15px;color:#374151;font-weight:600;">
+                                        Total Votes: ${totalVotes.toLocaleString()}
+                                    </div>
+                                    <div style="margin-top:4px;font-size:15px;font-weight:600;color:${compColor};">
+                                        Competitiveness: ${compLabel}
+                                    </div>
+                                </div>
+                        `;
+                        return;
         }
     }
         

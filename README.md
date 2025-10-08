@@ -244,6 +244,7 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
 - **Mid August 2025:** Improved sidebar UI to show more decimal precision for results
 - **August 24, 2025:** Switched sidebar percentage display from truncation to standard rounding (matches Ballotpedia)
 - **August 23, 2025:** Adjusted map layer opacity for improved visual clarity and accessibility
+- **October 8, 2025** Implemented a thermometer bar for better statewide results visualization and moved the color legend to the bottom left corner for better sidebar visibility
 
 ## FAQ
 
@@ -284,6 +285,7 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
 
 
 

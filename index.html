@@ -1475,7 +1475,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       
     }
 
-    function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
+  function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes, otherVotesArg) {
       const statewideContent = document.getElementById('statewide-content');
       const tempBar = document.getElementById('statewide-temperature-bar');
       if (!statewideContent) return;
@@ -1489,11 +1489,14 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       
       const demPct = (demVotes / totalVotes) * 100;
       const repPct = (repVotes / totalVotes) * 100;
-      let otherVotes = 0;
+      // Prefer explicitly passed otherVotes (aggregated from county data).
+      // Fallback to contest-level other_votes if the arg is undefined.
+      let otherVotes = typeof otherVotesArg === 'number' ? otherVotesArg : 0;
       let otherPct = 0;
-      // Try to get otherVotes from contest data if available
-      if (currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
+      if ((!otherVotes || otherVotes === 0) && currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
         otherVotes = currentContest.data.other_votes;
+      }
+      if (otherVotes > 0 && totalVotes > 0) {
         otherPct = (otherVotes / totalVotes) * 100;
       }
       const marginPct = Math.abs(demPct - repPct);
@@ -3078,8 +3081,8 @@ function filterValidContests(contests) {
         totalVotes += county.total_votes || 0;
       });
 
-      // Update the statewide results display
-      updateStatewideResults(currentContest.contestType, currentContest.year, totalDemVotes, totalRepVotes, totalVotes);
+  // Update the statewide results display (pass aggregated other votes so "Other" shows when present)
+  updateStatewideResults(currentContest.contestType, currentContest.year, totalDemVotes, totalRepVotes, totalVotes, totalOtherVotes);
     }
 
     function onCountyClick(e) {

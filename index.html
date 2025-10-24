@@ -1240,6 +1240,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
                 // fall through only if we can map individual contest names below; otherwise skip
               } else return;
             }
+            // Exclude specific problematic contest name
+            if (contestName && contestName.toString().toUpperCase().includes('CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS')) return;
             if (!groupedByOffice[officeLabel]) groupedByOffice[officeLabel] = [];
             groupedByOffice[officeLabel].push({ year, cat, contestKey, contestName });
             // For Council of State and Judicial, show all contests
@@ -1247,9 +1249,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           });
         });
       });
-  // Exclude problematic contest from dropdown
-            if (contestName && contestName.toUpperCase().includes('CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS')) return;
-      // Build optgroups for each allowed office, with years as options inside
+  // Build optgroups for each allowed office, with years as options inside
 
         // Use the granular contest dropdown builder instead
         buildGranularContestDropdown();

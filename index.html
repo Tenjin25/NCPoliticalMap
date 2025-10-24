@@ -66,8 +66,6 @@
       animation: spinner-rotate 0.8s linear infinite;
     }
   </style>
-            // Exclude problematic contest from dropdown
-            if (contestName && contestName.toUpperCase().includes('CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS')) return;
   <script>
     // Zoom to county by name using turf.js — improved to match NCMap's behavior
     function zoomToCounty(countyName) {
@@ -1249,7 +1247,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           });
         });
       });
-
+  // Exclude problematic contest from dropdown
+            if (contestName && contestName.toUpperCase().includes('CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS')) return;
       // Build optgroups for each allowed office, with years as options inside
 
         // Use the granular contest dropdown builder instead

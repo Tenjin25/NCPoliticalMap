@@ -67,28 +67,96 @@
     }
   </style>
   <script>
-  // For Tennessee, candidate names are already in the election data
-  function getCandidateName(year, office, party) {
-    // For Tennessee, candidate names are already provided in the election data
-    // This function is kept for compatibility but just returns the party name
-    return party;
+    // Zoom to county by name using turf.js — improved to match NCMap's behavior
+    function zoomToCounty(countyName) {
+      if (!countyName) return;
+
+      function normalizeCountyName(name) {
+        return (name || '')
+          .toString()
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9 ]/g, '')
+          .replace(/\s+/g, ' ')
+          .replace(/county$/, '')
+          .replace(/ /g, '');
+      }
+
+      const src = map.getSource && map.getSource('counties');
+      const features = (src && src._data && src._data.features) || (window.countiesData && window.countiesData.features) || (typeof countiesGeojson !== 'undefined' && countiesGeojson && countiesGeojson.features) || null;
+      if (!features) return;
+
+      const normTarget = normalizeCountyName(countyName);
+      const feature = features.find(f => {
+        const props = f.properties || {};
+        const nameCandidates = [props.NAME20, props.NAMELSAD20, props.county_name, props.County, props.COUNTYNAME, props.NAME];
+        return nameCandidates.some(n => normalizeCountyName(n) === normTarget);
+      });
+      if (!feature) return;
+
+      try {
+        lastSelectedCounty = (feature.properties && (feature.properties.NAME20 || feature.properties.NAME || feature.properties.county_name)) || countyName;
+      } catch (e) {
+        lastSelectedCounty = countyName;
+      }
+
+      // Try bbox via turf, then fallback to geometry-derived LngLatBounds (like NCMap)
+      try {
+  const bbox = turf.bbox(feature);
+        if (!Array.isArray(bbox) || bbox.length !== 4) throw new Error('invalid bbox');
+        const bounds = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]];
+        map.fitBounds(bounds, { padding: 50, duration: 1000 });
+      } catch (err) {
+        // bbox failed; try fallback
+        try {
+          if (feature.geometry && feature.geometry.coordinates) {
+            const allCoords = [];
+            const geom = feature.geometry;
+            if (geom.type === 'Polygon') {
+              geom.coordinates.forEach(ring => ring.forEach(c => allCoords.push(c)));
+            } else if (geom.type === 'MultiPolygon') {
+              geom.coordinates.forEach(poly => poly.forEach(ring => ring.forEach(c => allCoords.push(c))));
+            }
+            if (allCoords.length) {
+              const mb = allCoords.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(allCoords[0], allCoords[0]));
+              map.fitBounds(mb, { padding: 50, duration: 1000 });
+            }
+          } else {
+              // no geometry found
+          }
+        } catch (e) {
+          // fallback failed
+        }
+      }
+
+      if (typeof showCountyDetails === 'function') showCountyDetails(lastSelectedCounty);
+    }
+  </script>
+  <script>
+  // Tennessee contest/statewide logic (isolated)
+  function setupTNContestLogic() {
+    // For Tennessee, candidate names are already in the election data
+    function getCandidateName(year, office, party) {
+      // For Tennessee, candidate names are already provided in the election data
+      // This function is kept for compatibility but just returns the party name
+      return party;
+    }
+    // ...other TN contest/statewide logic can be moved here as needed...
   }
+  // Call this only when contest logic is needed
   </script>
   <script>
     // Zoom to county by name using turf.js
     function zoomToCounty(countyName) {
       const countiesSource = map.getSource('counties');
-      if (!countiesSource || !countiesSource._data || !countiesSource._data.features) return;
+    if (!countiesSource || !countiesSource._data || !countiesSource._data.features) {
+      alert('County data not loaded!');
+      return;
+    }
       const counties = countiesSource._data.features;
       // Normalize county names for matching
       function normalizeCountyName(name) {
-        return (name || '')
-          .replace(/St\.? Lucie/i, 'St Lucie')
-          .replace(/St\.? Johns/i, 'St Johns')
-          .replace(/[^a-z0-9 ]/gi, '')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .toUpperCase();
+      // ...existing code...
       }
       const normTarget = normalizeCountyName(countyName);
       const countyFeature = counties.find(f => {
@@ -96,7 +164,10 @@
         const name = normalizeCountyName(props.NAME20 || props.county_name || props.County || props.COUNTYNAME || props.NAME || '');
         return name === normTarget;
       });
-      if (!countyFeature) return;
+    if (!countyFeature) {
+      alert('County not found: ' + countyName);
+      return;
+    }
       const bbox = turf.bbox(countyFeature);
       // Efficient direct centering/zooming without recursion
       if (bounds && typeof bounds.getCenter === 'function' && typeof map.setCenter === 'function' && typeof map.setZoom === 'function') {
@@ -1097,8 +1168,6 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           Object.keys(contests).forEach(contestKey => {
             const contest = contests[contestKey];
             const contestName = (contest && contest.contest_name) || contestKey;
-            // Filter out TN contests and local/municipal contests
-            if ((contestName && contestName.toUpperCase().includes('TN')) || (cat && cat.toUpperCase().includes('TN'))) return;
             // Normalize office label
             let officeLabel = contestName;
             const shortMap = {
@@ -1289,87 +1358,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       sel.onchange = () => {
         if (document.body.classList.contains('colorblind-mode')) {
           // ...existing code for accessibility mode...
-          // --- County Search Bar with Zoom (GAMap-style, robust) ---
-          document.addEventListener('DOMContentLoaded', function() {
-            // Use static sidebar input and dropdown only
-            const input = document.getElementById('county-search');
-            let dropdown = document.getElementById('county-dropdown');
-            // Helper: get all county names from loaded geojson
-            function getCountyNames() {
-              const geo = window.countiesData || countiesData;
-              if (!geo || !geo.features) return [];
-              return geo.features.map(f => {
-                const p = f.properties || {};
-                return p.NAMELSAD20 || p.NAME20 || p.NAME || p.COUNTYNAME || p.County || p.county_name || '';
-              }).filter(Boolean);
-            }
-            // Normalize for matching
-            function normalize(name) {
-              return (name || '').toString().replace(/county$/i, '').replace(/[^a-z0-9 ]/gi, '').replace(/\s+/g, ' ').trim().toUpperCase();
-            }
-            // Autocomplete dropdown logic
-            function renderDropdown(items) {
-              if (!dropdown) return;
-              dropdown.innerHTML = '';
-              if (!items || items.length === 0) { dropdown.style.display = 'none'; return; }
-              items.forEach(function(name) {
-                const div = document.createElement('div');
-                div.className = 'item';
-                div.dataset.county = name;
-                div.textContent = name;
-                div.style.padding = '8px 10px';
-                div.style.cursor = 'pointer';
-                div.style.borderBottom = '1px solid #f3f4f6';
-                div.addEventListener('click', function() { selectCounty(name); });
-                dropdown.appendChild(div);
-              });
-              dropdown.style.display = 'block';
-            }
-            // Zoom and highlight county
-            function selectCounty(name) {
-              const geo = window.countiesData || countiesData;
-              if (!geo || !geo.features) return;
-              // Try exact match, then normalized match
-              let feature = geo.features.find(f => {
-                const p = f.properties || {};
-                const n = p.NAMELSAD20 || p.NAME20 || p.NAME || p.COUNTYNAME || p.County || p.county_name || '';
-                return n === name;
-              });
-              if (!feature) {
-                // Try normalized match
-                const normTarget = normalize(name);
-                feature = geo.features.find(f => {
-                  const p = f.properties || {};
-                  const n = p.NAMELSAD20 || p.NAME20 || p.NAME || p.COUNTYNAME || p.County || p.county_name || '';
-                  return normalize(n) === normTarget;
-                });
-              }
-              if (feature && map) {
-                const bbox = turf.bbox(feature);
-                map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 40, duration: 600 });
-                showCountyDetails(name);
-                lastSelectedCounty = name;
-              }
-              if (dropdown) dropdown.style.display = 'none';
-              if (input) input.value = name;
-            }
-            // Input event handlers
-            if (input) {
-              input.addEventListener('input', function(e) {
-                const q = (e.target.value || '').trim().toUpperCase();
-                if (!q) { renderDropdown([]); return; }
-                const candidates = getCountyNames().filter(n => normalize(n).includes(q) || n.toUpperCase().includes(q));
-                renderDropdown(candidates.slice(0, 25));
-              });
-              input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                  const v = input.value && input.value.trim();
-                  if (v) selectCounty(v);
-                  if (dropdown) dropdown.style.display = 'none';
-                }
-              });
-            }
-          });
+          
         } else {
           // Normal mode
           applyContest(sel.value);
@@ -1453,12 +1442,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       const tempBar = document.getElementById('statewide-temperature-bar');
       if (!statewideContent) return;
       
-      // Remove TN contests from statewide results
-      if ((contestType && contestType.toUpperCase().includes('TN')) || (typeof currentContest !== 'undefined' && currentContest.data && currentContest.data.contest_name && currentContest.data.contest_name.toUpperCase().includes('TN'))) {
-        statewideContent.innerHTML = '<p>This contest is not available for North Carolina statewide analysis.</p>';
-        if (tempBar) tempBar.style.display = 'none';
-        return;
-      }
+      // (Previously excluded contests containing 'TN' — removed so statewide section no longer blocks contests)
       if (totalVotes === 0) {
         statewideContent.innerHTML = '<p>No statewide data available for this contest.</p>';
         if (tempBar) tempBar.style.display = 'none';
@@ -2713,6 +2697,8 @@ function toggleSidebar() {
         
         // Add county layers
         addCountyLayers();
+        // Initialize county search (autocomplete & zoom) once counties are added
+        try { if (typeof setupCountySearch === 'function') setupCountySearch(); } catch(e) { console.warn('setupCountySearch failed', e); }
         
         // Correct Mapbox GL JS bounds for North Carolina
         var ncBounds = [
@@ -2882,6 +2868,21 @@ function filterValidContests(contests) {
       }
       
       // Throttle updates to prevent performance issues
+      // Immediately clear contest name if TN or Tennessee is present in the contest label
+      const contestNameEl = document.getElementById('contest-name');
+      if (contestNameEl && value) {
+        let label = '';
+        if (value.includes('||')) {
+          const parts = value.split('||');
+          label = parts[2] || '';
+        } else {
+          const parts = value.split('-');
+          label = parts[2] || '';
+        }
+        if (/\bTN\b/i.test(label) || /\bTennessee\b/i.test(label)) {
+          contestNameEl.textContent = '';
+        }
+      }
       updateTimeout = setTimeout(() => {
         if (!value) {
           currentContest = null;
@@ -2947,9 +2948,13 @@ function filterValidContests(contests) {
         const contestNameEl = document.getElementById('contest-name');
         if (contestNameEl) {
           let label = (currentContest && currentContest.data && currentContest.data.contest_name) ? currentContest.data.contest_name : '';
-          // Remove TN prefix if present (shouldn't be needed for NC data)
-          label = label.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '');
-          contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
+          // Remove TN prefix and any contest containing 'TN' (case-insensitive)
+          if (/\bTN\b/i.test(label) || /\bTennessee\b/i.test(label)) {
+            contestNameEl.textContent = '';
+          } else {
+            label = label.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '');
+            contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
+          }
         }
         
         // Update sidebar if a county is currently selected
@@ -3235,8 +3240,8 @@ function filterValidContests(contests) {
         return setStatus('Error applying colors to map');
       }
       
-      // Update contest display
-      document.getElementById('contest-name').textContent = `TN ${contestData.contest_name} (${year})`;
+  // Update contest display (do not show state prefix to avoid brief out-of-state flashes)
+  document.getElementById('contest-name').textContent = `${contestData.contest_name} (${year})`;
       setStatus(`Applied Tennessee contest: ${contestData.contest_name} (${countiesProcessed} counties)`);
     }
 
@@ -3276,7 +3281,7 @@ function filterValidContests(contests) {
       expr.push('#e0e0e0'); // default color
       
       map.setPaintProperty('district-fill', 'fill-color', expr);
-  document.getElementById('contest-name').textContent = `FL US House (${year})`;
+  document.getElementById('contest-name').textContent = `US House (${year})`;
       setStatus(`Applied contest: FL US House ${year}`);
     }
 
@@ -3326,7 +3331,7 @@ function filterValidContests(contests) {
         setStatus('District layer not found!', 5000, true);
       }
 
-  document.getElementById('contest-name').textContent = `FL ${formatContestName(contestType, year)} (${year}) - Statewide Result`;
+  document.getElementById('contest-name').textContent = `${formatContestName(contestType, year)} (${year}) - Statewide Result`;
       setStatus(`Applied statewide contest: ${formatContestName(contestType, year)} ${year} (${demPct.toFixed(1)}% D, ${repPct.toFixed(1)}% R)`);
     }
 
@@ -3377,13 +3382,20 @@ function safeFitBounds(map, bounds, options = {}) {
         const original = proto.fitBounds;
         proto.fitBounds = function(bounds, options) {
           try {
-            if (typeof safeFitBounds === 'function') {
-              return safeFitBounds(this, bounds, options);
-            }
+            // Prefer the original Mapbox implementation so callers get expected behavior
             return original.call(this, bounds, options);
           } catch (e) {
-            console.warn('override fitBounds fallback', e);
-                this.flyTo({ center: [-79.0193, 35.7596], zoom: 6.5, offset: [120, 0] });
+            // If original fails (rare), fall back to the defensive implementation
+            console.warn('fitBounds original failed, using safeFitBounds fallback', e);
+            try {
+              if (typeof safeFitBounds === 'function') {
+                return safeFitBounds(this, bounds, options);
+              }
+            } catch (e2) {
+              console.warn('safeFitBounds also failed', e2);
+            }
+            // Last-resort center
+            this.flyTo({ center: [-79.0193, 35.7596], zoom: 6.5, offset: [120, 0] });
           }
         };
         proto.__safeFitBoundsOverridden = true;

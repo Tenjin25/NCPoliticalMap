@@ -1249,21 +1249,32 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       });
 
       // Build optgroups for each allowed office, with years as options inside
-      allowedOffices.forEach(officeLabel => {
-        if (!groupedByOffice[officeLabel]) return;
-        const opts = groupedByOffice[officeLabel];
-        opts.sort((a, b) => parseInt(a.year) - parseInt(b.year) || a.contestName.localeCompare(b.contestName));
-        const og = document.createElement('optgroup');
-        og.label = officeLabel;
-        opts.forEach(item => {
-          const o = document.createElement('option');
-          o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-          let displayName = `${item.contestName} (${item.year})`;
-          o.textContent = displayName;
-          og.appendChild(o);
-        });
-        sel.appendChild(og);
-      });
+
+        // Use the granular contest dropdown builder instead
+        buildGranularContestDropdown();
+
+        // --- Granular Contest Dropdown Builder ---
+        // This function builds grouped/nicknamed contest options for clarity
+        function buildGranularContestDropdown() {
+          const sel = document.getElementById('contestSelect');
+          sel.innerHTML = '<option value="">Select a contest...</option>';
+          Object.entries(groupedByOffice).forEach(([officeLabel, contests]) => {
+            const og = document.createElement('optgroup');
+            og.label = officeLabel;
+            contests.forEach(item => {
+              const o = document.createElement('option');
+              o.value = `${item.year}||${item.cat}||${item.contestKey}`;
+              // Nickname: "US President (2008)", "Auditor (2016)", etc.
+              let displayName = `${officeLabel} (${item.year})`;
+              if (item.contestName && !officeLabel.includes(item.contestName)) {
+                displayName = `${item.contestName} (${item.year})`;
+              }
+              o.textContent = displayName;
+              og.appendChild(o);
+            });
+            sel.appendChild(og);
+          });
+        }
 
       sel.onchange = function() {
         const v = sel.value; if (!v) return;

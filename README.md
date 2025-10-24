@@ -252,6 +252,31 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
 - **August 24, 2025:** Switched sidebar percentage display from truncation to standard rounding (matches Ballotpedia)
 - **August 23, 2025:** Adjusted map layer opacity for improved visual clarity and accessibility
 - **October 8, 2025** Implemented a thermometer bar for better statewide results visualization and moved the color legend to the bottom left corner for better sidebar visibility
+- **October 23, 2025 — New UI Launched**
+  - **Major UI Overhaul:** The project has moved to a new, modern user interface for improved usability and performance. The sidebar, county search, and statewide results sections have been redesigned for clarity and speed.
+   - **Migration Complete:** All features from the previous version have been migrated and enhanced, minus the precincts.
+   - **Ready for Launch:** The new UI is now live and ready for public use.
+
+  ### October 23, 2025 — Judicial Races & UI Unification
+  - **Introducing Judicial Races:** The frontend now supports judicial contests (state and appellate-level) with dedicated sidebar rendering and data handling. 
+    - **Current Implementation:** All judicial races added so far are partisan, showing candidate names and party abbreviations in the sidebar and statewide panel. 
+    - If contest metadata includes a `nonpartisan` flag, the sidebar will omit party abbreviations and use candidate names only (nonpartisan support is available for future contests).
+    - Handles multi-candidate judicial contests (non-binary outcomes) and displays candidate vote totals and percentages in the county sidebar.
+    - Aggregates county totals for statewide judicial contests and displays a sortable candidate table in the statewide panel.
+    - Expected data shape: contest entries should include an array/object of candidates with vote totals e.g. `{ "candidates": [{"name":"Jane Doe","party":"D","votes":1234}, ...], "nonpartisan": false }`.
+
+  - **Unified v2 (FL) UI Across Maps:** The v2 UI originally implemented for the FL map has been standardized across the other maps in this repo (NC, TN, GA, etc.). This unification includes:
+    - A single, consistent sidebar layout (county details, statewide panel, search) and shared CSS variables for colors and spacing.
+    - The same county search/autocomplete helper and normalized name-matching logic to ensure consistent behavior across maps.
+    - Consistent zoom/fit behavior using `map.fitBounds` with defensive fallbacks and a shared `zoomToCounty` helper.
+    - Shared accessibility improvements (ARIA roles, keyboard focus handling) and performance optimizations (deferred init, requestIdleCallback where available).
+
+  Migration notes and data compatibility
+  - If you maintain separate state-specific JSON files, ensure judicial contest records follow the candidate-array format above.
+  - Small field-name differences across old and new data were reconciled in the merge scripts; however, when adding new judicial contests please follow the example format for predictable rendering.
+  - If you prefer explicit state scoping for the statewide panel (e.g., only show statewide results for NC when `currentContest.data.state === 'NC'`), we can add a strict whitelist check — currently the unified UI favors display-but-hide-out-of-state labels by default.
+
+  If you'd like, I can also add a short example JSON file for a judicial contest to the `examples/` folder and update the migration scripts to validate candidate arrays on ingest.
 
 ## FAQ
 

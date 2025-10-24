@@ -1468,13 +1468,12 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       
       const demPct = (demVotes / totalVotes) * 100;
       const repPct = (repVotes / totalVotes) * 100;
-      let otherVotes = 0;
-      let otherPct = 0;
-      // Try to get otherVotes from contest data if available
-      if (currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
-        otherVotes = currentContest.data.other_votes;
-        otherPct = (otherVotes / totalVotes) * 100;
-      }
+      // Compute 'Other' votes. Prefer an explicit contest-level `other_votes` value;
+      // otherwise derive it from the totals passed in (total - dem - rep).
+      let otherVotes = (currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number')
+        ? currentContest.data.other_votes
+        : Math.max(0, totalVotes - demVotes - repVotes);
+      let otherPct = totalVotes > 0 ? (otherVotes / totalVotes) * 100 : 0;
       const marginPct = Math.abs(demPct - repPct);
       // Determine winner and get actual candidate name
       let demCandidate = currentContest?.data?.dem_candidate || '';
@@ -1812,11 +1811,32 @@ function toggleSidebar() {
         return;
       }
       
-      // Get votes from the Tennessee data structure
-      const demVotes = countyData.dem_votes || 0;
-      const repVotes = countyData.rep_votes || 0;
-      const otherVotes = countyData.other_votes || 0;
-      const totalVotes = countyData.total_votes || 0;
+      // Get votes from the county data structure
+      const demVotes = countyData.dem_votes || countyData.dem || 0;
+      const repVotes = countyData.rep_votes || countyData.rep || countyData.republican || 0;
+      const totalVotes = countyData.total_votes || countyData.total || 0;
+      // Compute aggregated Other votes for this county. Prefer an explicit `other_votes` field,
+      // otherwise sum any *_votes fields (excluding dem/rep/total) and finally fall back to
+      // total - dem - rep if needed.
+      let otherVotes = 0;
+      if (typeof countyData.other_votes === 'number') {
+        otherVotes = countyData.other_votes;
+      } else {
+        // Sum fields that look like candidate vote totals (conservative heuristic)
+        for (const k in countyData) {
+          if (!Object.prototype.hasOwnProperty.call(countyData, k)) continue;
+          const lk = k.toString().toLowerCase();
+          if (lk === 'dem_votes' || lk === 'rep_votes' || lk === 'total_votes' || lk === 'other_votes' || lk === 'total') continue;
+          if (/_votes$/.test(lk)) {
+            const v = Number(countyData[k]) || 0;
+            otherVotes += v;
+          }
+        }
+        // If the heuristic found nothing, fallback to total - dem - rep (prevents missing Other)
+        if (!otherVotes && totalVotes > 0) {
+          otherVotes = Math.max(0, totalVotes - demVotes - repVotes);
+        }
+      }
       
       if (totalVotes === 0) {
         contentEl.innerHTML = `<p>No ${contestName} data available for ${countyName} County in ${year}.</p>`;
@@ -1824,9 +1844,9 @@ function toggleSidebar() {
         return;
       }
       
-      const demPct = (demVotes / totalVotes * 100);
-      const repPct = (repVotes / totalVotes * 100);
-      const otherPct = (otherVotes / totalVotes * 100);
+  const demPct = totalVotes > 0 ? (demVotes / totalVotes * 100) : 0;
+  const repPct = totalVotes > 0 ? (repVotes / totalVotes * 100) : 0;
+  const otherPct = totalVotes > 0 ? (otherVotes / totalVotes * 100) : 0;
       
       // Get candidate names from the contest data, not the county data
       // Candidate names: prefer contest-level, fallback to derived most-common from county-level results,
@@ -3051,10 +3071,15 @@ function filterValidContests(contests) {
       let totalVotes = 0;
 
       Object.values(currentContest.data.results).forEach(county => {
-        totalDemVotes += county.dem_votes || 0;
-        totalRepVotes += county.rep_votes || 0;
-        totalOtherVotes += county.other_votes || 0;
-        totalVotes += county.total_votes || 0;
+        const dem = county.dem_votes || county.dem || 0;
+        const rep = county.rep_votes || county.rep || county.republican || 0;
+        const total = county.total_votes || county.total || (dem + rep) || 0;
+        // Derive county 'other' if explicit field missing
+        const other = (typeof county.other_votes === 'number') ? county.other_votes : Math.max(0, total - dem - rep);
+        totalDemVotes += dem;
+        totalRepVotes += rep;
+        totalOtherVotes += other;
+        totalVotes += total;
       });
 
       // Update the statewide results display
@@ -3107,6 +3132,12 @@ function filterValidContests(contests) {
         return;
       }
       
+      // Ensure we compute 'Other' votes deterministically for the sidebar display
+      const demVal = result.dem_votes || result.dem || 0;
+      const repVal = result.rep_votes || result.rep || result.republican || 0;
+      const totVal = result.total_votes || result.total || (demVal + repVal) || 0;
+      const otherVal = (typeof result.other_votes === 'number') ? result.other_votes : Math.max(0, totVal - demVal - repVal);
+
       const html = `
         <div style="margin-bottom: 16px;">
           <strong>${currentContest.data.contest_name}</strong><br>
@@ -3122,16 +3153,16 @@ function filterValidContests(contests) {
             <span><strong>Republican:</strong> ${result.rep_candidate || 'Unknown'}</span>
             <span>${result.rep_votes?.toLocaleString() || 0} votes</span>
           </div>
-          ${result.other_votes > 0 ? `
+          ${otherVal > 0 ? `
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <span><strong>Other:</strong></span>
-            <span>${result.other_votes?.toLocaleString() || 0} votes</span>
+            <span>${otherVal.toLocaleString() || 0} votes</span>
           </div>
           ` : ''}
         </div>
         
         <div style="margin-bottom: 16px;">
-          <strong>Total Votes:</strong> ${result.total_votes?.toLocaleString() || 0}
+          <strong>Total Votes:</strong> ${totVal.toLocaleString() || 0}
         </div>
         
         <div style="margin-bottom: 16px;">

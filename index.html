@@ -1261,43 +1261,41 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
 
         // --- Granular Contest Dropdown Builder ---
         // This function builds grouped/nicknamed contest options for clarity
+        // It preserves the original insertion order of `groupedByOffice` but
+        // swaps the positions of the two judicial optgroups if both are present
+        // so that "NC Supreme Court" appears before "Court of Appeals".
         function buildGranularContestDropdown() {
           const sel = document.getElementById('contestSelect');
           sel.innerHTML = '<option value="">Select a contest...</option>';
-          // We want NC Supreme Court to appear before Court of Appeals in the dropdown.
-          // Create a shallow copy of groupedByOffice keys so we can control ordering.
-          const officeKeys = Object.keys(groupedByOffice || {});
-          const preferredOrder = ['NC Supreme Court', 'Court of Appeals'];
 
-          // First append preferred offices in the given order if they exist
-          preferredOrder.forEach(pref => {
-            if (groupedByOffice[pref]) {
-              const og = document.createElement('optgroup');
-              og.label = pref;
-              groupedByOffice[pref].forEach(item => {
-                const o = document.createElement('option');
-                o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-                let displayName = `${pref} (${item.year})`;
-                if (item.contestName && !pref.includes(item.contestName)) displayName = `${item.contestName} (${item.year})`;
-                o.textContent = displayName;
-                og.appendChild(o);
-              });
-              sel.appendChild(og);
-            }
-          });
+          const entries = Object.entries(groupedByOffice || {});
+          if (!entries.length) return;
 
-          // Then append remaining offices in alphabetical order for predictability
-          const remaining = officeKeys.filter(k => !preferredOrder.includes(k)).sort((a, b) => a.localeCompare(b));
-          remaining.forEach(officeLabel => {
-            const contests = groupedByOffice[officeLabel];
-            if (!contests) return;
+          // Find indices for the two judicial labels
+          const labelA = 'NC Supreme Court';
+          const labelB = 'Court of Appeals';
+          const idxA = entries.findIndex(([label]) => label === labelA);
+          const idxB = entries.findIndex(([label]) => label === labelB);
+
+          // If both exist, swap them to put NC Supreme Court before Court of Appeals
+          if (idxA !== -1 && idxB !== -1 && idxA > idxB) {
+            const temp = entries[idxA];
+            entries[idxA] = entries[idxB];
+            entries[idxB] = temp;
+          }
+
+          // Append optgroups in the (possibly swapped) insertion order
+          entries.forEach(([officeLabel, contests]) => {
             const og = document.createElement('optgroup');
             og.label = officeLabel;
             contests.forEach(item => {
               const o = document.createElement('option');
               o.value = `${item.year}||${item.cat}||${item.contestKey}`;
+              // Nickname: "US President (2008)", "Auditor (2016)", etc.
               let displayName = `${officeLabel} (${item.year})`;
-              if (item.contestName && !officeLabel.includes(item.contestName)) displayName = `${item.contestName} (${item.year})`;
+              if (item.contestName && !officeLabel.includes(item.contestName)) {
+                displayName = `${item.contestName} (${item.year})`;
+              }
               o.textContent = displayName;
               og.appendChild(o);
             });

@@ -1240,8 +1240,13 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
                 // fall through only if we can map individual contest names below; otherwise skip
               } else return;
             }
-            // Exclude specific problematic contest name
-            if (contestName && contestName.toString().toUpperCase().includes('CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS')) return;
+            // Exclude specific problematic contest names (case-insensitive, robust)
+            const unwantedContests = [
+              'CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS',
+              'WAR MEMORIAL AUDITORIUM',
+              'GREENSBORO AUDITORIUM BONDS'
+            ];
+            if (contestName && unwantedContests.some(unwanted => contestName.toString().toUpperCase().includes(unwanted))) return;
             if (!groupedByOffice[officeLabel]) groupedByOffice[officeLabel] = [];
             groupedByOffice[officeLabel].push({ year, cat, contestKey, contestName });
             // For Council of State and Judicial, show all contests

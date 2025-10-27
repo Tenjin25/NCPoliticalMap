@@ -1264,27 +1264,35 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         function buildGranularContestDropdown() {
           const sel = document.getElementById('contestSelect');
           sel.innerHTML = '<option value="">Select a contest...</option>';
-          Object.entries(groupedByOffice).forEach(([officeLabel, contests]) => {
+          // Custom optgroup order: Supreme Court first, then Court of Appeals, then others
+          const officeOrder = [
+            'NC Supreme Court',
+            'Court of Appeals'
+          ];
+          // Get all office labels, preserving original order for non-judicial
+          const allLabels = Object.keys(groupedByOffice);
+          const sortedLabels = [
+            ...officeOrder.filter(label => allLabels.includes(label)),
+            ...allLabels.filter(label => !officeOrder.includes(label))
+          ];
+          sortedLabels.forEach(officeLabel => {
+            const contests = groupedByOffice[officeLabel];
             const og = document.createElement('optgroup');
             og.label = officeLabel;
             let sortedContests = contests;
             // Sort judicial races numerically by seat/position and year
-            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
+            if (officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals' || officeLabel === 'Judicial') {
               sortedContests = contests.slice().sort((a, b) => {
-                // Extract seat/position number from contestName
                 function extractSeatNum(name) {
                   if (!name) return 0;
-                  // Try to match 'Seat X', 'Position X', 'Place X', 'District X', 'No. X', 'Judge X', etc.
                   const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
                   return match ? parseInt(match[2], 10) : 0;
                 }
-                // Sort by year, then seat number
                 const yearDiff = parseInt(a.year) - parseInt(b.year);
                 if (yearDiff !== 0) return yearDiff;
                 return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
               });
             } else {
-              // For other offices, sort by year
               sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
             }
             sortedContests.forEach(item => {
@@ -2911,22 +2919,11 @@ function filterValidContests(contests) {
         clearTimeout(updateTimeout);
       }
       
-      // Throttle updates to prevent performance issues
-      // Immediately clear contest name if TN or Tennessee is present in the contest label
+      // Immediately clear contest name and statewide content to prevent stale info flash
       const contestNameEl = document.getElementById('contest-name');
-      if (contestNameEl && value) {
-        let label = '';
-        if (value.includes('||')) {
-          const parts = value.split('||');
-          label = parts[2] || '';
-        } else {
-          const parts = value.split('-');
-          label = parts[2] || '';
-        }
-        if (/\bTN\b/i.test(label) || /\bTennessee\b/i.test(label)) {
-          contestNameEl.textContent = '';
-        }
-      }
+      const statewideContent = document.getElementById('statewide-content');
+      if (contestNameEl) contestNameEl.textContent = '';
+      if (statewideContent) statewideContent.innerHTML = '<p>Select a contest to see statewide results and margin.</p>';
       updateTimeout = setTimeout(() => {
         if (!value) {
           currentContest = null;
@@ -2983,20 +2980,26 @@ function filterValidContests(contests) {
           return;
         }
         
-        updateMapColors();
-
-        // Calculate and update statewide results
-        calculateAndUpdateStatewideResults();
-
-        // Update contest name in statewide section
+        // Decide whether this contest is a Tennessee contest (or otherwise non-NC)
         const contestNameEl = document.getElementById('contest-name');
-        if (contestNameEl) {
-          let label = (currentContest && currentContest.data && currentContest.data.contest_name) ? currentContest.data.contest_name : '';
-          // Remove TN prefix and any contest containing 'TN' (case-insensitive)
-          if (/\bTN\b/i.test(label) || /\bTennessee\b/i.test(label)) {
-            contestNameEl.textContent = '';
-          } else {
-            label = label.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '');
+        const statewideContent = document.getElementById('statewide-content');
+        const rawLabel = (currentContest && currentContest.data && currentContest.data.contest_name) ? String(currentContest.data.contest_name) : '';
+        const contestTypeLabel = String(currentContest?.contestType || '');
+        const isTN = /\bTN\b/i.test(rawLabel) || /\bTennessee\b/i.test(rawLabel) || /\bTN\b/i.test(contestTypeLabel) || /\bTennessee\b/i.test(contestTypeLabel) || (/^TN$/i.test(String(currentContest?.data?.state || '')));
+
+        if (isTN) {
+          // Skip NC-specific coloring and statewide aggregation for Tennessee contests
+          if (contestNameEl) contestNameEl.textContent = '';
+          if (statewideContent) statewideContent.innerHTML = '<p>This contest is not available for North Carolina county/statewide analysis.</p>';
+        } else {
+          // NC contest: update map colors and compute statewide totals
+          updateMapColors();
+          // Calculate and update statewide results
+          calculateAndUpdateStatewideResults();
+
+          // Update contest name in statewide section (strip any leading TN/NC prefixes)
+          if (contestNameEl) {
+            let label = rawLabel.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '').trim();
             contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
           }
         }

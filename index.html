@@ -1264,24 +1264,22 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         function buildGranularContestDropdown() {
           const sel = document.getElementById('contestSelect');
           sel.innerHTML = '<option value="">Select a contest...</option>';
-          // Custom optgroup order: Supreme Court first, then Court of Appeals, then others
-          const officeOrder = [
-            'NC Supreme Court',
-            'Court of Appeals'
-          ];
-          // Get all office labels, preserving original order for non-judicial
-          const allLabels = Object.keys(groupedByOffice);
-          const sortedLabels = [
-            ...officeOrder.filter(label => allLabels.includes(label)),
-            ...allLabels.filter(label => !officeOrder.includes(label))
-          ];
-          sortedLabels.forEach(officeLabel => {
+          // Swap only NC Supreme Court and Court of Appeals order, keep all others in original order
+          const officeLabels = Object.keys(groupedByOffice);
+          const labels = officeLabels.slice();
+          const scIdx = labels.indexOf('NC Supreme Court');
+          const caIdx = labels.indexOf('Court of Appeals');
+          if (scIdx !== -1 && caIdx !== -1 && scIdx > caIdx) {
+            // If Supreme Court comes after Court of Appeals, swap them
+            [labels[scIdx], labels[caIdx]] = [labels[caIdx], labels[scIdx]];
+          }
+          labels.forEach(officeLabel => {
             const contests = groupedByOffice[officeLabel];
             const og = document.createElement('optgroup');
             og.label = officeLabel;
             let sortedContests = contests;
             // Sort judicial races numerically by seat/position and year
-            if (officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals' || officeLabel === 'Judicial') {
+            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
               sortedContests = contests.slice().sort((a, b) => {
                 function extractSeatNum(name) {
                   if (!name) return 0;
@@ -1307,13 +1305,13 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
             });
             sel.appendChild(og);
           });
+          }
         }
 
       sel.onchange = function() {
         const v = sel.value; if (!v) return;
         handleContestSelect(v);
       };
-    }
 
     // Parse the encoded option value and load the selected contest into currentContest
     function handleContestSelect(encoded) {

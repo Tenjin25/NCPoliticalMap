@@ -67,38 +67,38 @@
     }
   </style>
   <script>
-    // Zoom to county by name using turf.js — improved to match NCMap's behavior
-    function zoomToCounty(countyName) {
-      if (!countyName) return;
-
-      function normalizeCountyName(name) {
-        return (name || '')
-          .toString()
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9 ]/g, '')
-          .replace(/\s+/g, ' ')
-          .replace(/county$/, '')
-          .replace(/ /g, '');
-      }
-
-      const src = map.getSource && map.getSource('counties');
-      const features = (src && src._data && src._data.features) || (window.countiesData && window.countiesData.features) || (typeof countiesGeojson !== 'undefined' && countiesGeojson && countiesGeojson.features) || null;
-      if (!features) return;
-
-      const normTarget = normalizeCountyName(countyName);
-      const feature = features.find(f => {
-        const props = f.properties || {};
-        const nameCandidates = [props.NAME20, props.NAMELSAD20, props.county_name, props.County, props.COUNTYNAME, props.NAME];
-        return nameCandidates.some(n => normalizeCountyName(n) === normTarget);
-      });
-      if (!feature) return;
-
+      // Try bbox via turf, then fallback to geometry-derived LngLatBounds (like NCMap)
       try {
-        lastSelectedCounty = (feature.properties && (feature.properties.NAME20 || feature.properties.NAME || feature.properties.county_name)) || countyName;
-      } catch (e) {
-        lastSelectedCounty = countyName;
+  const bbox = turf.bbox(feature);
+        if (!Array.isArray(bbox) || bbox.length !== 4) throw new Error('invalid bbox');
+        const bounds = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]];
+        map.fitBounds(bounds, { padding: 50, duration: 1000 });
+      } catch (err) {
+        // bbox failed; try fallback
+        try {
+          if (feature.geometry && feature.geometry.coordinates) {
+            const allCoords = [];
+            const geom = feature.geometry;
+            if (geom.type === 'Polygon') {
+              geom.coordinates.forEach(ring => ring.forEach(c => allCoords.push(c)));
+            } else if (geom.type === 'MultiPolygon') {
+              geom.coordinates.forEach(poly => poly.forEach(ring => ring.forEach(c => allCoords.push(c))));
+            }
+            if (allCoords.length) {
+              const mb = allCoords.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(allCoords[0], allCoords[0]));
+              map.fitBounds(mb, { padding: 50, duration: 1000 });
+            }
+          } else {
+              // no geometry found
+          }
+        } catch (e) {
+          // fallback failed
+        }
       }
+
+      if (typeof showCountyDetails === 'function') showCountyDetails(lastSelectedCounty);
+  </script>
+  <script>
   // Tennessee contest/statewide logic (isolated)
   function setupTNContestLogic() {
     // For Tennessee, candidate names are already in the election data

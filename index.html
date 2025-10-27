@@ -1308,10 +1308,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           }
         }
 
-      sel.onchange = function() {
-        const v = sel.value; if (!v) return;
-        handleContestSelect(v);
-      };
+      // Remove duplicate sel.onchange assignment here to avoid conflicts.
 
     // Parse the encoded option value and load the selected contest into currentContest
     function handleContestSelect(encoded) {

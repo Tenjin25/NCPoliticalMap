@@ -1261,37 +1261,35 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
 
         // --- Granular Contest Dropdown Builder ---
         // This function builds grouped/nicknamed contest options for clarity
-        // It preserves the original insertion order of `groupedByOffice` but
-        // swaps the positions of the two judicial optgroups if both are present
-        // so that "NC Supreme Court" appears before "Court of Appeals".
         function buildGranularContestDropdown() {
           const sel = document.getElementById('contestSelect');
           sel.innerHTML = '<option value="">Select a contest...</option>';
-
-          const entries = Object.entries(groupedByOffice || {});
-          if (!entries.length) return;
-
-          // Find indices for the two judicial labels
-          const labelA = 'NC Supreme Court';
-          const labelB = 'Court of Appeals';
-          const idxA = entries.findIndex(([label]) => label === labelA);
-          const idxB = entries.findIndex(([label]) => label === labelB);
-
-          // If both exist, swap them to put NC Supreme Court before Court of Appeals
-          if (idxA !== -1 && idxB !== -1 && idxA > idxB) {
-            const temp = entries[idxA];
-            entries[idxA] = entries[idxB];
-            entries[idxB] = temp;
-          }
-
-          // Append optgroups in the (possibly swapped) insertion order
-          entries.forEach(([officeLabel, contests]) => {
+          Object.entries(groupedByOffice).forEach(([officeLabel, contests]) => {
             const og = document.createElement('optgroup');
             og.label = officeLabel;
-            contests.forEach(item => {
+            let sortedContests = contests;
+            // Sort judicial races numerically by seat/position and year
+            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
+              sortedContests = contests.slice().sort((a, b) => {
+                // Extract seat/position number from contestName
+                function extractSeatNum(name) {
+                  if (!name) return 0;
+                  // Try to match 'Seat X', 'Position X', 'Place X', 'District X', 'No. X', 'Judge X', etc.
+                  const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
+                  return match ? parseInt(match[2], 10) : 0;
+                }
+                // Sort by year, then seat number
+                const yearDiff = parseInt(a.year) - parseInt(b.year);
+                if (yearDiff !== 0) return yearDiff;
+                return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
+              });
+            } else {
+              // For other offices, sort by year
+              sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
+            }
+            sortedContests.forEach(item => {
               const o = document.createElement('option');
               o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-              // Nickname: "US President (2008)", "Auditor (2016)", etc.
               let displayName = `${officeLabel} (${item.year})`;
               if (item.contestName && !officeLabel.includes(item.contestName)) {
                 displayName = `${item.contestName} (${item.year})`;
@@ -1475,7 +1473,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       
     }
 
-  function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes, otherVotesArg) {
+    function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
       const statewideContent = document.getElementById('statewide-content');
       const tempBar = document.getElementById('statewide-temperature-bar');
       if (!statewideContent) return;
@@ -1489,16 +1487,21 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       
       const demPct = (demVotes / totalVotes) * 100;
       const repPct = (repVotes / totalVotes) * 100;
-      // Prefer explicitly passed otherVotes (aggregated from county data).
-      // Fallback to contest-level other_votes if the arg is undefined.
-      let otherVotes = typeof otherVotesArg === 'number' ? otherVotesArg : 0;
+      let otherVotes = 0;
       let otherPct = 0;
-      if ((!otherVotes || otherVotes === 0) && currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
+      // Try to get otherVotes from contest data if available
+      if (currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
         otherVotes = currentContest.data.other_votes;
+      } else {
+        // Fallback: if totalVotes is available, compute other as the remainder
+        // This covers cases where contest-level other_votes wasn't recorded during aggregation
+        if (typeof totalVotes === 'number' && Number.isFinite(totalVotes)) {
+          otherVotes = Math.max(0, totalVotes - (Number(demVotes) || 0) - (Number(repVotes) || 0));
+        } else {
+          otherVotes = 0;
+        }
       }
-      if (otherVotes > 0 && totalVotes > 0) {
-        otherPct = (otherVotes / totalVotes) * 100;
-      }
+      otherPct = totalVotes > 0 ? (otherVotes / totalVotes) * 100 : 0;
       const marginPct = Math.abs(demPct - repPct);
       // Determine winner and get actual candidate name
       let demCandidate = currentContest?.data?.dem_candidate || '';
@@ -3081,8 +3084,8 @@ function filterValidContests(contests) {
         totalVotes += county.total_votes || 0;
       });
 
-  // Update the statewide results display (pass aggregated other votes so "Other" shows when present)
-  updateStatewideResults(currentContest.contestType, currentContest.year, totalDemVotes, totalRepVotes, totalVotes, totalOtherVotes);
+      // Update the statewide results display
+      updateStatewideResults(currentContest.contestType, currentContest.year, totalDemVotes, totalRepVotes, totalVotes);
     }
 
     function onCountyClick(e) {

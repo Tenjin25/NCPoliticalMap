@@ -2000,23 +2000,24 @@ function toggleSidebar() {
     finalCompColor = winner === 'Democratic' ? '#2563eb' : '#dc2626'; // Blue for Dem win, Red for Rep win
   } else {
     // Use Florida map color logic for all other categories
-    if (countyCompLabel.includes('Republican')) {
-      if (countyCompLabel.includes('Annihilation')) finalCompColor = '#67000d';
-      else if (countyCompLabel.includes('Dominant')) finalCompColor = '#7f1d1d';
-      else if (countyCompLabel.includes('Stronghold')) finalCompColor = '#991b1b';
-      else if (countyCompLabel.includes('Safe')) finalCompColor = '#dc2626';
-      else if (countyCompLabel.includes('Likely')) finalCompColor = '#ef4444';
-      else if (countyCompLabel.includes('Lean')) finalCompColor = '#f87171';
-      else if (countyCompLabel.includes('Tilt')) finalCompColor = '#fca5a5';
-    } else if (countyCompLabel.includes('Democratic')) {
-      if (countyCompLabel.includes('Annihilation')) finalCompColor = '#0c1d56';
-      else if (countyCompLabel.includes('Dominant')) finalCompColor = '#1e3a8a';
-      else if (countyCompLabel.includes('Stronghold')) finalCompColor = '#1e40af';
-      else if (countyCompLabel.includes('Safe')) finalCompColor = '#3b82f6';
-      else if (countyCompLabel.includes('Likely')) finalCompColor = '#60a5fa';
-      else if (countyCompLabel.includes('Lean')) finalCompColor = '#93c5fd';
-      else if (countyCompLabel.includes('Tilt')) finalCompColor = '#bfdbfe';
-    }
+      // Assign competitiveness color based on rounded margin percentage, matching the label
+      if (roundedMargin >= 40) {
+        finalCompColor = winner === 'Republican' ? '#67000d' : '#0c1d56';
+      } else if (roundedMargin >= 30) {
+        finalCompColor = winner === 'Republican' ? '#7f1d1d' : '#1e3a8a';
+      } else if (roundedMargin >= 20) {
+        finalCompColor = winner === 'Republican' ? '#991b1b' : '#1e40af';
+      } else if (roundedMargin >= 10) {
+        finalCompColor = winner === 'Republican' ? '#dc2626' : '#3b82f6';
+      } else if (roundedMargin >= 5.5) {
+        finalCompColor = winner === 'Republican' ? '#ef4444' : '#60a5fa';
+      } else if (roundedMargin >= 1) {
+        finalCompColor = winner === 'Republican' ? '#f87171' : '#93c5fd';
+      } else if (roundedMargin >= 0.5) {
+        finalCompColor = winner === 'Republican' ? '#fca5a5' : '#bfdbfe';
+      } else {
+        finalCompColor = winner === 'Democratic' ? '#2563eb' : (winner === 'Republican' ? '#dc2626' : '#64748b');
+      }
   }
   
   sidebarContent += `<div class="competitiveness-section">`;

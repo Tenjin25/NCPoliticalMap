@@ -733,24 +733,24 @@ document.addEventListener('DOMContentLoaded', function() {
               .toUpperCase();
           }
           function cbColorForMargin(marginPct, winner) {
-            // Accessibility palette: orange for R, blue for D, with shades
-            if (marginPct >= 40) {
-              return winner === 'R' ? '#ff9900' : '#0074d9'; // Annihilation
-            } else if (marginPct >= 30) {
-              return winner === 'R' ? '#ffb84d' : '#339af0'; // Dominant
-            } else if (marginPct >= 20) {
-              return winner === 'R' ? '#ffd699' : '#5dade2'; // Stronghold
-            } else if (marginPct >= 10) {
-              return winner === 'R' ? '#ffe5cc' : '#74c0fc'; // Safe
-            } else if (marginPct >= 5.5) {
-              return winner === 'R' ? '#fff2e6' : '#a5d8ff'; // Likely
-            } else if (marginPct >= 1) {
-              return winner === 'R' ? '#ffe5cc' : '#d0ebff'; // Lean
-            } else if (marginPct >= 0.5) {
-              return winner === 'R' ? '#fff2e6' : '#e7f5ff'; // Tilt
-            } else {
-              return '#cccccc'; // Tossup
-            }
+              // Use same logic as sidebar: winner labels and rounded margin
+              if (marginPct >= 40) {
+                return winner === 'Republican' ? '#67000d' : '#0c1d56';
+              } else if (marginPct >= 30) {
+                return winner === 'Republican' ? '#7f1d1d' : '#1e3a8a';
+              } else if (marginPct >= 20) {
+                return winner === 'Republican' ? '#991b1b' : '#1e40af';
+              } else if (marginPct >= 10) {
+                return winner === 'Republican' ? '#dc2626' : '#3b82f6';
+              } else if (marginPct >= 5.5) {
+                return winner === 'Republican' ? '#ef4444' : '#60a5fa';
+              } else if (marginPct >= 1) {
+                return winner === 'Republican' ? '#f87171' : '#93c5fd';
+              } else if (marginPct >= 0.5) {
+                return winner === 'Republican' ? '#fca5a5' : '#bfdbfe';
+              } else {
+                return winner === 'Democratic' ? '#2563eb' : (winner === 'Republican' ? '#dc2626' : '#64748b');
+              }
           }
           contestData.forEach(row => {
             const countyName = normalizeCountyName(row.county);
@@ -760,9 +760,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (totalVotes === 0) return;
             const demPct = (demVotes / totalVotes) * 100;
             const repPct = (repVotes / totalVotes) * 100;
-            const winner = repPct > demPct ? 'R' : 'D';
-            const marginPct = Math.abs(repPct - demPct);
-            const color = cbColorForMargin(marginPct, winner);
+              const winner = repPct > demPct ? 'Republican' : (demPct > repPct ? 'Democratic' : 'Tie');
+              const marginPct = Math.abs(repPct - demPct);
+              const roundedMargin = Math.round(marginPct * 100) / 100;
+              const color = cbColorForMargin(roundedMargin, winner);
             expr.push(['==', ['upcase', ['get', 'County']], countyName]);
             expr.push(color);
           });

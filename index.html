@@ -1878,17 +1878,26 @@ function toggleSidebar() {
         countyCompetitiveness = currentContest.data.competitiveness;
       }
       const countyCompColor = countyCompetitiveness.color || '#6b7280';
-      let countyCompLabel = countyCompetitiveness.description;
-      if (!countyCompLabel || countyCompLabel === 'Unknown') {
-        // Build label from category and party if available
-        if (countyCompetitiveness.category && countyCompetitiveness.party) {
-          countyCompLabel = `${countyCompetitiveness.category} ${countyCompetitiveness.party}`;
-        } else if (countyCompetitiveness.category) {
-          countyCompLabel = countyCompetitiveness.category;
+        // Always assign competitiveness category based on rounded margin percentage
+        let countyCompLabel = '';
+        const roundedMargin = Math.round(marginPct * 100) / 100;
+        if (roundedMargin >= 40) {
+          countyCompLabel = winner === 'Republican' ? "Annihilation Republican (40%+)" : "Annihilation Democratic (40%+)";
+        } else if (roundedMargin >= 30) {
+          countyCompLabel = winner === 'Republican' ? "Dominant Republican (30-40%)" : "Dominant Democratic (30-40%)";
+        } else if (roundedMargin >= 20) {
+          countyCompLabel = winner === 'Republican' ? "Stronghold Republican (20-30%)" : "Stronghold Democratic (20-30%)";
+        } else if (roundedMargin >= 10) {
+          countyCompLabel = winner === 'Republican' ? "Safe Republican (10-20%)" : "Safe Democratic (10-20%)";
+        } else if (roundedMargin >= 5.5) {
+          countyCompLabel = winner === 'Republican' ? "Likely Republican (5.5-10%)" : "Likely Democratic (5.5-10%)";
+        } else if (roundedMargin >= 1) {
+          countyCompLabel = winner === 'Republican' ? "Lean Republican (1-5.5%)" : "Lean Democratic (1-5.5%)";
+        } else if (roundedMargin >= 0.5) {
+          countyCompLabel = winner === 'Republican' ? "Tilt Republican (0.5-1%)" : "Tilt Democratic (0.5-1%)";
         } else {
-          countyCompLabel = 'Unknown';
+          countyCompLabel = winner === 'Democratic' ? 'Tossup (Democratic Win)' : (winner === 'Republican' ? 'Tossup (Republican Win)' : 'Tossup (Tie)');
         }
-      }
       // Accessibility palette for winner color
       function cbColorForMargin(marginPct, winner) {
         if (marginPct >= 40) {

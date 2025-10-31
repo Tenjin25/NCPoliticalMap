@@ -753,19 +753,20 @@ document.addEventListener('DOMContentLoaded', function() {
               }
           }
           contestData.forEach(row => {
-            const countyName = normalizeCountyName(row.county);
-            const demVotes = row[`${contestType}_dem`] || 0;
-            const repVotes = row[`${contestType}_rep`] || 0;
-            const totalVotes = row[`${contestType}_total`] || 0;
-            if (totalVotes === 0) return;
-            const demPct = (demVotes / totalVotes) * 100;
-            const repPct = (repVotes / totalVotes) * 100;
-              const winner = repPct > demPct ? 'Republican' : (demPct > repPct ? 'Democratic' : 'Tie');
-              const marginPct = Math.abs(repPct - demPct);
-              const roundedMargin = Math.round(marginPct * 100) / 100;
-              const color = cbColorForMargin(roundedMargin, winner);
-            expr.push(['==', ['upcase', ['get', 'County']], countyName]);
-            expr.push(color);
+          const countyName = normalizeCountyName(row.county);
+          const demVotes = row[`${contestType}_dem`] || 0;
+          const repVotes = row[`${contestType}_rep`] || 0;
+          const totalVotes = row[`${contestType}_total`] || 0;
+          if (totalVotes === 0) return;
+          const demPct = (demVotes / totalVotes) * 100;
+          const repPct = (repVotes / totalVotes) * 100;
+          const winner = repPct > demPct ? 'Republican' : (demPct > repPct ? 'Democratic' : 'Tie');
+          const marginPct = Math.abs(repPct - demPct);
+          // Use rounded margin for color assignment
+          const roundedMargin = Math.round(marginPct * 100) / 100;
+          const color = cbColorForMargin(roundedMargin, winner);
+          expr.push(['==', ['upcase', ['get', 'County']], countyName]);
+          expr.push(color);
           });
           expr.push('#e0e0e0'); // default color
           if (map.getLayer('county-fill')) {

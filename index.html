@@ -1882,19 +1882,19 @@ function toggleSidebar() {
         let countyCompLabel = '';
         const roundedMargin = Math.round(marginPct * 100) / 100;
         if (roundedMargin >= 40) {
-          countyCompLabel = winner === 'Republican' ? "Annihilation Republican (40%+)" : "Annihilation Democratic (40%+)";
+          countyCompLabel = winner === 'Republican' ? "Annihilation Republican" : "Annihilation Democratic";
         } else if (roundedMargin >= 30) {
-          countyCompLabel = winner === 'Republican' ? "Dominant Republican (30-40%)" : "Dominant Democratic (30-40%)";
+          countyCompLabel = winner === 'Republican' ? "Dominant Republican" : "Dominant Democratic";
         } else if (roundedMargin >= 20) {
-          countyCompLabel = winner === 'Republican' ? "Stronghold Republican (20-30%)" : "Stronghold Democratic (20-30%)";
+          countyCompLabel = winner === 'Republican' ? "Stronghold Republican" : "Stronghold Democratic";
         } else if (roundedMargin >= 10) {
-          countyCompLabel = winner === 'Republican' ? "Safe Republican (10-20%)" : "Safe Democratic (10-20%)";
+          countyCompLabel = winner === 'Republican' ? "Safe Republican" : "Safe Democratic";
         } else if (roundedMargin >= 5.5) {
-          countyCompLabel = winner === 'Republican' ? "Likely Republican (5.5-10%)" : "Likely Democratic (5.5-10%)";
+          countyCompLabel = winner === 'Republican' ? "Likely Republican" : "Likely Democratic";
         } else if (roundedMargin >= 1) {
-          countyCompLabel = winner === 'Republican' ? "Lean Republican (1-5.5%)" : "Lean Democratic (1-5.5%)";
+          countyCompLabel = winner === 'Republican' ? "Lean Republican" : "Lean Democratic";
         } else if (roundedMargin >= 0.5) {
-          countyCompLabel = winner === 'Republican' ? "Tilt Republican (0.5-1%)" : "Tilt Democratic (0.5-1%)";
+          countyCompLabel = winner === 'Republican' ? "Tilt Republican" : "Tilt Democratic";
         } else {
           countyCompLabel = winner === 'Democratic' ? 'Tossup (Democratic Win)' : (winner === 'Republican' ? 'Tossup (Republican Win)' : 'Tossup (Tie)');
         }

@@ -491,7 +491,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 12081,
@@ -734,7 +734,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 17363,
@@ -2874,7 +2874,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 6519,
@@ -3117,7 +3117,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "DEM": 70777,
@@ -4386,7 +4386,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "DEM": 7342,
@@ -4602,7 +4602,7 @@
                 "category": "Annihilation",
                 "party": "Democratic",
                 "code": "D_ANNIHILATION",
-                "color": "#08306b"
+                "color": "#08519c"
               },
               "all_parties": {
                 "DEM": 7300,
@@ -4683,7 +4683,7 @@
                 "category": "Likely",
                 "party": "Republican",
                 "code": "R_LIKELY",
-                "color": "#fb6a4a"
+                "color": "#fcae91"
               },
               "all_parties": {
                 "DEM": 3058,
@@ -5088,7 +5088,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 10802,
@@ -5250,7 +5250,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 32716,
@@ -5554,7 +5554,7 @@
                 "category": "Lean",
                 "party": "Republican",
                 "code": "R_LEAN",
-                "color": "#fcae91"
+                "color": "#fee8c8"
               },
               "all_parties": {
                 "DEM": 30456,
@@ -6022,7 +6022,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "DEM": 17325,
@@ -6282,7 +6282,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 26401,
@@ -7504,7 +7504,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 19328,
@@ -7842,7 +7842,7 @@
                 "category": "Annihilation",
                 "party": "Democratic",
                 "code": "D_ANNIHILATION",
-                "color": "#08306b"
+                "color": "#08519c"
               },
               "all_parties": {
                 "DEM": 1283,
@@ -9069,7 +9069,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 32155,
@@ -9719,7 +9719,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 2128,
@@ -9771,7 +9771,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 17064,
@@ -10135,7 +10135,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "DEM": 10794,
@@ -10473,7 +10473,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 28163,
@@ -18495,7 +18495,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "DEM": 9251,
@@ -18981,7 +18981,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 3841,
@@ -19197,7 +19197,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "DEM": 13541,
@@ -19899,7 +19899,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 2036,
@@ -20196,7 +20196,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "DEM": 3270,
@@ -20466,7 +20466,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "DEM": 11973,
@@ -31004,7 +31004,7 @@
                 "category": "Unknown",
                 "party": null,
                 "code": null,
-                "color": null
+                "color": "#f7f7f7"
               },
               "all_parties": {
                 "OTHER": 120437
@@ -31253,7 +31253,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "DEM": 6374,
@@ -33629,7 +33629,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 5594,
@@ -34070,7 +34070,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 32849,
@@ -35987,7 +35987,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 8431,
@@ -36561,7 +36561,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 3659,
@@ -36723,7 +36723,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "DEM": 64389,
@@ -37425,7 +37425,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "DEM": 2862,
@@ -47973,7 +47973,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "DEM": 4420,
@@ -61823,7 +61823,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "OTHER": 23,
@@ -62066,7 +62066,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "OTHER": 123,
@@ -62120,7 +62120,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 2713,
@@ -62822,7 +62822,7 @@
                 "category": "Annihilation",
                 "party": "Democratic",
                 "code": "D_ANNIHILATION",
-                "color": "#08306b"
+                "color": "#08519c"
               },
               "all_parties": {
                 "OTHER": 5,
@@ -62876,7 +62876,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "OTHER": 2,
@@ -62903,7 +62903,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "OTHER": 156,
@@ -63065,7 +63065,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "OTHER": 66,
@@ -63551,7 +63551,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "OTHER": 16,
@@ -63713,7 +63713,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "OTHER": 72,
@@ -65252,7 +65252,7 @@
                 "category": "Likely",
                 "party": "Republican",
                 "code": "R_LIKELY",
-                "color": "#fb6a4a"
+                "color": "#fcae91"
               },
               "all_parties": {
                 "REP": 2675,
@@ -65564,7 +65564,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "REP": 54597,
@@ -66318,7 +66318,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "REP": 17877,
@@ -67467,7 +67467,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "LIB": 156,
@@ -67701,7 +67701,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "LIB": 224,
@@ -68975,7 +68975,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "LIB": 1630,
@@ -69235,7 +69235,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "LIB": 2388,
@@ -89992,7 +89992,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "REP": 53819,
@@ -90154,7 +90154,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "REP": 17105,
@@ -90748,7 +90748,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "DEM": 149248,
@@ -91261,7 +91261,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "OTHER": 7289,
@@ -91342,7 +91342,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "LIB": 1355,
@@ -91558,7 +91558,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "LIB": 683,
@@ -91774,7 +91774,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "REP": 26830,
@@ -92609,7 +92609,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 22370,
@@ -94195,7 +94195,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 9087,
@@ -94637,7 +94637,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 6749,
@@ -129111,7 +129111,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "CST": 218,
@@ -129300,7 +129300,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "LIB": 96,
@@ -129948,7 +129948,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "CST": 96,
@@ -130056,7 +130056,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "LIB": 1371,
@@ -152432,7 +152432,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "OTHER": 52,
@@ -153525,7 +153525,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "LIB": 399,
@@ -153579,7 +153579,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "CST": 1636,
@@ -153714,7 +153714,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "REP": 28492,
@@ -154173,7 +154173,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "LIB": 506,
@@ -154578,7 +154578,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "REP": 1315,
@@ -154848,7 +154848,7 @@
                 "category": "Tilt",
                 "party": "Republican",
                 "code": "R_TILT",
-                "color": "#fee8c8"
+                "color": "#f7f7f7"
               },
               "all_parties": {
                 "CST": 160,
@@ -154902,7 +154902,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "CST": 5440,
@@ -171134,7 +171134,7 @@
                 "category": "Likely",
                 "party": "Republican",
                 "code": "R_LIKELY",
-                "color": "#fb6a4a"
+                "color": "#fcae91"
               },
               "all_parties": {
                 "OTHER": 6,
@@ -171526,7 +171526,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "OTHER": 30,
@@ -172954,7 +172954,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 2091,
@@ -173682,7 +173682,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "GRE": 260,
@@ -174399,7 +174399,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "LIB": 91,
@@ -175236,7 +175236,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 2045,
@@ -175317,7 +175317,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "LIB": 999,
@@ -175614,7 +175614,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "LIB": 92,
@@ -176316,7 +176316,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "LIB": 13205,
@@ -176397,7 +176397,7 @@
                 "category": "Safe",
                 "party": "Democratic",
                 "code": "D_SAFE",
-                "color": "#6baed6"
+                "color": "#9ecae1"
               },
               "all_parties": {
                 "DEM": 17136,
@@ -178989,7 +178989,7 @@
                 "category": "Likely",
                 "party": "Democratic",
                 "code": "D_LIKELY",
-                "color": "#9ecae1"
+                "color": "#c6dbef"
               },
               "all_parties": {
                 "DEM": 20782,
@@ -180499,7 +180499,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "LIB": 549,
@@ -180603,7 +180603,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "LIB": 16011,
@@ -181123,7 +181123,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "DEM": 21410,
@@ -184699,7 +184699,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 2856,
@@ -184777,7 +184777,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "DEM": 8784,
@@ -185479,7 +185479,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "DEM": 46773,
@@ -185947,7 +185947,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "LIB": 171,
@@ -186415,7 +186415,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "LIB": 250,
@@ -189569,7 +189569,7 @@
                 "category": "Annihilation",
                 "party": "Democratic",
                 "code": "D_ANNIHILATION",
-                "color": "#08306b"
+                "color": "#08519c"
               },
               "all_parties": {
                 "GRE": 1559,
@@ -189737,7 +189737,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "REP": 6279,
@@ -189793,7 +189793,7 @@
                 "category": "Dominant",
                 "party": "Democratic",
                 "code": "D_DOMINANT",
-                "color": "#08519c"
+                "color": "#3182bd"
               },
               "all_parties": {
                 "CST": 461,
@@ -189933,7 +189933,7 @@
                 "category": "Stronghold",
                 "party": "Republican",
                 "code": "R_STRONGHOLD",
-                "color": "#cb181d"
+                "color": "#ef3b2c"
               },
               "all_parties": {
                 "CST": 187,
@@ -190409,7 +190409,7 @@
                 "category": "Annihilation",
                 "party": "Democratic",
                 "code": "D_ANNIHILATION",
-                "color": "#08306b"
+                "color": "#08519c"
               },
               "all_parties": {
                 "CST": 2635,
@@ -190577,7 +190577,7 @@
                 "category": "Stronghold",
                 "party": "Democratic",
                 "code": "D_STRONGHOLD",
-                "color": "#3182bd"
+                "color": "#6baed6"
               },
               "all_parties": {
                 "LIB": 744,
@@ -191361,7 +191361,7 @@
                 "category": "Safe",
                 "party": "Republican",
                 "code": "R_SAFE",
-                "color": "#ef3b2c"
+                "color": "#fb6a4a"
               },
               "all_parties": {
                 "LIB": 396,
@@ -191529,7 +191529,7 @@
                 "category": "Dominant",
                 "party": "Republican",
                 "code": "R_DOMINANT",
-                "color": "#a50f15"
+                "color": "#cb181d"
               },
               "all_parties": {
                 "CST": 380,
@@ -191977,7 +191977,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "LIB": 1071,
@@ -192033,7 +192033,7 @@
                 "category": "Annihilation",
                 "party": "Republican",
                 "code": "R_ANNIHILATION",
-                "color": "#67000d"
+                "color": "#a50f15"
               },
               "all_parties": {
                 "REP": 13287,

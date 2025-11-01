@@ -3230,11 +3230,20 @@ function filterValidContests(contests) {
       let countiesProcessed = 0;
       
       Object.entries(contestData.results).forEach(([countyName, countyResult]) => {
-        if (!countyResult.competitiveness || !countyResult.competitiveness.color) {
-          return; // Skip counties without competitiveness data
-        }
+        // Compute color on-the-fly using margin data to ensure consistency
+        const demVotes = countyResult.dem_votes || 0;
+        const repVotes = countyResult.rep_votes || 0;
+        const totalVotes = countyResult.total_votes || countyResult.two_party_total || (demVotes + repVotes);
         
-        const color = countyResult.competitiveness.color;
+        if (totalVotes === 0) return; // Skip counties with no votes
+        
+        const demPct = (demVotes / totalVotes) * 100;
+        const repPct = (repVotes / totalVotes) * 100;
+        const marginPct = Math.abs(repPct - demPct);
+        const winner = repPct > demPct ? 'R' : 'D';
+        
+        // Use categoryColorForMargin for consistent colors
+        const color = categoryColorForMargin(marginPct, winner);
         
         // Match county names (Tennessee uses uppercase in data, proper case in GeoJSON)
         // Tennessee data: "ANDERSON", GeoJSON: "Anderson" 

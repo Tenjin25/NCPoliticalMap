@@ -277,6 +277,8 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
   - If you prefer explicit state scoping for the statewide panel (e.g., only show statewide results for NC when `currentContest.data.state === 'NC'`), we can add a strict whitelist check — currently the unified UI favors display-but-hide-out-of-state labels by default.
 
   If you'd like, I can also add a short example JSON file for a judicial contest to the `examples/` folder and update the migration scripts to validate candidate arrays on ingest.
+### November 13, 2025
+- Fixed the 2018 Supreme Court election aggregation logic so that the Anglin votes are counted as other candidates instead of being merged with Jackson's. Chris Anglin was the other "republican" in that race, and it wasn't being aggregated correctly before I caught the discrepancy, cross-referencing it with Wikipedia and Ballotpedia.
 
 ## FAQ
 
@@ -317,6 +319,7 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
 
 
 

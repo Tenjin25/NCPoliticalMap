@@ -304,7 +304,6 @@ A: The map works best in Chrome, Firefox, Edge, and Safari. For optimal performa
 - Enable user-submitted corrections and feedback directly in the app
 
 ## Community & Social Links
-- Project website: https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html
 - Contact: Shamard415@gmail.com
 
 ## Demo Video
@@ -319,6 +318,7 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
 
 
 

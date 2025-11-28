@@ -57,40 +57,29 @@ Universities are encouraged to integrate the map into their curriculum and resea
 - **Tossup Category:** In very close contests, the statewide section displays `Tossup (Democratic Win)` or `Tossup (Republican Win)` to clarify the winning party.
 - **Improved Error Handling:** Reference errors and duplicate variable declarations in the results logic have been resolved for robust operation.
 
-## Live Demo & Screenshots
-See a preview of the interactive map below.  
-![Map Screenshot](Screenshots/preview.png)
-
-<p align="center">
-  <a href="https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html" target="_blank">
-    <img src="https://img.shields.io/badge/LIVE%20DEMO-Click%20Here-brightgreen?style=for-the-badge&logo=mapbox" alt="Live Demo Button">
-  </a>
-</p>
-
-**Please Note:** The version on this GitHub Pages site is a static preview of the latest update. For the complete, up-to-date interactive experience with the full dataset, please use the **Live Demo** link above.
-
 ### Screenshots
-
+**V2 Layout**
+![Map Screenshot](Screenshots/V2_Preview.png)
 **Statewide County Map**
-![Statewide County Map](Screenshots/County_Map.png)
+![Statewide County Map](Screenshots/V2_CountyMap.png)
 
 **Main Controls Panel**
-![Main Controls Panel](Screenshots/screenshot_controls_panel.png)
+![Main Controls Panel](Screenshots/V2_ControlPanel.png)
 
 **Political Categories Legend**
-![Political Categories Legend](Screenshots/screenshot_legend.png)
+![Political Categories Legend](Screenshots/V2_Legend.png)
 
 **County Details Sidebar**
-![County Details Sidebar](Screenshots/Updated_County_Details.png)
+![County Details Sidebar](Screenshots/V2_CountySidebar.png)
 
 **County Zoom**
-![County Zoom](Screenshots/Updated_Robeson_Zoom.png)
+![County Zoom](Screenshots/V2_RobesonZoom.png)
 
 **Thermometer Bar**
-![Thermometer Bar](Screenshots/Thermometer_Bar.png)
+![Thermometer Bar](Screenshots/V2_ThermometerBar.png)
 
 **Updated Layout**
-![Updated Layout](Screenshots/UpdatedLayout.png)
+![Updated Layout](Screenshots/V2_Layout.png)
 
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).
@@ -318,6 +307,7 @@ The interactive map includes built-in social sharing buttons. Users can easily s
 - Direct link (copy to clipboard)
 
 These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
 
 
 

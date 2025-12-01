@@ -1,0 +1,327 @@
+# NC Political Realignment Map (2000-2024)
+NC Political Realignment Map (2000-2024) is a comprehensive, interactive web application for visualizing North Carolina’s county and precinct-level election results and trends. Leveraging Mapbox GL JS and robust Python data processing, the map enables users to explore political shifts, contest outcomes, and competitiveness across multiple election cycles. Features include dynamic swing arrow visualizations, detailed county analysis, and color-coded categories for quick insight into partisan margins. The intuitive sidebar and controls make it easy to compare contests, investigate realignment, and understand the evolving political landscape. This project is designed for researchers, journalists, and citizens interested in North Carolina’s electoral history and future.
+
+**This project is an interactive visualization of North Carolina's political trends from 2000 to 2024, showing county-level and precinct-level voting patterns. It uses Mapbox GL JS for map rendering and Python scripts for data merging and normalization.**
+
+## Academic & Research Applications
+
+This project is ideal for use in university courses, research projects, and outreach initiatives focused on political science, data analysis, geography, and North Carolina studies. Faculty and students can leverage the interactive map and data tools for:
+
+- Classroom demonstrations of electoral trends and realignment
+- Student research projects and presentations
+- Comparative analysis of county and precinct-level voting patterns
+- Outreach and civic engagement programs
+
+## How to Cite
+
+If you use this project in research or coursework, please cite as follows:
+
+> Davis, S. (2025). NC Political Realignment Map (2008-2024). Interactive web application. https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html
+
+## Contact & Collaboration
+
+For questions, collaboration opportunities, or to request data access, contact:
+
+- Shamar Davis: [Shamard415@gmail.com]
+
+## Educational Value
+
+This tool provides a hands-on resource for exploring the evolving political landscape of North Carolina. It supports:
+
+- Data-driven learning and analysis
+- Visual storytelling in political science
+- Interdisciplinary research across geography, history, and public policy
+
+Universities are encouraged to integrate the map into their curriculum and research activities.
+
+## Features
+
+- Interactive county and precinct map
+- Sidebar with county analysis and research findings
+- Contest selection and category coloring
+- Swing arrow visualization for election comparisons
+- Robust backend data merging and normalization
+- County zoom via search bar: Quickly zoom to any county by typing its name in the sidebar search box.
+- Responsive UI controls: Minimize or expand the sidebar, legend, and main controls for a customizable layout.
+- Status panel: See real-time feedback on loading, analysis, and map actions.
+
+
+### Recent Updates (August 24,2025)
+- **Codebase Cleanup:** Removed references to missing external scripts (LoadingManager.js, AnalyticsManager.js, etc.) for improved reliability and to resolve 404 errors.
+- **Permissions-Policy Header Warnings:** If you see browser console warnings about Permissions-Policy features, these do not affect map functionality and can be ignored unless you control the server configuration.
+
+- **Statewide Margin Display:** The statewide results section now shows the winner’s last name and party abbreviation (e.g., `Obama (D) +0.34%`).
+- **Manual Candidate Overrides:** For contests like Treasurer and Auditor, manual overrides ensure the correct winner name and party are shown, even if data is ambiguous (e.g., `Boliek (R)` for 2024 Auditor, `Folwell (R)` for 2016 Treasurer).
+- **Winner Formatting:** Winner display uses the format `LastName (D)` or `LastName (R)` for clarity.
+- **Statewide Rating Format:** Statewide rating categories now use the format `Lean Republican`, `Safe Democratic`, etc., for improved readability.
+- **Tossup Category:** In very close contests, the statewide section displays `Tossup (Democratic Win)` or `Tossup (Republican Win)` to clarify the winning party.
+- **Improved Error Handling:** Reference errors and duplicate variable declarations in the results logic have been resolved for robust operation.
+
+### Screenshots
+**V2 Layout**
+![Map Screenshot](Screenshots/V2_Preview.png)
+**Statewide County Map**
+![Statewide County Map](Screenshots/V2_CountyMap.png)
+
+**Main Controls Panel**
+![Main Controls Panel](Screenshots/V2_ControlPanel.png)
+
+**Political Categories Legend**
+![Political Categories Legend](Screenshots/V2_Legend.png)
+
+**County Details Sidebar**
+![County Details Sidebar](Screenshots/V2_CountySidebar.png)
+
+**County Zoom**
+![County Zoom](Screenshots/V2_RobesonZoom.png)
+
+**Thermometer Bar**
+![Thermometer Bar](Screenshots/V2_ThermometerBar.png)
+
+**Updated Layout**
+![Updated Layout](Screenshots/V2_Layout.png)
+
+## Usage
+Open index.html in a modern web browser (or visit the live demo link above).
+Use the contest dropdown to select an election.
+Click counties on the map for detailed analysis.
+Use the +/- button in the top right to toggle the sidebar.
+
+## Data Sources
+Election data is sourced from the North Carolina State Board of Elections and other official public datasets. All data is normalized and merged for consistency.
+
+## Technologies
+- Mapbox GL JS
+- Turf.js for geospatial calculations
+- Custom JavaScript for UI and data management
+- Responsive CSS for modern look and feel
+
+## Customization & Extensibility
+You can add new contests or update results by editing the JSON data and re-running the merge script. The map and sidebar will automatically reflect new data.
+
+## Credits
+Created by Shamar Davis
+
+## Usage
+1. Open ultimate_nc_political_map_CLEAN.html in a modern web browser.
+2. Use the contest dropdown to select an election.
+3. Click counties on the map for detailed analysis.
+4. Use the +/- button in the top right to toggle the sidebar.
+
+
+## Data Preparation
+- Use the provided Python script (`merge_geojson_to_json.py`) to merge and normalize election GeoJSON files into a comprehensive JSON for frontend use.
+- Ensure county names are normalized to match frontend expectations.
+
+### Example Data Format
+Election data is stored in JSON format. Each precinct entry typically looks like:
+
+```json
+"MCDOWELL_CROOKED_CREEK": {
+	"county": "MCDOWELL",
+	"precinct": "CROOKED CREEK",
+	"results": {
+		"treasurer_2020_1": { "dem": 1234, "rep": 2345 },
+		"auditor_2020_1": { "dem": 1200, "rep": 2300 }
+	}
+}
+```
+
+## Adding or Updating Contest Data
+To add missing county results (e.g., for Treasurer or Auditor):
+1. Locate the relevant JSON file (e.g., `nc_statewide_precinct_comprehensive_2008_2024_UPDATED_MERGED.json`).
+2. Find the precinct entry for the county (e.g., `MCDOWELL_CROOKED_CREEK`).
+3. Add or update the contest results under the `results` key, matching the format above.
+4. Save the file and re-run the merge/normalization script if needed.
+
+
+## Troubleshooting
+- If you see 404 errors for missing scripts (e.g., LoadingManager.js, AnalyticsManager.js, SocialShare.js, MobileWarning.js), these have been removed from the codebase for improved reliability. No action is needed unless you plan to restore those features.
+- Permissions-Policy header warnings in the browser console are informational and do not affect the map's operation.
+- If county names do not match, check for normalization issues (e.g., spelling, capitalization).
+- If the map does not display new data, ensure the JSON structure matches the example above.
+- For script errors, verify Python dependencies and file paths.
+- If you previously had missing contest data (e.g., McDowell County State Auditor 2024), verify updates by checking the JSON file directly or viewing the data on your FTP server. Successfully added and verified data will appear in the map and analysis features.
+
+## Contributing & Reporting Issues
+Contributions are welcome! To report issues or suggest improvements:
+- Open an issue on the project repository.
+- Include details about the problem, steps to reproduce, and any relevant data or screenshots.
+- For data corrections, specify the county, contest, and year affected.
+
+## Political Categories Explained
+
+The map uses color-coded categories to represent the competitiveness and margin of victory in each county or precinct. These categories are:
+
+- **Annihilation (40%+ margin):** One party wins by more than 40 percentage points. Indicates a landslide victory and a safe stronghold for the winning party.
+- **Dominant (30-40% margin):** One party wins by 30-40 percentage points. Still a very safe seat, but slightly less extreme than Annihilation.
+- **Stronghold (20-30% margin):** One party wins by 20-30 percentage points. A reliably safe county or precinct for the winning party.
+- **Safe (10-20% margin):** One party wins by 10-20 percentage points. The area is considered safe, but not impenetrable.
+- **Likely (5.5-10% margin):** The winning party has a clear advantage, but the area could become competitive under the right circumstances.
+- **Lean (1-5.5% margin):** The area is competitive, with a modest advantage for the winning party.
+- **Tilt (0.5-1% margin):** The area is extremely competitive, with only a slight edge for the winner.
+- **Tossup (±0.5% margin):** The margin is less than half a percentage point, indicating a true battleground with no clear favorite.
+
+These categories help users quickly identify which areas are safe for each party, which are competitive, and where political realignment is occurring.
+
+## Notable Political Realignments (2008–2024)
+
+Over the past 16–17 years, North Carolina has experienced significant political shifts at the county level, with especially notable realignments in rural and suburban areas. This map highlights key realignments, including:
+
+- **Rural counties that shifted from reliably Democratic to Republican, or vice versa, in major statewide or national elections.**  
+  Examples: Robeson County (Democratic to Republican), Bladen County (Democratic to Republican), Surry County (Republican stronghold).
+
+- **Suburban regions that have become more competitive, moving from “Safe” or “Stronghold” status to “Lean,” “Tilt,” or “Tossup.”**  
+  Examples: Johnston County (suburban growth, especially in the Clayton area), Cabarrus County (shift toward battleground status due to Charlotte spillover), Union County (stagnant, has barely moved and its Republican lean may have been reinforced even with all of the growth in communities such as Indian Trail and Monroe).
+
+- **Notable swings in voter turnout or partisan margins, particularly in areas experiencing demographic change or suburban growth.**  
+  Examples: Wake County (suburban Democratic gains), Mecklenburg County (urban/suburban Democratic consolidation).
+
+- **Emerging battleground counties where margins have narrowed considerably, reflecting evolving political attitudes and population shifts.**  
+  Examples: New Hanover County (swing county), Pitt County (competitive margins), Craven County (narrowing margins since 2008), Alamance County (stagnant but more competitive).
+
+For further research and verification, users are encouraged to cross-reference county-level trends and election results with Ballotpedia’s comprehensive coverage of North Carolina elections and local politics: https://ballotpedia.org/North_Carolina
+
+These realignments are visualized through dynamic swing arrows and color-coded categories, allowing users to explore how North Carolina’s political landscape has evolved since 2008.
+
+## Attribution
+This project was developed by Shamar Davis (90%) with the assistance of GitHub Copilot, an AI-powered coding assistant by Microsoft (10%).
+
+## License
+
+This project is licensed under the Apache License, Version 2.0. You may use, modify, and distribute the code, including for commercial purposes, as long as you comply with the terms of the license. See the LICENSE file for full details.
+
+Copyright 2025 Shamar Davis
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Percentage Display Method
+
+All election result percentages shown in the sidebar are rounded to two decimal places using standard rounding (e.g., 53.47%). This matches the convention used by Ballotpedia and most official sources. No truncation is applied—values are rounded to the nearest hundredth for clarity and consistency.
+
+If you compare results with Ballotpedia, you should see matching percentages for each county and precinct.
+
+> **Note:** Truncation of percentages was briefly tested, but the map now uses standard rounding to two decimal places for all sidebar results, matching Ballotpedia's convention. This ensures consistency with official sources and a familiar presentation for users.
+
+## Data Accuracy & Limitations
+
+While every effort has been made to ensure the accuracy of county and precinct-level results, some limitations may exist:
+- Occasional missing precincts or contests due to incomplete public datasets
+- Historical changes in county or precinct boundaries
+- Data normalization challenges when merging sources
+- Minor discrepancies may occur when comparing with other sources due to rounding conventions or updates
+
+## Comparison Guidance
+
+Users can compare map results with Ballotpedia or official state sources. Small differences may arise from rounding, data updates, or normalization. For best results, cross-reference contest, year, and county/precinct names.
+
+## User Feedback & Feature Requests
+
+Feedback is welcome! If you spot discrepancies, want to request additional contests/years, or suggest new features, please open an issue or contact the author directly.
+
+## Accessibility & Browser Support
+
+The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supports keyboard navigation and screen readers for improved accessibility. For best performance, use the latest browser version.
+
+## Update Log / Changelog
+
+- **Early July 2025:** Initial release of interactive map and county/precinct analysis features
+- **Early July 2025:** Added dynamic swing arrow visualizations and color-coded competitiveness categories
+- **Mid July 2025:** Added Ballotpedia reference and expanded realignment examples in README
+- **Late July 2025:** Added dynamic swing arrow visualizations and color-coded competitiveness categories
+- **Mid August 2025:** Improved sidebar UI to show more decimal precision for results
+- **August 24, 2025:** Switched sidebar percentage display from truncation to standard rounding (matches Ballotpedia)
+- **August 23, 2025:** Adjusted map layer opacity for improved visual clarity and accessibility
+- **October 8, 2025** Implemented a thermometer bar for better statewide results visualization and moved the color legend to the bottom left corner for better sidebar visibility
+- **October 23, 2025 — New UI Launched**
+  - **Major UI Overhaul:** The project has moved to a new, modern user interface for improved usability and performance. The sidebar, county search, and statewide results sections have been redesigned for clarity and speed.
+   - **Migration Complete:** All features from the previous version have been migrated and enhanced, minus the precincts.
+   - **Ready for Launch:** The new UI is now live and ready for public use.
+
+  ### October 23, 2025 — Judicial Races & UI Unification
+  - **Introducing Judicial Races:** The frontend now supports judicial contests (state and appellate-level) with dedicated sidebar rendering and data handling. 
+    - **Current Implementation:** All judicial races added so far are partisan, showing candidate names and party abbreviations in the sidebar and statewide panel. 
+    - If contest metadata includes a `nonpartisan` flag, the sidebar will omit party abbreviations and use candidate names only (nonpartisan support is available for future contests).
+    - Handles multi-candidate judicial contests (non-binary outcomes) and displays candidate vote totals and percentages in the county sidebar.
+    - Aggregates county totals for statewide judicial contests and displays a sortable candidate table in the statewide panel.
+    - Expected data shape: contest entries should include an array/object of candidates with vote totals e.g. `{ "candidates": [{"name":"Jane Doe","party":"D","votes":1234}, ...], "nonpartisan": false }`.
+
+  - **Unified v2 (FL) UI Across Maps:** The v2 UI originally implemented for the FL map has been standardized across the other maps in this repo (NC, TN, GA, etc.). This unification includes:
+    - A single, consistent sidebar layout (county details, statewide panel, search) and shared CSS variables for colors and spacing.
+    - The same county search/autocomplete helper and normalized name-matching logic to ensure consistent behavior across maps.
+    - Consistent zoom/fit behavior using `map.fitBounds` with defensive fallbacks and a shared `zoomToCounty` helper.
+    - Shared accessibility improvements (ARIA roles, keyboard focus handling) and performance optimizations (deferred init, requestIdleCallback where available).
+
+  Migration notes and data compatibility
+  - If you maintain separate state-specific JSON files, ensure judicial contest records follow the candidate-array format above.
+  - Small field-name differences across old and new data were reconciled in the merge scripts; however, when adding new judicial contests please follow the example format for predictable rendering.
+  - If you prefer explicit state scoping for the statewide panel (e.g., only show statewide results for NC when `currentContest.data.state === 'NC'`), we can add a strict whitelist check — currently the unified UI favors display-but-hide-out-of-state labels by default.
+
+  If you'd like, I can also add a short example JSON file for a judicial contest to the `examples/` folder and update the migration scripts to validate candidate arrays on ingest.
+### November 13, 2025
+- Fixed the 2018 Supreme Court election aggregation logic so that Chris Anglin's votes are counted as "other" instead of being merged with Barbara Jackson's votes. Chris Anglin ran as a Republican in that race (though he was a registered Democrat), and the aggregation was incorrectly treating him as the Republican candidate before this fix. The correction was verified by cross-referencing with Wikipedia and Ballotpedia.
+
+### November 30, 2025
+- **Extended Historical Data:** Added election results dating back to 2000, expanding the map's coverage to 24+ years of North Carolina political history. This allows users to explore longer-term realignment trends and compare contests across a broader timespan. Notably, the 2000 and 2004 presidential elections were the last contests where North Carolina was won by double digits, and some urban counties (such as Wake and Mecklenburg) still voted Republican for president—highlighting the dramatic political shifts that have occurred since then.
+- **Refined Margin Criteria:** Updated competitiveness categories and margin thresholds for improved accuracy and consistency with national standards. The new criteria provide more nuanced classification of county-level competitiveness, making it easier to identify true battlegrounds and safe seats.
+- **Data Quality Improvements:** Enhanced data normalization and validation for contests from 2000-2008, ensuring consistent formatting and accurate candidate/party attribution across all years.
+- **UI Bug Fixes:** Fixed issue where county sidebar would go blank when minimized and reopened, ensuring county details persist correctly across UI state changes.
+- **UI Enhancements:** Improved county analysis sidebar to handle edge cases in older contests, including better handling of third-party candidates and write-in votes.
+
+## FAQ
+
+**Q: Why do some counties or precincts show missing data?**
+A: Data gaps may result from incomplete public datasets or historical changes in boundaries. See the Data Accuracy section for details.
+
+**Q: How do I compare results with Ballotpedia?**
+A: All sidebar percentages use standard rounding to two decimal places, matching Ballotpedia. Cross-reference contest, year, and county/precinct names for best results.
+
+**Q: What browsers are supported?**
+A: The map works best in Chrome, Firefox, Edge, and Safari. For optimal performance, use the latest version.
+
+## Performance Tips
+- For best experience, use a modern computer and a high-speed internet connection.
+- If the map loads slowly, try refreshing or clearing your browser cache.
+- Mobile devices are supported, but desktop browsers offer the best performance and full feature set.
+
+## Future Roadmap
+- Add support for additional election years and contests
+- Enhance precinct-level analysis and visualizations
+- Integrate demographic overlays and turnout trends
+- Improve accessibility and mobile experience
+- Enable user-submitted corrections and feedback directly in the app
+
+## Community & Social Links
+- Contact: Shamard415@gmail.com
+
+## Demo Video
+A short walkthrough video will be available soon to help new users explore the map and sidebar features.
+
+## Social Sharing Options
+
+The interactive map includes built-in social sharing buttons. Users can easily share their current map view or analysis via:
+- Twitter (X)
+- Facebook
+- Email
+- Direct link (copy to clipboard)
+
+These options are available in between the sidebar and main controls panel. Shared links preserve your selected contest, county, and zoom level for easy collaboration and discussion.
+
+
+
+
+
+
+
+
+
+
+

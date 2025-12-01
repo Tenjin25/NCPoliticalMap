@@ -159,15 +159,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <meta charset='utf-8'>
-  <title>NC Political Realignment Map (2008-2024)</title>
+  <title>NC Political Realignment Map (2000-2024)</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'>
-  <meta property="og:title" content="NC Political Realignment Map (2008-2024)">
-  <meta property="og:description" content="Interactive visualization of North Carolina's political trends from 2008 to 2024, showing county-level voting patterns.">
+  <meta property="og:title" content="NC Political Realignment Map (2000-2024)">
+  <meta property="og:description" content="Interactive visualization of North Carolina's political trends from 2000 to 2024, showing county-level voting patterns.">
   <meta property="og:image" content="preview.png">
   <meta name="twitter:card" content="summary_large_image">
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet'>
-    <style>
-html, body {
+        <style>
+
+{
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -1138,10 +1139,25 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
             const contestName = (contest && contest.contest_name) || contestKey;
             
             // Skip nonpartisan judicial races (no DEM or REP candidates)
+            // NOTE: previously this checked only the first county and could skip
+            // contests where the first county was nonpartisan even though other
+            // counties had partisan data. Use any() over counties to ensure we
+            // only skip truly nonpartisan contests.
             if (cat === 'judicial' && contest && contest.results) {
-              const sampleCounty = Object.values(contest.results)[0];
-              if (sampleCounty && !sampleCounty.dem_candidate && !sampleCounty.rep_candidate) {
-                return; // Skip this contest
+              const counties = Object.values(contest.results || {});
+              const hasPartisan = counties.some(c => c && (c.dem_candidate || c.rep_candidate));
+              if (!hasPartisan) {
+                return; // Skip this contest (all counties nonpartisan)
+              }
+            }
+            
+            // Skip unopposed contests (only one party has candidates)
+            if (contest && contest.results) {
+              const counties = Object.values(contest.results || {});
+              const hasDem = counties.some(c => c && c.dem_candidate);
+              const hasRep = counties.some(c => c && c.rep_candidate);
+              if (!hasDem || !hasRep) {
+                return; // Skip unopposed contests
               }
             }
             
@@ -1241,15 +1257,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         function buildGranularContestDropdown() {
           const sel = document.getElementById('contestSelect');
           sel.innerHTML = '<option value="">Select a contest...</option>';
-          // Swap only NC Supreme Court and Court of Appeals order, keep all others in original order
-          const officeLabels = Object.keys(groupedByOffice);
-          const labels = officeLabels.slice();
-          const scIdx = labels.indexOf('NC Supreme Court');
-          const caIdx = labels.indexOf('Court of Appeals');
-          if (scIdx !== -1 && caIdx !== -1 && scIdx > caIdx) {
-            // If Supreme Court comes after Court of Appeals, swap them
-            [labels[scIdx], labels[caIdx]] = [labels[caIdx], labels[scIdx]];
-          }
+          // Use allowedOffices order to maintain consistent dropdown grouping
+          const labels = allowedOffices.filter(office => groupedByOffice[office]);
           labels.forEach(officeLabel => {
             const contests = groupedByOffice[officeLabel];
             const og = document.createElement('optgroup');

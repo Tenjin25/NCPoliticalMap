@@ -1136,6 +1136,15 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           Object.keys(contests).forEach(contestKey => {
             const contest = contests[contestKey];
             const contestName = (contest && contest.contest_name) || contestKey;
+            
+            // Skip nonpartisan judicial races (no DEM or REP candidates)
+            if (cat === 'judicial' && contest && contest.results) {
+              const sampleCounty = Object.values(contest.results)[0];
+              if (sampleCounty && !sampleCounty.dem_candidate && !sampleCounty.rep_candidate) {
+                return; // Skip this contest
+              }
+            }
+            
             // Normalize office label
             let officeLabel = contestName;
             const shortMap = {
@@ -1889,19 +1898,19 @@ function toggleSidebar() {
         let countyCompLabel = '';
         const roundedMargin = Math.round(marginPct * 100) / 100;
         if (roundedMargin >= 40) {
-          countyCompLabel = winner === 'Republican' ? "Annihilation Republican (40%+)" : "Annihilation Democratic (40%+)";
+          countyCompLabel = winner === 'Republican' ? "Annihilation Republican" : "Annihilation Democratic";
         } else if (roundedMargin >= 30) {
-          countyCompLabel = winner === 'Republican' ? "Dominant Republican (30-39.99%)" : "Dominant Democratic (30-39.99%)";
+          countyCompLabel = winner === 'Republican' ? "Dominant Republican" : "Dominant Democratic";
         } else if (roundedMargin >= 20) {
-          countyCompLabel = winner === 'Republican' ? "Stronghold Republican (20-29.99%)" : "Stronghold Democratic (20-29.99%)";
+          countyCompLabel = winner === 'Republican' ? "Stronghold Republican" : "Stronghold Democratic";
         } else if (roundedMargin >= 10) {
-          countyCompLabel = winner === 'Republican' ? "Safe Republican (10-19.99%)" : "Safe Democratic (10-19.99%)";
+          countyCompLabel = winner === 'Republican' ? "Safe Republican" : "Safe Democratic";
         } else if (roundedMargin >= 5.5) {
-          countyCompLabel = winner === 'Republican' ? "Likely Republican (5.51-9.99%)" : "Likely Democratic (5.51-9.99%)";
+          countyCompLabel = winner === 'Republican' ? "Likely Republican" : "Likely Democratic";
         } else if (roundedMargin >= 1) {
-          countyCompLabel = winner === 'Republican' ? "Lean Republican (1-5.5%)" : "Lean Democratic (1-5.5%)";
+          countyCompLabel = winner === 'Republican' ? "Lean Republican" : "Lean Democratic";
         } else if (roundedMargin >= 0.5) {
-          countyCompLabel = winner === 'Republican' ? "Tilt Republican (0.51-0.99%)" : "Tilt Democratic (0.51-0.99%)";
+          countyCompLabel = winner === 'Republican' ? "Tilt Republican" : "Tilt Democratic";
         } else {
           countyCompLabel = winner === 'Democratic' ? 'Tossup (Democratic Win)' : (winner === 'Republican' ? 'Tossup (Republican Win)' : 'Tossup (Tie)');
         }

@@ -279,6 +279,26 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
 ### December 1, 2025
 - **Critical Data Fix: Phil Berger Jr. Judicial Races:** Corrected a CSV parsing bug that affected 2016 Court of Appeals Judge and 2020 Supreme Court Associate Justice Seat 02 races. The bug was caused by unquoted commas in candidate names (e.g., "Phil Berger, Jr."), which shifted column data and resulted in incorrect vote totals. The aggregation script now detects column shifts and reads votes from the correct columns. Phil Berger Jr. now correctly shows as the winner in both races across all 100 NC counties, with proper vote totals (e.g., Alamance County: 37,431 votes instead of the previously incorrect 216 votes). This fix ensures accurate judicial race data and competitive ratings throughout the map.
 
+### December 2, 2025
+- **New Consolidated County Dataset (2000-2024):** Created `county_level_election_results_2000_2024.json`, a comprehensive county-level dataset that consolidates all presidential, gubernatorial, US Senate, Council of State, and judicial elections from 2000-2024. This replaces the previous precinct-level format for improved performance and simpler frontend integration. The dataset includes:
+  - All 100 NC counties with consistent naming and structure
+  - Full candidate vote totals, percentages, and margins for each contest
+  - Computed Democratic/Republican/Other vote aggregations
+  - Competitiveness ratings and margin categories
+  - Metadata for each contest including display names and office types
+- **Simplified Data Pipeline:** Updated aggregation workflow to produce county-level results directly from cleaned CSV files, with file filtering to prevent double-counting (particularly for 2012 data). This ensures accurate statewide totals and margins that match official sources.
+- **Data Validation:** Confirmed statewide totals for all major contests align with Wikipedia and Ballotpedia references, with proper handling of third-party candidates and write-ins.
+
+### December 2, 2025
+- **New Consolidated County Dataset (2000-2024):** Created `county_level_election_results_2000_2024.json`, a comprehensive county-level dataset that consolidates all presidential, gubernatorial, US Senate, Council of State, and judicial elections from 2000-2024. This replaces the previous precinct-level format for improved performance and simpler frontend integration. The dataset includes:
+  - All 100 NC counties with consistent naming and structure
+  - Full candidate vote totals, percentages, and margins for each contest
+  - Computed Democratic/Republican/Other vote aggregations
+  - Competitiveness ratings and margin categories
+  - Metadata for each contest including display names and office types
+- **Simplified Data Pipeline:** Updated aggregation workflow to produce county-level results directly from cleaned CSV files, with file filtering to prevent double-counting (particularly for 2012 data). This ensures accurate statewide totals and margins that match official sources.
+- **Data Validation:** Confirmed statewide totals for all major contests align with Wikipedia and Ballotpedia references, with proper handling of third-party candidates and write-ins.
+
 ## FAQ
 
 **Q: Why do some counties or precincts show missing data?**

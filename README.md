@@ -276,6 +276,9 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
 - **UI Bug Fixes:** Fixed issue where county sidebar would go blank when minimized and reopened, ensuring county details persist correctly across UI state changes.
 - **UI Enhancements:** Improved county analysis sidebar to handle edge cases in older contests, including better handling of third-party candidates and write-in votes.
 
+### December 1, 2025
+- **Critical Data Fix: Phil Berger Jr. Judicial Races:** Corrected a CSV parsing bug that affected 2016 Court of Appeals Judge and 2020 Supreme Court Associate Justice Seat 02 races. The bug was caused by unquoted commas in candidate names (e.g., "Phil Berger, Jr."), which shifted column data and resulted in incorrect vote totals. The aggregation script now detects column shifts and reads votes from the correct columns. Phil Berger Jr. now correctly shows as the winner in both races across all 100 NC counties, with proper vote totals (e.g., Alamance County: 37,431 votes instead of the previously incorrect 216 votes). This fix ensures accurate judicial race data and competitive ratings throughout the map.
+
 ## FAQ
 
 **Q: Why do some counties or precincts show missing data?**

@@ -293,7 +293,7 @@ The interactive map's county-level data reveals:
 - **36 counties flipped from Republican to Democratic** in presidential races between 2000 and 2024 (mostly urban/suburban)
 - **48 counties moved further Republican** over the same period (mostly rural)
 - **16 counties remain true swing counties**, with margins of 5% or less in multiple recent cycles
-- **Statewide presidential margins have narrowed** from R+12.78 (2000) to R+1.35 (2020) to R+3.32 (2024), reflecting growing Democratic strength but not yet a Democratic majority
+- **Statewide presidential margins have narrowed** from R+12.78 (2000) to R+1.35 (2020) to R+3.21 (2024), reflecting growing Democratic strength but not yet a Democratic majority
 
 ### Implications for Future Elections
 

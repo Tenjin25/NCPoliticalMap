@@ -211,7 +211,7 @@ def is_desired_contest(contest_name):
     return None
 
 
-def aggregate_csv_files(input_glob, output_path, existing_path=None):
+def aggregate_csv_files(input_glob, output_path, existing_path=None, include_judicial_pre2018=False):
     files = glob.glob(input_glob)
     # For 2012, only use the one intended clean file to avoid double-counting
     filtered_files = []
@@ -263,8 +263,8 @@ def aggregate_csv_files(input_glob, output_path, existing_path=None):
                     continue
                 # Only include targeted contests
                 group = is_desired_contest(contest)
-                # Exclude judicial races before 2018
-                if group == 'judicial' and int(year) < 2018:
+                # Optionally exclude judicial races before 2018 (default behavior)
+                if group == 'judicial' and int(year) < 2018 and not include_judicial_pre2018:
                     continue
                 if not group:
                     unmatched_contests.add(contest)
@@ -516,8 +516,10 @@ if __name__ == '__main__':
     ap.add_argument('--existing', default='data/county_level_election_results_2008_2024.json')
     ap.add_argument('--extract-names', action='store_true', help='Extract all contest names to a text file')
     ap.add_argument('--names-output', default='all_contest_names.txt', help='Output file for contest names')
+    ap.add_argument('--include-judicial-pre2018', action='store_true',
+                    help='Include judicial contests before 2018 when aggregating')
     args = ap.parse_args()
     if args.extract_names:
         extract_all_contest_names(args.input_glob, args.names_output)
     else:
-        aggregate_csv_files(args.input_glob, args.output, args.existing)
+        aggregate_csv_files(args.input_glob, args.output, args.existing, include_judicial_pre2018=args.include_judicial_pre2018)

@@ -208,7 +208,7 @@ This result was driven by:
 2. **Suburban white-collar voters** shifting Democratic in response to the Great Recession and changing attitudes on social issues
 3. **Young voters and college-educated whites** in the Research Triangle (Raleigh-Durham-Chapel Hill) breaking decisively for Democrats
 
-However, this was a one-time phenomenon at the presidential level. Obama lost North Carolina in 2012 by **R+2.04%**, and the state voted Republican in 2016 (R+3.66%), 2020 (R+1.37%), and 2024 (R+3.26%).
+However, this was a one-time phenomenon at the presidential level. Obama lost North Carolina in 2012 by **R+2.04%**, and the state voted Republican in 2016 (R+3.66%), 2020 (R+1.37%), and 2024 (R+3.21%).
 
 ### The New Democratic Coalition: Educated Suburbanites and Urban Professionals
 

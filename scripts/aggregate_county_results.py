@@ -134,10 +134,13 @@ def slugify(name):
 def classify_margin(margin_pct):
     if margin_pct is None:
         return {'category':'Unknown','party':None,'code':None,'color':None}
-    if abs(margin_pct) <= 0.5:
+    # Tossup: strictly less than 0.50 (user requested <0.50)
+    if abs(margin_pct) < 0.5:
         return {'category':'Tossup','party':'Tossup','code':'TOSSUP','color':'#f7f7f7'}
     if margin_pct > 0:
         # Republican advantage
+        # Thresholds: 0.50-0.99 (Tilt), 1-5.49 (Lean), 5.50-9.99 (Likely),
+        # 10.00-19.99 (Safe), 20.00-29.99 (Stronghold), 30.00-39.99 (Dominant), ≥40 (Annihilation)
         for threshold, cat, color, code in COMP_MAP:
             if margin_pct >= threshold:
                 return {'category':cat, 'party':'Republican','code':code,'color':color}

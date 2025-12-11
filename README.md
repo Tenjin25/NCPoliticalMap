@@ -46,7 +46,10 @@ Universities are encouraged to integrate the map into their curriculum and resea
 - Status panel: See real-time feedback on loading, analysis, and map actions.
 
 
-### Recent Updates (August 24,2025)
+### Recent Updates (December 10, 2025)
+- **Map Opacity Enhancement:** Updated county fill opacity from 0.38 to 0.75 to match professional cartographic standards and improve visual clarity of political trends.
+
+### Previous Updates (August 24, 2025)
 - **Codebase Cleanup:** Removed references to missing external scripts (LoadingManager.js, AnalyticsManager.js, etc.) for improved reliability and to resolve 404 errors.
 - **Permissions-Policy Header Warnings:** If you see browser console warnings about Permissions-Policy features, these do not affect map functionality and can be ignored unless you control the server configuration.
 

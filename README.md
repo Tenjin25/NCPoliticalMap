@@ -64,7 +64,7 @@ Universities are encouraged to integrate the map into their curriculum and resea
 **V2 Layout**
 ![Map Screenshot](Screenshots/V2_Preview.png)
 **Statewide County Map**
-![Statewide County Map](Screenshots/V2_CountyMap.png)
+![Statewide County Map](Screenshots/V2_UpdatedOpacity.png)
 
 **Main Controls Panel**
 ![Main Controls Panel](Screenshots/V2_ControlPanel.png)

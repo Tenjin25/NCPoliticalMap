@@ -157,13 +157,13 @@ Contributions are welcome! To report issues or suggest improvements:
 The map uses color-coded categories to represent the competitiveness and margin of victory in each county or precinct. These categories are:
 
 - **Annihilation (40%+ margin):** One party wins by more than 40 percentage points. Indicates a landslide victory and a safe stronghold for the winning party.
-- **Dominant (30-40% margin):** One party wins by 30-40 percentage points. Still a very safe seat, but slightly less extreme than Annihilation.
-- **Stronghold (20-30% margin):** One party wins by 20-30 percentage points. A reliably safe county or precinct for the winning party.
-- **Safe (10-20% margin):** One party wins by 10-20 percentage points. The area is considered safe, but not impenetrable.
-- **Likely (5.5-10% margin):** The winning party has a clear advantage, but the area could become competitive under the right circumstances.
-- **Lean (1-5.5% margin):** The area is competitive, with a modest advantage for the winning party.
-- **Tilt (0.5-1% margin):** The area is extremely competitive, with only a slight edge for the winner.
-- **Tossup (±0.5% margin):** The margin is less than half a percentage point, indicating a true battleground with no clear favorite.
+- **Dominant (30-39.99% margin):** One party wins by 30-40 percentage points. Still a very safe seat, but slightly less extreme than Annihilation.
+- **Stronghold (20-29.99% margin):** One party wins by 20-30 percentage points. A reliably safe county or precinct for the winning party.
+- **Safe (10-19.99% margin):** One party wins by 10-20 percentage points. The area is considered safe, but not impenetrable.
+- **Likely (5.5-9.99% margin):** The winning party has a clear advantage, but the area could become competitive under the right circumstances.
+- **Lean (1-5.49% margin):** The area is competitive, with a modest advantage for the winning party.
+- **Tilt (0.5-0.99% margin):** The area is extremely competitive, with only a slight edge for the winner.
+- **Tossup (>0.5% margin):** The margin is less than half a percentage point, indicating a true battleground with no clear favorite.
 
 These categories help users quickly identify which areas are safe for each party, which are competitive, and where political realignment is occurring.
 
@@ -412,15 +412,7 @@ The map is designed for modern browsers (Chrome, Firefox, Edge, Safari) and supp
 - **Simplified Data Pipeline:** Updated aggregation workflow to produce county-level results directly from cleaned CSV files, with file filtering to prevent double-counting (particularly for 2012 data). This ensures accurate statewide totals and margins that match official sources.
 - **Data Validation:** Confirmed statewide totals for all major contests align with Wikipedia and Ballotpedia references, with proper handling of third-party candidates and write-ins.
 
-### December 2, 2025
-- **New Consolidated County Dataset (2000-2024):** Created `county_level_election_results_2000_2024.json`, a comprehensive county-level dataset that consolidates all presidential, gubernatorial, US Senate, Council of State, and judicial elections from 2000-2024. This replaces the previous precinct-level format for improved performance and simpler frontend integration. The dataset includes:
-  - All 100 NC counties with consistent naming and structure
-  - Full candidate vote totals, percentages, and margins for each contest
-  - Computed Democratic/Republican/Other vote aggregations
-  - Competitiveness ratings and margin categories
-  - Metadata for each contest including display names and office types
-- **Simplified Data Pipeline:** Updated aggregation workflow to produce county-level results directly from cleaned CSV files, with file filtering to prevent double-counting (particularly for 2012 data). This ensures accurate statewide totals and margins that match official sources.
-- **Data Validation:** Confirmed statewide totals for all major contests align with Wikipedia and Ballotpedia references, with proper handling of third-party candidates and write-ins.
+
 
 ## FAQ
 

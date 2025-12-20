@@ -70,7 +70,7 @@ Universities are encouraged to integrate the map into their curriculum and resea
 ![Main Controls Panel](Screenshots/V2_ControlPanel.png)
 
 **Political Categories Legend**
-![Political Categories Legend](Screenshots/V2_Legend.png)
+![Political Categories Legend](Screenshots/V2_UpdatedLegend.png)
 
 **County Details Sidebar**
 ![County Details Sidebar](Screenshots/V2_CountySidebar.png)

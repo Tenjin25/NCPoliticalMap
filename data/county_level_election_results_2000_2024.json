@@ -128766,12 +128766,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 30486,
-              "rep_votes": 49630,
-              "other_votes": 2080,
-              "total_votes": 82196,
-              "two_party_total": 80116,
-              "margin": 19144,
+              "dem_votes": 15243,
+              "rep_votes": 24815,
+              "other_votes": 1040,
+              "total_votes": 41098,
+              "two_party_total": 40058,
+              "margin": 9572,
               "margin_pct": 23.9,
               "winner": "REP",
               "competitiveness": {
@@ -128781,10 +128781,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 30486,
-                "REP": 49630,
-                "LIB": 2030,
-                "OTHER": 50
+                "DEM": 15243,
+                "REP": 24815,
+                "LIB": 1015,
+                "OTHER": 25
               }
             },
             "ALEXANDER": {
@@ -128793,12 +128793,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7750,
-              "rep_votes": 16464,
-              "other_votes": 630,
-              "total_votes": 24844,
-              "two_party_total": 24214,
-              "margin": 8714,
+              "dem_votes": 3875,
+              "rep_votes": 8232,
+              "other_votes": 315,
+              "total_votes": 12422,
+              "two_party_total": 12107,
+              "margin": 4357,
               "margin_pct": 35.99,
               "winner": "REP",
               "competitiveness": {
@@ -128808,10 +128808,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 7750,
-                "REP": 16464,
-                "LIB": 616,
-                "OTHER": 14
+                "DEM": 3875,
+                "REP": 8232,
+                "LIB": 308,
+                "OTHER": 7
               }
             },
             "ALLEGHANY": {
@@ -128820,12 +128820,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2780,
-              "rep_votes": 5046,
-              "other_votes": 206,
-              "total_votes": 8032,
-              "two_party_total": 7826,
-              "margin": 2266,
+              "dem_votes": 1390,
+              "rep_votes": 2523,
+              "other_votes": 103,
+              "total_votes": 4016,
+              "two_party_total": 3913,
+              "margin": 1133,
               "margin_pct": 28.95,
               "winner": "REP",
               "competitiveness": {
@@ -128835,10 +128835,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 2780,
-                "REP": 5046,
-                "LIB": 204,
-                "OTHER": 2
+                "DEM": 1390,
+                "REP": 2523,
+                "LIB": 102,
+                "OTHER": 1
               }
             },
             "ANSON": {
@@ -128847,12 +128847,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7944,
-              "rep_votes": 5218,
-              "other_votes": 158,
-              "total_votes": 13320,
-              "two_party_total": 13162,
-              "margin": -2726,
+              "dem_votes": 3972,
+              "rep_votes": 2609,
+              "other_votes": 79,
+              "total_votes": 6660,
+              "two_party_total": 6581,
+              "margin": -1363,
               "margin_pct": -20.71,
               "winner": "DEM",
               "competitiveness": {
@@ -128862,10 +128862,10 @@
                 "color": "#3182bd"
               },
               "all_parties": {
-                "DEM": 7944,
-                "REP": 5218,
-                "LIB": 154,
-                "OTHER": 4
+                "DEM": 3972,
+                "REP": 2609,
+                "LIB": 77,
+                "OTHER": 2
               }
             },
             "ASHE": {
@@ -128874,12 +128874,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6738,
-              "rep_votes": 11936,
-              "other_votes": 458,
-              "total_votes": 19132,
-              "two_party_total": 18674,
-              "margin": 5198,
+              "dem_votes": 3369,
+              "rep_votes": 5968,
+              "other_votes": 229,
+              "total_votes": 9566,
+              "two_party_total": 9337,
+              "margin": 2599,
               "margin_pct": 27.84,
               "winner": "REP",
               "competitiveness": {
@@ -128889,10 +128889,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 6738,
-                "REP": 11936,
-                "LIB": 446,
-                "OTHER": 12
+                "DEM": 3369,
+                "REP": 5968,
+                "LIB": 223,
+                "OTHER": 6
               }
             },
             "AVERY": {
@@ -128901,12 +128901,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2216,
-              "rep_votes": 7446,
-              "other_votes": 252,
-              "total_votes": 9914,
-              "two_party_total": 9662,
-              "margin": 5230,
+              "dem_votes": 1108,
+              "rep_votes": 3723,
+              "other_votes": 126,
+              "total_votes": 4957,
+              "two_party_total": 4831,
+              "margin": 2615,
               "margin_pct": 54.13,
               "winner": "REP",
               "competitiveness": {
@@ -128916,10 +128916,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 2216,
-                "REP": 7446,
-                "LIB": 246,
-                "OTHER": 6
+                "DEM": 1108,
+                "REP": 3723,
+                "LIB": 123,
+                "OTHER": 3
               }
             },
             "BEAUFORT": {
@@ -128928,12 +128928,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11876,
-              "rep_votes": 20184,
-              "other_votes": 680,
-              "total_votes": 32740,
-              "two_party_total": 32060,
-              "margin": 8308,
+              "dem_votes": 5938,
+              "rep_votes": 10092,
+              "other_votes": 340,
+              "total_votes": 16370,
+              "two_party_total": 16030,
+              "margin": 4154,
               "margin_pct": 25.91,
               "winner": "REP",
               "competitiveness": {
@@ -128943,10 +128943,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 11876,
-                "REP": 20184,
-                "LIB": 656,
-                "OTHER": 24
+                "DEM": 5938,
+                "REP": 10092,
+                "LIB": 328,
+                "OTHER": 12
               }
             },
             "BERTIE": {
@@ -128955,12 +128955,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7530,
-              "rep_votes": 5078,
-              "other_votes": 128,
-              "total_votes": 12736,
-              "two_party_total": 12608,
-              "margin": -2452,
+              "dem_votes": 3765,
+              "rep_votes": 2539,
+              "other_votes": 64,
+              "total_votes": 6368,
+              "two_party_total": 6304,
+              "margin": -1226,
               "margin_pct": -19.45,
               "winner": "DEM",
               "competitiveness": {
@@ -128970,10 +128970,10 @@
                 "color": "#6baed6"
               },
               "all_parties": {
-                "DEM": 7530,
-                "REP": 5078,
-                "LIB": 122,
-                "OTHER": 6
+                "DEM": 3765,
+                "REP": 2539,
+                "LIB": 61,
+                "OTHER": 3
               }
             },
             "BLADEN": {
@@ -128982,12 +128982,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 12748,
-              "rep_votes": 11404,
-              "other_votes": 400,
-              "total_votes": 24552,
-              "two_party_total": 24152,
-              "margin": -1344,
+              "dem_votes": 6374,
+              "rep_votes": 5702,
+              "other_votes": 200,
+              "total_votes": 12276,
+              "two_party_total": 12076,
+              "margin": -672,
               "margin_pct": -5.56,
               "winner": "DEM",
               "competitiveness": {
@@ -128997,10 +128997,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 12748,
-                "REP": 11404,
-                "LIB": 388,
-                "OTHER": 12
+                "DEM": 6374,
+                "REP": 5702,
+                "LIB": 194,
+                "OTHER": 6
               }
             },
             "BRUNSWICK": {
@@ -129009,12 +129009,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 26378,
-              "rep_votes": 51360,
-              "other_votes": 1654,
-              "total_votes": 79392,
-              "two_party_total": 77738,
-              "margin": 24982,
+              "dem_votes": 13189,
+              "rep_votes": 25680,
+              "other_votes": 827,
+              "total_votes": 39696,
+              "two_party_total": 38869,
+              "margin": 12491,
               "margin_pct": 32.14,
               "winner": "REP",
               "competitiveness": {
@@ -129024,10 +129024,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 26378,
-                "REP": 51360,
-                "LIB": 1630,
-                "OTHER": 24
+                "DEM": 13189,
+                "REP": 25680,
+                "LIB": 815,
+                "OTHER": 12
               }
             },
             "BUNCOMBE": {
@@ -129036,12 +129036,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 77392,
-              "rep_votes": 72768,
-              "other_votes": 4202,
-              "total_votes": 154362,
-              "two_party_total": 150160,
-              "margin": -4624,
+              "dem_votes": 38696,
+              "rep_votes": 36384,
+              "other_votes": 2101,
+              "total_votes": 77181,
+              "two_party_total": 75080,
+              "margin": -2312,
               "margin_pct": -3.08,
               "winner": "DEM",
               "competitiveness": {
@@ -129051,10 +129051,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 77392,
-                "REP": 72768,
-                "LIB": 4100,
-                "OTHER": 102
+                "DEM": 38696,
+                "REP": 36384,
+                "LIB": 2050,
+                "OTHER": 51
               }
             },
             "BURKE": {
@@ -129063,12 +129063,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16854,
-              "rep_votes": 27258,
-              "other_votes": 1018,
-              "total_votes": 45130,
-              "two_party_total": 44112,
-              "margin": 10404,
+              "dem_votes": 8427,
+              "rep_votes": 13629,
+              "other_votes": 509,
+              "total_votes": 22565,
+              "two_party_total": 22056,
+              "margin": 5202,
               "margin_pct": 23.59,
               "winner": "REP",
               "competitiveness": {
@@ -129078,10 +129078,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 16854,
-                "REP": 27258,
-                "LIB": 1008,
-                "OTHER": 10
+                "DEM": 8427,
+                "REP": 13629,
+                "LIB": 504,
+                "OTHER": 5
               }
             },
             "CABARRUS": {
@@ -129090,12 +129090,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 31558,
-              "rep_votes": 61028,
-              "other_votes": 2112,
-              "total_votes": 94698,
-              "two_party_total": 92586,
-              "margin": 29470,
+              "dem_votes": 15779,
+              "rep_votes": 30514,
+              "other_votes": 1056,
+              "total_votes": 47349,
+              "two_party_total": 46293,
+              "margin": 14735,
               "margin_pct": 31.83,
               "winner": "REP",
               "competitiveness": {
@@ -129105,10 +129105,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 31558,
-                "REP": 61028,
-                "LIB": 2084,
-                "OTHER": 28
+                "DEM": 15779,
+                "REP": 30514,
+                "LIB": 1042,
+                "OTHER": 14
               }
             },
             "CALDWELL": {
@@ -129117,12 +129117,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 13766,
-              "rep_votes": 28644,
-              "other_votes": 1404,
-              "total_votes": 43814,
-              "two_party_total": 42410,
-              "margin": 14878,
+              "dem_votes": 6883,
+              "rep_votes": 14322,
+              "other_votes": 702,
+              "total_votes": 21907,
+              "two_party_total": 21205,
+              "margin": 7439,
               "margin_pct": 35.08,
               "winner": "REP",
               "competitiveness": {
@@ -129132,10 +129132,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 13766,
-                "REP": 28644,
-                "LIB": 1374,
-                "OTHER": 30
+                "DEM": 6883,
+                "REP": 14322,
+                "LIB": 687,
+                "OTHER": 15
               }
             },
             "CAMDEN": {
@@ -129144,12 +129144,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2010,
-              "rep_votes": 3980,
-              "other_votes": 150,
-              "total_votes": 6140,
-              "two_party_total": 5990,
-              "margin": 1970,
+              "dem_votes": 1005,
+              "rep_votes": 1990,
+              "other_votes": 75,
+              "total_votes": 3070,
+              "two_party_total": 2995,
+              "margin": 985,
               "margin_pct": 32.89,
               "winner": "REP",
               "competitiveness": {
@@ -129159,10 +129159,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 2010,
-                "REP": 3980,
-                "LIB": 148,
-                "OTHER": 2
+                "DEM": 1005,
+                "REP": 1990,
+                "LIB": 74,
+                "OTHER": 1
               }
             },
             "CARTERET": {
@@ -129171,12 +129171,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 12050,
-              "rep_votes": 33138,
-              "other_votes": 1056,
-              "total_votes": 46244,
-              "two_party_total": 45188,
-              "margin": 21088,
+              "dem_votes": 6025,
+              "rep_votes": 16569,
+              "other_votes": 528,
+              "total_votes": 23122,
+              "two_party_total": 22594,
+              "margin": 10544,
               "margin_pct": 46.67,
               "winner": "REP",
               "competitiveness": {
@@ -129186,10 +129186,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 12050,
-                "REP": 33138,
-                "LIB": 942,
-                "OTHER": 114
+                "DEM": 6025,
+                "REP": 16569,
+                "LIB": 471,
+                "OTHER": 57
               }
             },
             "CASWELL": {
@@ -129198,12 +129198,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6678,
-              "rep_votes": 7086,
-              "other_votes": 258,
-              "total_votes": 14022,
-              "two_party_total": 13764,
-              "margin": 408,
+              "dem_votes": 3339,
+              "rep_votes": 3543,
+              "other_votes": 129,
+              "total_votes": 7011,
+              "two_party_total": 6882,
+              "margin": 204,
               "margin_pct": 2.96,
               "winner": "REP",
               "competitiveness": {
@@ -129213,9 +129213,9 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 6678,
-                "REP": 7086,
-                "LIB": 258,
+                "DEM": 3339,
+                "REP": 3543,
+                "LIB": 129,
                 "OTHER": 0
               }
             },
@@ -129225,12 +129225,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 25150,
-              "rep_votes": 55220,
-              "other_votes": 2092,
-              "total_votes": 82462,
-              "two_party_total": 80370,
-              "margin": 30070,
+              "dem_votes": 12575,
+              "rep_votes": 27610,
+              "other_votes": 1046,
+              "total_votes": 41231,
+              "two_party_total": 40185,
+              "margin": 15035,
               "margin_pct": 37.41,
               "winner": "REP",
               "competitiveness": {
@@ -129240,10 +129240,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 25150,
-                "REP": 55220,
-                "LIB": 2044,
-                "OTHER": 48
+                "DEM": 12575,
+                "REP": 27610,
+                "LIB": 1022,
+                "OTHER": 24
               }
             },
             "CHATHAM": {
@@ -129252,12 +129252,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 24462,
-              "rep_votes": 23316,
-              "other_votes": 1104,
-              "total_votes": 48882,
-              "two_party_total": 47778,
-              "margin": -1146,
+              "dem_votes": 12231,
+              "rep_votes": 11658,
+              "other_votes": 552,
+              "total_votes": 24441,
+              "two_party_total": 23889,
+              "margin": -573,
               "margin_pct": -2.4,
               "winner": "DEM",
               "competitiveness": {
@@ -129267,10 +129267,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 24462,
-                "REP": 23316,
-                "LIB": 1086,
-                "OTHER": 18
+                "DEM": 12231,
+                "REP": 11658,
+                "LIB": 543,
+                "OTHER": 9
               }
             },
             "CHEROKEE": {
@@ -129279,12 +129279,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 5860,
-              "rep_votes": 12354,
-              "other_votes": 762,
-              "total_votes": 18976,
-              "two_party_total": 18214,
-              "margin": 6494,
+              "dem_votes": 2930,
+              "rep_votes": 6177,
+              "other_votes": 381,
+              "total_votes": 9488,
+              "two_party_total": 9107,
+              "margin": 3247,
               "margin_pct": 35.65,
               "winner": "REP",
               "competitiveness": {
@@ -129294,10 +129294,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 5860,
-                "REP": 12354,
-                "LIB": 752,
-                "OTHER": 10
+                "DEM": 2930,
+                "REP": 6177,
+                "LIB": 376,
+                "OTHER": 5
               }
             },
             "CHOWAN": {
@@ -129306,12 +129306,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 4266,
-              "rep_votes": 5944,
-              "other_votes": 178,
-              "total_votes": 10388,
-              "two_party_total": 10210,
-              "margin": 1678,
+              "dem_votes": 2133,
+              "rep_votes": 2972,
+              "other_votes": 89,
+              "total_votes": 5194,
+              "two_party_total": 5105,
+              "margin": 839,
               "margin_pct": 16.43,
               "winner": "REP",
               "competitiveness": {
@@ -129321,9 +129321,9 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 4266,
-                "REP": 5944,
-                "LIB": 178,
+                "DEM": 2133,
+                "REP": 2972,
+                "LIB": 89,
                 "OTHER": 0
               }
             },
@@ -129333,12 +129333,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 3106,
-              "rep_votes": 6030,
-              "other_votes": 412,
-              "total_votes": 9548,
-              "two_party_total": 9136,
-              "margin": 2924,
+              "dem_votes": 1553,
+              "rep_votes": 3015,
+              "other_votes": 206,
+              "total_votes": 4774,
+              "two_party_total": 4568,
+              "margin": 1462,
               "margin_pct": 32.01,
               "winner": "REP",
               "competitiveness": {
@@ -129348,10 +129348,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 3106,
-                "REP": 6030,
-                "LIB": 406,
-                "OTHER": 6
+                "DEM": 1553,
+                "REP": 3015,
+                "LIB": 203,
+                "OTHER": 3
               }
             },
             "CLEVELAND": {
@@ -129360,12 +129360,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 20794,
-              "rep_votes": 32238,
-              "other_votes": 1032,
-              "total_votes": 54064,
-              "two_party_total": 53032,
-              "margin": 11444,
+              "dem_votes": 10397,
+              "rep_votes": 16119,
+              "other_votes": 516,
+              "total_votes": 27032,
+              "two_party_total": 26516,
+              "margin": 5722,
               "margin_pct": 21.58,
               "winner": "REP",
               "competitiveness": {
@@ -129375,10 +129375,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 20794,
-                "REP": 32238,
-                "LIB": 1008,
-                "OTHER": 24
+                "DEM": 10397,
+                "REP": 16119,
+                "LIB": 504,
+                "OTHER": 12
               }
             },
             "COLUMBUS": {
@@ -129387,12 +129387,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 14916,
-              "rep_votes": 17108,
-              "other_votes": 596,
-              "total_votes": 32620,
-              "two_party_total": 32024,
-              "margin": 2192,
+              "dem_votes": 7458,
+              "rep_votes": 8554,
+              "other_votes": 298,
+              "total_votes": 16310,
+              "two_party_total": 16012,
+              "margin": 1096,
               "margin_pct": 6.84,
               "winner": "REP",
               "competitiveness": {
@@ -129402,10 +129402,10 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 14916,
-                "REP": 17108,
-                "LIB": 572,
-                "OTHER": 24
+                "DEM": 7458,
+                "REP": 8554,
+                "LIB": 286,
+                "OTHER": 12
               }
             },
             "CRAVEN": {
@@ -129414,12 +129414,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 18990,
-              "rep_votes": 35104,
-              "other_votes": 1066,
-              "total_votes": 55160,
-              "two_party_total": 54094,
-              "margin": 16114,
+              "dem_votes": 9495,
+              "rep_votes": 17552,
+              "other_votes": 533,
+              "total_votes": 27580,
+              "two_party_total": 27047,
+              "margin": 8057,
               "margin_pct": 29.79,
               "winner": "REP",
               "competitiveness": {
@@ -129429,10 +129429,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 18990,
-                "REP": 35104,
-                "LIB": 1044,
-                "OTHER": 22
+                "DEM": 9495,
+                "REP": 17552,
+                "LIB": 522,
+                "OTHER": 11
               }
             },
             "CUMBERLAND": {
@@ -129441,12 +129441,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 72452,
-              "rep_votes": 61976,
-              "other_votes": 2302,
-              "total_votes": 136730,
-              "two_party_total": 134428,
-              "margin": -10476,
+              "dem_votes": 36226,
+              "rep_votes": 30988,
+              "other_votes": 1151,
+              "total_votes": 68365,
+              "two_party_total": 67214,
+              "margin": -5238,
               "margin_pct": -7.79,
               "winner": "DEM",
               "competitiveness": {
@@ -129456,10 +129456,10 @@
                 "color": "#9ecae1"
               },
               "all_parties": {
-                "DEM": 72452,
-                "REP": 61976,
-                "LIB": 2232,
-                "OTHER": 70
+                "DEM": 36226,
+                "REP": 30988,
+                "LIB": 1116,
+                "OTHER": 35
               }
             },
             "CURRITUCK": {
@@ -129468,12 +129468,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 4200,
-              "rep_votes": 10222,
-              "other_votes": 464,
-              "total_votes": 14886,
-              "two_party_total": 14422,
-              "margin": 6022,
+              "dem_votes": 2100,
+              "rep_votes": 5111,
+              "other_votes": 232,
+              "total_votes": 7443,
+              "two_party_total": 7211,
+              "margin": 3011,
               "margin_pct": 41.76,
               "winner": "REP",
               "competitiveness": {
@@ -129483,10 +129483,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 4200,
-                "REP": 10222,
-                "LIB": 456,
-                "OTHER": 8
+                "DEM": 2100,
+                "REP": 5111,
+                "LIB": 228,
+                "OTHER": 4
               }
             },
             "DARE": {
@@ -129495,12 +129495,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 8522,
-              "rep_votes": 14558,
-              "other_votes": 626,
-              "total_votes": 23706,
-              "two_party_total": 23080,
-              "margin": 6036,
+              "dem_votes": 4261,
+              "rep_votes": 7279,
+              "other_votes": 313,
+              "total_votes": 11853,
+              "two_party_total": 11540,
+              "margin": 3018,
               "margin_pct": 26.15,
               "winner": "REP",
               "competitiveness": {
@@ -129510,10 +129510,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 8522,
-                "REP": 14558,
-                "LIB": 624,
-                "OTHER": 2
+                "DEM": 4261,
+                "REP": 7279,
+                "LIB": 312,
+                "OTHER": 1
               }
             },
             "DAVIDSON": {
@@ -129522,12 +129522,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 22240,
-              "rep_votes": 58408,
-              "other_votes": 1960,
-              "total_votes": 82608,
-              "two_party_total": 80648,
-              "margin": 36168,
+              "dem_votes": 11120,
+              "rep_votes": 29204,
+              "other_votes": 980,
+              "total_votes": 41304,
+              "two_party_total": 40324,
+              "margin": 18084,
               "margin_pct": 44.85,
               "winner": "REP",
               "competitiveness": {
@@ -129537,10 +129537,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 22240,
-                "REP": 58408,
-                "LIB": 1926,
-                "OTHER": 34
+                "DEM": 11120,
+                "REP": 29204,
+                "LIB": 963,
+                "OTHER": 17
               }
             },
             "DAVIE": {
@@ -129549,12 +129549,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6670,
-              "rep_votes": 20540,
-              "other_votes": 564,
-              "total_votes": 27774,
-              "two_party_total": 27210,
-              "margin": 13870,
+              "dem_votes": 3335,
+              "rep_votes": 10270,
+              "other_votes": 282,
+              "total_votes": 13887,
+              "two_party_total": 13605,
+              "margin": 6935,
               "margin_pct": 50.97,
               "winner": "REP",
               "competitiveness": {
@@ -129564,10 +129564,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 6670,
-                "REP": 20540,
-                "LIB": 552,
-                "OTHER": 12
+                "DEM": 3335,
+                "REP": 10270,
+                "LIB": 276,
+                "OTHER": 6
               }
             },
             "DUPLIN": {
@@ -129576,12 +129576,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11406,
-              "rep_votes": 14582,
-              "other_votes": 362,
-              "total_votes": 26350,
-              "two_party_total": 25988,
-              "margin": 3176,
+              "dem_votes": 5703,
+              "rep_votes": 7291,
+              "other_votes": 181,
+              "total_votes": 13175,
+              "two_party_total": 12994,
+              "margin": 1588,
               "margin_pct": 12.22,
               "winner": "REP",
               "competitiveness": {
@@ -129591,10 +129591,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 11406,
-                "REP": 14582,
-                "LIB": 354,
-                "OTHER": 8
+                "DEM": 5703,
+                "REP": 7291,
+                "LIB": 177,
+                "OTHER": 4
               }
             },
             "DURHAM": {
@@ -129603,12 +129603,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 111588,
-              "rep_votes": 43130,
-              "other_votes": 2516,
-              "total_votes": 157234,
-              "two_party_total": 154718,
-              "margin": -68458,
+              "dem_votes": 55794,
+              "rep_votes": 21565,
+              "other_votes": 1258,
+              "total_votes": 78617,
+              "two_party_total": 77359,
+              "margin": -34229,
               "margin_pct": -44.25,
               "winner": "DEM",
               "competitiveness": {
@@ -129618,10 +129618,10 @@
                 "color": "#08306b"
               },
               "all_parties": {
-                "DEM": 111588,
-                "REP": 43130,
-                "LIB": 2446,
-                "OTHER": 70
+                "DEM": 55794,
+                "REP": 21565,
+                "LIB": 1223,
+                "OTHER": 35
               }
             },
             "EDGECOMBE": {
@@ -129630,12 +129630,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 20608,
-              "rep_votes": 11224,
-              "other_votes": 324,
-              "total_votes": 32156,
-              "two_party_total": 31832,
-              "margin": -9384,
+              "dem_votes": 10304,
+              "rep_votes": 5612,
+              "other_votes": 162,
+              "total_votes": 16078,
+              "two_party_total": 15916,
+              "margin": -4692,
               "margin_pct": -29.48,
               "winner": "DEM",
               "competitiveness": {
@@ -129645,10 +129645,10 @@
                 "color": "#3182bd"
               },
               "all_parties": {
-                "DEM": 20608,
-                "REP": 11224,
-                "LIB": 316,
-                "OTHER": 8
+                "DEM": 10304,
+                "REP": 5612,
+                "LIB": 158,
+                "OTHER": 4
               }
             },
             "FORSYTH": {
@@ -129657,12 +129657,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 81316,
-              "rep_votes": 103552,
-              "other_votes": 3462,
-              "total_votes": 188330,
-              "two_party_total": 184868,
-              "margin": 22236,
+              "dem_votes": 40658,
+              "rep_votes": 51776,
+              "other_votes": 1731,
+              "total_votes": 94165,
+              "two_party_total": 92434,
+              "margin": 11118,
               "margin_pct": 12.03,
               "winner": "REP",
               "competitiveness": {
@@ -129672,10 +129672,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 81316,
-                "REP": 103552,
-                "LIB": 3396,
-                "OTHER": 66
+                "DEM": 40658,
+                "REP": 51776,
+                "LIB": 1698,
+                "OTHER": 33
               }
             },
             "FRANKLIN": {
@@ -129684,12 +129684,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 15986,
-              "rep_votes": 18176,
-              "other_votes": 732,
-              "total_votes": 34894,
-              "two_party_total": 34162,
-              "margin": 2190,
+              "dem_votes": 7993,
+              "rep_votes": 9088,
+              "other_votes": 366,
+              "total_votes": 17447,
+              "two_party_total": 17081,
+              "margin": 1095,
               "margin_pct": 6.41,
               "winner": "REP",
               "competitiveness": {
@@ -129699,10 +129699,10 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 15986,
-                "REP": 18176,
-                "LIB": 718,
-                "OTHER": 14
+                "DEM": 7993,
+                "REP": 9088,
+                "LIB": 359,
+                "OTHER": 7
               }
             },
             "GASTON": {
@@ -129711,12 +129711,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 30926,
-              "rep_votes": 65516,
-              "other_votes": 2364,
-              "total_votes": 98806,
-              "two_party_total": 96442,
-              "margin": 34590,
+              "dem_votes": 15463,
+              "rep_votes": 32758,
+              "other_votes": 1182,
+              "total_votes": 49403,
+              "two_party_total": 48221,
+              "margin": 17295,
               "margin_pct": 35.87,
               "winner": "REP",
               "competitiveness": {
@@ -129726,10 +129726,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 30926,
-                "REP": 65516,
-                "LIB": 2324,
-                "OTHER": 40
+                "DEM": 15463,
+                "REP": 32758,
+                "LIB": 1162,
+                "OTHER": 20
               }
             },
             "GATES": {
@@ -129738,12 +129738,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 3100,
-              "rep_votes": 3364,
-              "other_votes": 72,
-              "total_votes": 6536,
-              "two_party_total": 6464,
-              "margin": 264,
+              "dem_votes": 1550,
+              "rep_votes": 1682,
+              "other_votes": 36,
+              "total_votes": 3268,
+              "two_party_total": 3232,
+              "margin": 132,
               "margin_pct": 4.08,
               "winner": "REP",
               "competitiveness": {
@@ -129753,10 +129753,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 3100,
-                "REP": 3364,
-                "LIB": 70,
-                "OTHER": 2
+                "DEM": 1550,
+                "REP": 1682,
+                "LIB": 35,
+                "OTHER": 1
               }
             },
             "GRAHAM": {
@@ -129765,12 +129765,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2390,
-              "rep_votes": 4316,
-              "other_votes": 226,
-              "total_votes": 6932,
-              "two_party_total": 6706,
-              "margin": 1926,
+              "dem_votes": 1195,
+              "rep_votes": 2158,
+              "other_votes": 113,
+              "total_votes": 3466,
+              "two_party_total": 3353,
+              "margin": 963,
               "margin_pct": 28.72,
               "winner": "REP",
               "competitiveness": {
@@ -129780,10 +129780,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 2390,
-                "REP": 4316,
-                "LIB": 222,
-                "OTHER": 4
+                "DEM": 1195,
+                "REP": 2158,
+                "LIB": 111,
+                "OTHER": 2
               }
             },
             "GRANVILLE": {
@@ -129792,12 +129792,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 14430,
-              "rep_votes": 14518,
-              "other_votes": 628,
-              "total_votes": 29576,
-              "two_party_total": 28948,
-              "margin": 88,
+              "dem_votes": 7215,
+              "rep_votes": 7259,
+              "other_votes": 314,
+              "total_votes": 14788,
+              "two_party_total": 14474,
+              "margin": 44,
               "margin_pct": 0.3,
               "winner": "REP",
               "competitiveness": {
@@ -129807,10 +129807,10 @@
                 "color": "#f7f7f7"
               },
               "all_parties": {
-                "DEM": 14430,
-                "REP": 14518,
-                "LIB": 624,
-                "OTHER": 4
+                "DEM": 7215,
+                "REP": 7259,
+                "LIB": 312,
+                "OTHER": 2
               }
             },
             "GREENE": {
@@ -129819,12 +129819,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 5222,
-              "rep_votes": 5824,
-              "other_votes": 140,
-              "total_votes": 11186,
-              "two_party_total": 11046,
-              "margin": 602,
+              "dem_votes": 2611,
+              "rep_votes": 2912,
+              "other_votes": 70,
+              "total_votes": 5593,
+              "two_party_total": 5523,
+              "margin": 301,
               "margin_pct": 5.45,
               "winner": "REP",
               "competitiveness": {
@@ -129834,10 +129834,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 5222,
-                "REP": 5824,
-                "LIB": 138,
-                "OTHER": 2
+                "DEM": 2611,
+                "REP": 2912,
+                "LIB": 69,
+                "OTHER": 1
               }
             },
             "GUILFORD": {
@@ -129846,12 +129846,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 132028,
-              "rep_votes": 138846,
-              "other_votes": 5278,
-              "total_votes": 276152,
-              "two_party_total": 270874,
-              "margin": 6818,
+              "dem_votes": 66014,
+              "rep_votes": 69423,
+              "other_votes": 2639,
+              "total_votes": 138076,
+              "two_party_total": 135437,
+              "margin": 3409,
               "margin_pct": 2.52,
               "winner": "REP",
               "competitiveness": {
@@ -129861,10 +129861,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 132028,
-                "REP": 138846,
-                "LIB": 5082,
-                "OTHER": 196
+                "DEM": 66014,
+                "REP": 69423,
+                "LIB": 2541,
+                "OTHER": 98
               }
             },
             "HALIFAX": {
@@ -129873,12 +129873,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 17536,
-              "rep_votes": 10722,
-              "other_votes": 330,
-              "total_votes": 28588,
-              "two_party_total": 28258,
-              "margin": -6814,
+              "dem_votes": 8768,
+              "rep_votes": 5361,
+              "other_votes": 165,
+              "total_votes": 14294,
+              "two_party_total": 14129,
+              "margin": -3407,
               "margin_pct": -24.11,
               "winner": "DEM",
               "competitiveness": {
@@ -129888,10 +129888,10 @@
                 "color": "#3182bd"
               },
               "all_parties": {
-                "DEM": 17536,
-                "REP": 10722,
-                "LIB": 324,
-                "OTHER": 6
+                "DEM": 8768,
+                "REP": 5361,
+                "LIB": 162,
+                "OTHER": 3
               }
             },
             "HARNETT": {
@@ -129900,12 +129900,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 20054,
-              "rep_votes": 30698,
-              "other_votes": 1008,
-              "total_votes": 51760,
-              "two_party_total": 50752,
-              "margin": 10644,
+              "dem_votes": 10027,
+              "rep_votes": 15349,
+              "other_votes": 504,
+              "total_votes": 25880,
+              "two_party_total": 25376,
+              "margin": 5322,
               "margin_pct": 20.97,
               "winner": "REP",
               "competitiveness": {
@@ -129915,10 +129915,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 20054,
-                "REP": 30698,
-                "LIB": 988,
-                "OTHER": 20
+                "DEM": 10027,
+                "REP": 15349,
+                "LIB": 494,
+                "OTHER": 10
               }
             },
             "HAYWOOD": {
@@ -129927,12 +129927,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16486,
-              "rep_votes": 22532,
-              "other_votes": 1026,
-              "total_votes": 40044,
-              "two_party_total": 39018,
-              "margin": 6046,
+              "dem_votes": 8243,
+              "rep_votes": 11266,
+              "other_votes": 513,
+              "total_votes": 20022,
+              "two_party_total": 19509,
+              "margin": 3023,
               "margin_pct": 15.5,
               "winner": "REP",
               "competitiveness": {
@@ -129942,10 +129942,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 16486,
-                "REP": 22532,
-                "LIB": 1010,
-                "OTHER": 16
+                "DEM": 8243,
+                "REP": 11266,
+                "LIB": 505,
+                "OTHER": 8
               }
             },
             "HENDERSON": {
@@ -129954,12 +129954,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 22658,
-              "rep_votes": 47610,
-              "other_votes": 1672,
-              "total_votes": 71940,
-              "two_party_total": 70268,
-              "margin": 24952,
+              "dem_votes": 11329,
+              "rep_votes": 23805,
+              "other_votes": 836,
+              "total_votes": 35970,
+              "two_party_total": 35134,
+              "margin": 12476,
               "margin_pct": 35.51,
               "winner": "REP",
               "competitiveness": {
@@ -129969,10 +129969,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 22658,
-                "REP": 47610,
-                "LIB": 1646,
-                "OTHER": 26
+                "DEM": 11329,
+                "REP": 23805,
+                "LIB": 823,
+                "OTHER": 13
               }
             },
             "HERTFORD": {
@@ -129981,12 +129981,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 8766,
-              "rep_votes": 4096,
-              "other_votes": 122,
-              "total_votes": 12984,
-              "two_party_total": 12862,
-              "margin": -4670,
+              "dem_votes": 4383,
+              "rep_votes": 2048,
+              "other_votes": 61,
+              "total_votes": 6492,
+              "two_party_total": 6431,
+              "margin": -2335,
               "margin_pct": -36.31,
               "winner": "DEM",
               "competitiveness": {
@@ -129996,10 +129996,10 @@
                 "color": "#08519c"
               },
               "all_parties": {
-                "DEM": 8766,
-                "REP": 4096,
-                "LIB": 120,
-                "OTHER": 2
+                "DEM": 4383,
+                "REP": 2048,
+                "LIB": 60,
+                "OTHER": 1
               }
             },
             "HOKE": {
@@ -130008,12 +130008,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 9192,
-              "rep_votes": 7114,
-              "other_votes": 282,
-              "total_votes": 16588,
-              "two_party_total": 16306,
-              "margin": -2078,
+              "dem_votes": 4596,
+              "rep_votes": 3557,
+              "other_votes": 141,
+              "total_votes": 8294,
+              "two_party_total": 8153,
+              "margin": -1039,
               "margin_pct": -12.74,
               "winner": "DEM",
               "competitiveness": {
@@ -130023,10 +130023,10 @@
                 "color": "#6baed6"
               },
               "all_parties": {
-                "DEM": 9192,
-                "REP": 7114,
-                "LIB": 272,
-                "OTHER": 10
+                "DEM": 4596,
+                "REP": 3557,
+                "LIB": 136,
+                "OTHER": 5
               }
             },
             "HYDE": {
@@ -130035,12 +130035,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 1532,
-              "rep_votes": 1686,
-              "other_votes": 80,
-              "total_votes": 3298,
-              "two_party_total": 3218,
-              "margin": 154,
+              "dem_votes": 766,
+              "rep_votes": 843,
+              "other_votes": 40,
+              "total_votes": 1649,
+              "two_party_total": 1609,
+              "margin": 77,
               "margin_pct": 4.79,
               "winner": "REP",
               "competitiveness": {
@@ -130050,9 +130050,9 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 1532,
-                "REP": 1686,
-                "LIB": 80,
+                "DEM": 766,
+                "REP": 843,
+                "LIB": 40,
                 "OTHER": 0
               }
             },
@@ -130062,12 +130062,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 25716,
-              "rep_votes": 57608,
-              "other_votes": 2258,
-              "total_votes": 85582,
-              "two_party_total": 83324,
-              "margin": 31892,
+              "dem_votes": 12858,
+              "rep_votes": 28804,
+              "other_votes": 1129,
+              "total_votes": 42791,
+              "two_party_total": 41662,
+              "margin": 15946,
               "margin_pct": 38.27,
               "winner": "REP",
               "competitiveness": {
@@ -130077,10 +130077,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 25716,
-                "REP": 57608,
-                "LIB": 2210,
-                "OTHER": 48
+                "DEM": 12858,
+                "REP": 28804,
+                "LIB": 1105,
+                "OTHER": 24
               }
             },
             "JACKSON": {
@@ -130089,12 +130089,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 10204,
-              "rep_votes": 11310,
-              "other_votes": 642,
-              "total_votes": 22156,
-              "two_party_total": 21514,
-              "margin": 1106,
+              "dem_votes": 5102,
+              "rep_votes": 5655,
+              "other_votes": 321,
+              "total_votes": 11078,
+              "two_party_total": 10757,
+              "margin": 553,
               "margin_pct": 5.14,
               "winner": "REP",
               "competitiveness": {
@@ -130104,10 +130104,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 10204,
-                "REP": 11310,
-                "LIB": 626,
-                "OTHER": 16
+                "DEM": 5102,
+                "REP": 5655,
+                "LIB": 313,
+                "OTHER": 8
               }
             },
             "JOHNSTON": {
@@ -130116,12 +130116,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 29710,
-              "rep_votes": 61126,
-              "other_votes": 1838,
-              "total_votes": 92674,
-              "two_party_total": 90836,
-              "margin": 31416,
+              "dem_votes": 14855,
+              "rep_votes": 30563,
+              "other_votes": 919,
+              "total_votes": 46337,
+              "two_party_total": 45418,
+              "margin": 15708,
               "margin_pct": 34.59,
               "winner": "REP",
               "competitiveness": {
@@ -130131,10 +130131,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 29710,
-                "REP": 61126,
-                "LIB": 1798,
-                "OTHER": 40
+                "DEM": 14855,
+                "REP": 30563,
+                "LIB": 899,
+                "OTHER": 20
               }
             },
             "JONES": {
@@ -130143,12 +130143,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 3302,
-              "rep_votes": 4086,
-              "other_votes": 144,
-              "total_votes": 7532,
-              "two_party_total": 7388,
-              "margin": 784,
+              "dem_votes": 1651,
+              "rep_votes": 2043,
+              "other_votes": 72,
+              "total_votes": 3766,
+              "two_party_total": 3694,
+              "margin": 392,
               "margin_pct": 10.61,
               "winner": "REP",
               "competitiveness": {
@@ -130158,10 +130158,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 3302,
-                "REP": 4086,
-                "LIB": 140,
-                "OTHER": 4
+                "DEM": 1651,
+                "REP": 2043,
+                "LIB": 70,
+                "OTHER": 2
               }
             },
             "LEE": {
@@ -130170,12 +130170,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11960,
-              "rep_votes": 16496,
-              "other_votes": 534,
-              "total_votes": 28990,
-              "two_party_total": 28456,
-              "margin": 4536,
+              "dem_votes": 5980,
+              "rep_votes": 8248,
+              "other_votes": 267,
+              "total_votes": 14495,
+              "two_party_total": 14228,
+              "margin": 2268,
               "margin_pct": 15.94,
               "winner": "REP",
               "competitiveness": {
@@ -130185,10 +130185,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 11960,
-                "REP": 16496,
-                "LIB": 526,
-                "OTHER": 8
+                "DEM": 5980,
+                "REP": 8248,
+                "LIB": 263,
+                "OTHER": 4
               }
             },
             "LENOIR": {
@@ -130197,12 +130197,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16192,
-              "rep_votes": 18288,
-              "other_votes": 408,
-              "total_votes": 34888,
-              "two_party_total": 34480,
-              "margin": 2096,
+              "dem_votes": 8096,
+              "rep_votes": 9144,
+              "other_votes": 204,
+              "total_votes": 17444,
+              "two_party_total": 17240,
+              "margin": 1048,
               "margin_pct": 6.08,
               "winner": "REP",
               "competitiveness": {
@@ -130212,10 +130212,10 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 16192,
-                "REP": 18288,
-                "LIB": 392,
-                "OTHER": 16
+                "DEM": 8096,
+                "REP": 9144,
+                "LIB": 196,
+                "OTHER": 8
               }
             },
             "LINCOLN": {
@@ -130224,12 +130224,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 13888,
-              "rep_votes": 31220,
-              "other_votes": 1148,
-              "total_votes": 46256,
-              "two_party_total": 45108,
-              "margin": 17332,
+              "dem_votes": 6944,
+              "rep_votes": 15610,
+              "other_votes": 574,
+              "total_votes": 23128,
+              "two_party_total": 22554,
+              "margin": 8666,
               "margin_pct": 38.42,
               "winner": "REP",
               "competitiveness": {
@@ -130239,10 +130239,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 13888,
-                "REP": 31220,
-                "LIB": 1126,
-                "OTHER": 22
+                "DEM": 6944,
+                "REP": 15610,
+                "LIB": 563,
+                "OTHER": 11
               }
             },
             "MACON": {
@@ -130251,12 +130251,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 8362,
-              "rep_votes": 15324,
-              "other_votes": 908,
-              "total_votes": 24594,
-              "two_party_total": 23686,
-              "margin": 6962,
+              "dem_votes": 4181,
+              "rep_votes": 7662,
+              "other_votes": 454,
+              "total_votes": 12297,
+              "two_party_total": 11843,
+              "margin": 3481,
               "margin_pct": 29.39,
               "winner": "REP",
               "competitiveness": {
@@ -130266,10 +130266,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 8362,
-                "REP": 15324,
-                "LIB": 894,
-                "OTHER": 14
+                "DEM": 4181,
+                "REP": 7662,
+                "LIB": 447,
+                "OTHER": 7
               }
             },
             "MADISON": {
@@ -130278,12 +130278,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6446,
-              "rep_votes": 6796,
-              "other_votes": 398,
-              "total_votes": 13640,
-              "two_party_total": 13242,
-              "margin": 350,
+              "dem_votes": 3223,
+              "rep_votes": 3398,
+              "other_votes": 199,
+              "total_votes": 6820,
+              "two_party_total": 6621,
+              "margin": 175,
               "margin_pct": 2.64,
               "winner": "REP",
               "competitiveness": {
@@ -130293,9 +130293,9 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 6446,
-                "REP": 6796,
-                "LIB": 398,
+                "DEM": 3223,
+                "REP": 3398,
+                "LIB": 199,
                 "OTHER": 0
               }
             },
@@ -130305,12 +130305,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 8660,
-              "rep_votes": 7786,
-              "other_votes": 228,
-              "total_votes": 16674,
-              "two_party_total": 16446,
-              "margin": -874,
+              "dem_votes": 4330,
+              "rep_votes": 3893,
+              "other_votes": 114,
+              "total_votes": 8337,
+              "two_party_total": 8223,
+              "margin": -437,
               "margin_pct": -5.31,
               "winner": "DEM",
               "competitiveness": {
@@ -130320,10 +130320,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 8660,
-                "REP": 7786,
-                "LIB": 220,
-                "OTHER": 8
+                "DEM": 4330,
+                "REP": 3893,
+                "LIB": 110,
+                "OTHER": 4
               }
             },
             "MCDOWELL": {
@@ -130332,12 +130332,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7570,
-              "rep_votes": 16154,
-              "other_votes": 670,
-              "total_votes": 24394,
-              "two_party_total": 23724,
-              "margin": 8584,
+              "dem_votes": 3785,
+              "rep_votes": 8077,
+              "other_votes": 335,
+              "total_votes": 12197,
+              "two_party_total": 11862,
+              "margin": 4292,
               "margin_pct": 36.18,
               "winner": "REP",
               "competitiveness": {
@@ -130347,10 +130347,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 7570,
-                "REP": 16154,
-                "LIB": 648,
-                "OTHER": 22
+                "DEM": 3785,
+                "REP": 8077,
+                "LIB": 324,
+                "OTHER": 11
               }
             },
             "MECKLENBURG": {
@@ -130359,12 +130359,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 236186,
-              "rep_votes": 207444,
-              "other_votes": 8252,
-              "total_votes": 451882,
-              "two_party_total": 443630,
-              "margin": -28742,
+              "dem_votes": 118093,
+              "rep_votes": 103722,
+              "other_votes": 4126,
+              "total_votes": 225941,
+              "two_party_total": 221815,
+              "margin": -14371,
               "margin_pct": -6.48,
               "winner": "DEM",
               "competitiveness": {
@@ -130374,10 +130374,10 @@
                 "color": "#9ecae1"
               },
               "all_parties": {
-                "DEM": 236186,
-                "REP": 207444,
-                "LIB": 8022,
-                "OTHER": 230
+                "DEM": 118093,
+                "REP": 103722,
+                "LIB": 4011,
+                "OTHER": 115
               }
             },
             "MITCHELL": {
@@ -130386,12 +130386,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2210,
-              "rep_votes": 7968,
-              "other_votes": 302,
-              "total_votes": 10480,
-              "two_party_total": 10178,
-              "margin": 5758,
+              "dem_votes": 1105,
+              "rep_votes": 3984,
+              "other_votes": 151,
+              "total_votes": 5240,
+              "two_party_total": 5089,
+              "margin": 2879,
               "margin_pct": 56.57,
               "winner": "REP",
               "competitiveness": {
@@ -130401,10 +130401,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 2210,
-                "REP": 7968,
-                "LIB": 290,
-                "OTHER": 12
+                "DEM": 1105,
+                "REP": 3984,
+                "LIB": 145,
+                "OTHER": 6
               }
             },
             "MONTGOMERY": {
@@ -130413,12 +130413,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6514,
-              "rep_votes": 8564,
-              "other_votes": 312,
-              "total_votes": 15390,
-              "two_party_total": 15078,
-              "margin": 2050,
+              "dem_votes": 3257,
+              "rep_votes": 4282,
+              "other_votes": 156,
+              "total_votes": 7695,
+              "two_party_total": 7539,
+              "margin": 1025,
               "margin_pct": 13.6,
               "winner": "REP",
               "competitiveness": {
@@ -130428,10 +130428,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 6514,
-                "REP": 8564,
-                "LIB": 306,
-                "OTHER": 6
+                "DEM": 3257,
+                "REP": 4282,
+                "LIB": 153,
+                "OTHER": 3
               }
             },
             "MOORE": {
@@ -130440,12 +130440,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 18084,
-              "rep_votes": 37480,
-              "other_votes": 1164,
-              "total_votes": 56728,
-              "two_party_total": 55564,
-              "margin": 19396,
+              "dem_votes": 9042,
+              "rep_votes": 18740,
+              "other_votes": 582,
+              "total_votes": 28364,
+              "two_party_total": 27782,
+              "margin": 9698,
               "margin_pct": 34.91,
               "winner": "REP",
               "competitiveness": {
@@ -130455,10 +130455,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 18084,
-                "REP": 37480,
-                "LIB": 1146,
-                "OTHER": 18
+                "DEM": 9042,
+                "REP": 18740,
+                "LIB": 573,
+                "OTHER": 9
               }
             },
             "NASH": {
@@ -130467,12 +130467,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 28974,
-              "rep_votes": 32974,
-              "other_votes": 786,
-              "total_votes": 62734,
-              "two_party_total": 61948,
-              "margin": 4000,
+              "dem_votes": 14487,
+              "rep_votes": 16487,
+              "other_votes": 393,
+              "total_votes": 31367,
+              "two_party_total": 30974,
+              "margin": 2000,
               "margin_pct": 6.46,
               "winner": "REP",
               "competitiveness": {
@@ -130482,10 +130482,10 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 28974,
-                "REP": 32974,
-                "LIB": 768,
-                "OTHER": 18
+                "DEM": 14487,
+                "REP": 16487,
+                "LIB": 384,
+                "OTHER": 9
               }
             },
             "NEW HANOVER": {
@@ -130494,12 +130494,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 49432,
-              "rep_votes": 73910,
-              "other_votes": 2834,
-              "total_votes": 126176,
-              "two_party_total": 123342,
-              "margin": 24478,
+              "dem_votes": 24716,
+              "rep_votes": 36955,
+              "other_votes": 1417,
+              "total_votes": 63088,
+              "two_party_total": 61671,
+              "margin": 12239,
               "margin_pct": 19.85,
               "winner": "REP",
               "competitiveness": {
@@ -130509,10 +130509,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 49432,
-                "REP": 73910,
-                "LIB": 2772,
-                "OTHER": 62
+                "DEM": 24716,
+                "REP": 36955,
+                "LIB": 1386,
+                "OTHER": 31
               }
             },
             "NORTHAMPTON": {
@@ -130521,12 +130521,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 9298,
-              "rep_votes": 5544,
-              "other_votes": 202,
-              "total_votes": 15044,
-              "two_party_total": 14842,
-              "margin": -3754,
+              "dem_votes": 4649,
+              "rep_votes": 2772,
+              "other_votes": 101,
+              "total_votes": 7522,
+              "two_party_total": 7421,
+              "margin": -1877,
               "margin_pct": -25.29,
               "winner": "DEM",
               "competitiveness": {
@@ -130536,10 +130536,10 @@
                 "color": "#3182bd"
               },
               "all_parties": {
-                "DEM": 9298,
-                "REP": 5544,
-                "LIB": 196,
-                "OTHER": 6
+                "DEM": 4649,
+                "REP": 2772,
+                "LIB": 98,
+                "OTHER": 3
               }
             },
             "ONSLOW": {
@@ -130548,12 +130548,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16398,
-              "rep_votes": 34212,
-              "other_votes": 1398,
-              "total_votes": 52008,
-              "two_party_total": 50610,
-              "margin": 17814,
+              "dem_votes": 8199,
+              "rep_votes": 17106,
+              "other_votes": 699,
+              "total_votes": 26004,
+              "two_party_total": 25305,
+              "margin": 8907,
               "margin_pct": 35.2,
               "winner": "REP",
               "competitiveness": {
@@ -130563,10 +130563,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 16398,
-                "REP": 34212,
-                "LIB": 1370,
-                "OTHER": 28
+                "DEM": 8199,
+                "REP": 17106,
+                "LIB": 685,
+                "OTHER": 14
               }
             },
             "ORANGE": {
@@ -130575,12 +130575,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 61688,
-              "rep_votes": 27432,
-              "other_votes": 2124,
-              "total_votes": 91244,
-              "two_party_total": 89120,
-              "margin": -34256,
+              "dem_votes": 30844,
+              "rep_votes": 13716,
+              "other_votes": 1062,
+              "total_votes": 45622,
+              "two_party_total": 44560,
+              "margin": -17128,
               "margin_pct": -38.44,
               "winner": "DEM",
               "competitiveness": {
@@ -130590,10 +130590,10 @@
                 "color": "#08519c"
               },
               "all_parties": {
-                "DEM": 61688,
-                "REP": 27432,
-                "LIB": 2074,
-                "OTHER": 50
+                "DEM": 30844,
+                "REP": 13716,
+                "LIB": 1037,
+                "OTHER": 25
               }
             },
             "PAMLICO": {
@@ -130602,12 +130602,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 3582,
-              "rep_votes": 5602,
-              "other_votes": 154,
-              "total_votes": 9338,
-              "two_party_total": 9184,
-              "margin": 2020,
+              "dem_votes": 1791,
+              "rep_votes": 2801,
+              "other_votes": 77,
+              "total_votes": 4669,
+              "two_party_total": 4592,
+              "margin": 1010,
               "margin_pct": 21.99,
               "winner": "REP",
               "competitiveness": {
@@ -130617,10 +130617,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 3582,
-                "REP": 5602,
-                "LIB": 150,
-                "OTHER": 4
+                "DEM": 1791,
+                "REP": 2801,
+                "LIB": 75,
+                "OTHER": 2
               }
             },
             "PASQUOTANK": {
@@ -130629,12 +130629,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 9572,
-              "rep_votes": 9104,
-              "other_votes": 368,
-              "total_votes": 19044,
-              "two_party_total": 18676,
-              "margin": -468,
+              "dem_votes": 4786,
+              "rep_votes": 4552,
+              "other_votes": 184,
+              "total_votes": 9522,
+              "two_party_total": 9338,
+              "margin": -234,
               "margin_pct": -2.51,
               "winner": "DEM",
               "competitiveness": {
@@ -130644,10 +130644,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 9572,
-                "REP": 9104,
-                "LIB": 350,
-                "OTHER": 18
+                "DEM": 4786,
+                "REP": 4552,
+                "LIB": 175,
+                "OTHER": 9
               }
             },
             "PENDER": {
@@ -130656,12 +130656,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 12068,
-              "rep_votes": 20602,
-              "other_votes": 660,
-              "total_votes": 33330,
-              "two_party_total": 32670,
-              "margin": 8534,
+              "dem_votes": 6034,
+              "rep_votes": 10301,
+              "other_votes": 330,
+              "total_votes": 16665,
+              "two_party_total": 16335,
+              "margin": 4267,
               "margin_pct": 26.12,
               "winner": "REP",
               "competitiveness": {
@@ -130671,10 +130671,10 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 12068,
-                "REP": 20602,
-                "LIB": 648,
-                "OTHER": 12
+                "DEM": 6034,
+                "REP": 10301,
+                "LIB": 324,
+                "OTHER": 6
               }
             },
             "PERQUIMANS": {
@@ -130683,12 +130683,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 2952,
-              "rep_votes": 5116,
-              "other_votes": 150,
-              "total_votes": 8218,
-              "two_party_total": 8068,
-              "margin": 2164,
+              "dem_votes": 1476,
+              "rep_votes": 2558,
+              "other_votes": 75,
+              "total_votes": 4109,
+              "two_party_total": 4034,
+              "margin": 1082,
               "margin_pct": 26.82,
               "winner": "REP",
               "competitiveness": {
@@ -130698,9 +130698,9 @@
                 "color": "#cb181d"
               },
               "all_parties": {
-                "DEM": 2952,
-                "REP": 5116,
-                "LIB": 150,
+                "DEM": 1476,
+                "REP": 2558,
+                "LIB": 75,
                 "OTHER": 0
               }
             },
@@ -130710,12 +130710,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 10044,
-              "rep_votes": 12588,
-              "other_votes": 498,
-              "total_votes": 23130,
-              "two_party_total": 22632,
-              "margin": 2544,
+              "dem_votes": 5022,
+              "rep_votes": 6294,
+              "other_votes": 249,
+              "total_votes": 11565,
+              "two_party_total": 11316,
+              "margin": 1272,
               "margin_pct": 11.24,
               "winner": "REP",
               "competitiveness": {
@@ -130725,10 +130725,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 10044,
-                "REP": 12588,
-                "LIB": 494,
-                "OTHER": 4
+                "DEM": 5022,
+                "REP": 6294,
+                "LIB": 247,
+                "OTHER": 2
               }
             },
             "PITT": {
@@ -130737,12 +130737,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 38426,
-              "rep_votes": 41836,
-              "other_votes": 988,
-              "total_votes": 81250,
-              "two_party_total": 80262,
-              "margin": 3410,
+              "dem_votes": 19213,
+              "rep_votes": 20918,
+              "other_votes": 494,
+              "total_votes": 40625,
+              "two_party_total": 40131,
+              "margin": 1705,
               "margin_pct": 4.25,
               "winner": "REP",
               "competitiveness": {
@@ -130752,10 +130752,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 38426,
-                "REP": 41836,
-                "LIB": 952,
-                "OTHER": 36
+                "DEM": 19213,
+                "REP": 20918,
+                "LIB": 476,
+                "OTHER": 18
               }
             },
             "POLK": {
@@ -130764,12 +130764,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 6098,
-              "rep_votes": 8830,
-              "other_votes": 414,
-              "total_votes": 15342,
-              "two_party_total": 14928,
-              "margin": 2732,
+              "dem_votes": 3049,
+              "rep_votes": 4415,
+              "other_votes": 207,
+              "total_votes": 7671,
+              "two_party_total": 7464,
+              "margin": 1366,
               "margin_pct": 18.3,
               "winner": "REP",
               "competitiveness": {
@@ -130779,10 +130779,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 6098,
-                "REP": 8830,
-                "LIB": 408,
-                "OTHER": 6
+                "DEM": 3049,
+                "REP": 4415,
+                "LIB": 204,
+                "OTHER": 3
               }
             },
             "RANDOLPH": {
@@ -130791,12 +130791,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 14136,
-              "rep_votes": 53122,
-              "other_votes": 2142,
-              "total_votes": 69400,
-              "two_party_total": 67258,
-              "margin": 38986,
+              "dem_votes": 7068,
+              "rep_votes": 26561,
+              "other_votes": 1071,
+              "total_votes": 34700,
+              "two_party_total": 33629,
+              "margin": 19493,
               "margin_pct": 57.96,
               "winner": "REP",
               "competitiveness": {
@@ -130806,10 +130806,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 14136,
-                "REP": 53122,
-                "LIB": 2092,
-                "OTHER": 50
+                "DEM": 7068,
+                "REP": 26561,
+                "LIB": 1046,
+                "OTHER": 25
               }
             },
             "RICHMOND": {
@@ -130818,12 +130818,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 12766,
-              "rep_votes": 10930,
-              "other_votes": 448,
-              "total_votes": 24144,
-              "two_party_total": 23696,
-              "margin": -1836,
+              "dem_votes": 6383,
+              "rep_votes": 5465,
+              "other_votes": 224,
+              "total_votes": 12072,
+              "two_party_total": 11848,
+              "margin": -918,
               "margin_pct": -7.75,
               "winner": "DEM",
               "competitiveness": {
@@ -130833,10 +130833,10 @@
                 "color": "#9ecae1"
               },
               "all_parties": {
-                "DEM": 12766,
-                "REP": 10930,
-                "LIB": 432,
-                "OTHER": 16
+                "DEM": 6383,
+                "REP": 5465,
+                "LIB": 216,
+                "OTHER": 8
               }
             },
             "ROBESON": {
@@ -130845,12 +130845,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 23482,
-              "rep_votes": 20866,
-              "other_votes": 644,
-              "total_votes": 44992,
-              "two_party_total": 44348,
-              "margin": -2616,
+              "dem_votes": 11741,
+              "rep_votes": 10433,
+              "other_votes": 322,
+              "total_votes": 22496,
+              "two_party_total": 22174,
+              "margin": -1308,
               "margin_pct": -5.9,
               "winner": "DEM",
               "competitiveness": {
@@ -130860,10 +130860,10 @@
                 "color": "#9ecae1"
               },
               "all_parties": {
-                "DEM": 23482,
-                "REP": 20866,
-                "LIB": 618,
-                "OTHER": 26
+                "DEM": 11741,
+                "REP": 10433,
+                "LIB": 309,
+                "OTHER": 13
               }
             },
             "ROCKINGHAM": {
@@ -130872,12 +130872,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16628,
-              "rep_votes": 31624,
-              "other_votes": 1580,
-              "total_votes": 49832,
-              "two_party_total": 48252,
-              "margin": 14996,
+              "dem_votes": 8314,
+              "rep_votes": 15812,
+              "other_votes": 790,
+              "total_votes": 24916,
+              "two_party_total": 24126,
+              "margin": 7498,
               "margin_pct": 31.08,
               "winner": "REP",
               "competitiveness": {
@@ -130887,10 +130887,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 16628,
-                "REP": 31624,
-                "LIB": 1540,
-                "OTHER": 40
+                "DEM": 8314,
+                "REP": 15812,
+                "LIB": 770,
+                "OTHER": 20
               }
             },
             "ROWAN": {
@@ -130899,12 +130899,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 23810,
-              "rep_votes": 46118,
-              "other_votes": 1900,
-              "total_votes": 71828,
-              "two_party_total": 69928,
-              "margin": 22308,
+              "dem_votes": 11905,
+              "rep_votes": 23059,
+              "other_votes": 950,
+              "total_votes": 35914,
+              "two_party_total": 34964,
+              "margin": 11154,
               "margin_pct": 31.9,
               "winner": "REP",
               "competitiveness": {
@@ -130914,10 +130914,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 23810,
-                "REP": 46118,
-                "LIB": 1856,
-                "OTHER": 44
+                "DEM": 11905,
+                "REP": 23059,
+                "LIB": 928,
+                "OTHER": 22
               }
             },
             "RUTHERFORD": {
@@ -130926,12 +130926,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11200,
-              "rep_votes": 25116,
-              "other_votes": 946,
-              "total_votes": 37262,
-              "two_party_total": 36316,
-              "margin": 13916,
+              "dem_votes": 5600,
+              "rep_votes": 12558,
+              "other_votes": 473,
+              "total_votes": 18631,
+              "two_party_total": 18158,
+              "margin": 6958,
               "margin_pct": 38.32,
               "winner": "REP",
               "competitiveness": {
@@ -130941,10 +130941,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 11200,
-                "REP": 25116,
-                "LIB": 928,
-                "OTHER": 18
+                "DEM": 5600,
+                "REP": 12558,
+                "LIB": 464,
+                "OTHER": 9
               }
             },
             "SAMPSON": {
@@ -130953,12 +130953,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 13916,
-              "rep_votes": 18684,
-              "other_votes": 407,
-              "total_votes": 33007,
-              "two_party_total": 32600,
-              "margin": 4768,
+              "dem_votes": 6958,
+              "rep_votes": 9342,
+              "other_votes": 203,
+              "total_votes": 16503,
+              "two_party_total": 16300,
+              "margin": 2384,
               "margin_pct": 14.63,
               "winner": "REP",
               "competitiveness": {
@@ -130968,10 +130968,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 13916,
-                "REP": 18684,
-                "LIB": 401,
-                "OTHER": 6
+                "DEM": 6958,
+                "REP": 9342,
+                "LIB": 200,
+                "OTHER": 3
               }
             },
             "SCOTLAND": {
@@ -130980,12 +130980,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 9136,
-              "rep_votes": 7208,
-              "other_votes": 298,
-              "total_votes": 16642,
-              "two_party_total": 16344,
-              "margin": -1928,
+              "dem_votes": 4568,
+              "rep_votes": 3604,
+              "other_votes": 149,
+              "total_votes": 8321,
+              "two_party_total": 8172,
+              "margin": -964,
               "margin_pct": -11.8,
               "winner": "DEM",
               "competitiveness": {
@@ -130995,10 +130995,10 @@
                 "color": "#6baed6"
               },
               "all_parties": {
-                "DEM": 9136,
-                "REP": 7208,
-                "LIB": 290,
-                "OTHER": 8
+                "DEM": 4568,
+                "REP": 3604,
+                "LIB": 145,
+                "OTHER": 4
               }
             },
             "STANLY": {
@@ -131007,12 +131007,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 10440,
-              "rep_votes": 25762,
-              "other_votes": 706,
-              "total_votes": 36908,
-              "two_party_total": 36202,
-              "margin": 15322,
+              "dem_votes": 5220,
+              "rep_votes": 12881,
+              "other_votes": 353,
+              "total_votes": 18454,
+              "two_party_total": 18101,
+              "margin": 7661,
               "margin_pct": 42.32,
               "winner": "REP",
               "competitiveness": {
@@ -131022,10 +131022,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 10440,
-                "REP": 25762,
-                "LIB": 686,
-                "OTHER": 20
+                "DEM": 5220,
+                "REP": 12881,
+                "LIB": 343,
+                "OTHER": 10
               }
             },
             "STOKES": {
@@ -131034,12 +131034,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7212,
-              "rep_votes": 20206,
-              "other_votes": 772,
-              "total_votes": 28190,
-              "two_party_total": 27418,
-              "margin": 12994,
+              "dem_votes": 3606,
+              "rep_votes": 10103,
+              "other_votes": 386,
+              "total_votes": 14095,
+              "two_party_total": 13709,
+              "margin": 6497,
               "margin_pct": 47.39,
               "winner": "REP",
               "competitiveness": {
@@ -131049,10 +131049,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 7212,
-                "REP": 20206,
-                "LIB": 764,
-                "OTHER": 8
+                "DEM": 3606,
+                "REP": 10103,
+                "LIB": 382,
+                "OTHER": 4
               }
             },
             "SURRY": {
@@ -131061,12 +131061,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11314,
-              "rep_votes": 24786,
-              "other_votes": 698,
-              "total_votes": 36798,
-              "two_party_total": 36100,
-              "margin": 13472,
+              "dem_votes": 5657,
+              "rep_votes": 12393,
+              "other_votes": 349,
+              "total_votes": 18399,
+              "two_party_total": 18050,
+              "margin": 6736,
               "margin_pct": 37.32,
               "winner": "REP",
               "competitiveness": {
@@ -131076,10 +131076,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 11314,
-                "REP": 24786,
-                "LIB": 694,
-                "OTHER": 4
+                "DEM": 5657,
+                "REP": 12393,
+                "LIB": 347,
+                "OTHER": 2
               }
             },
             "SWAIN": {
@@ -131088,12 +131088,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 3754,
-              "rep_votes": 4282,
-              "other_votes": 304,
-              "total_votes": 8340,
-              "two_party_total": 8036,
-              "margin": 528,
+              "dem_votes": 1877,
+              "rep_votes": 2141,
+              "other_votes": 152,
+              "total_votes": 4170,
+              "two_party_total": 4018,
+              "margin": 264,
               "margin_pct": 6.57,
               "winner": "REP",
               "competitiveness": {
@@ -131103,10 +131103,10 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 3754,
-                "REP": 4282,
-                "LIB": 298,
-                "OTHER": 6
+                "DEM": 1877,
+                "REP": 2141,
+                "LIB": 149,
+                "OTHER": 3
               }
             },
             "TRANSYLVANIA": {
@@ -131115,12 +131115,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 9636,
-              "rep_votes": 14222,
-              "other_votes": 618,
-              "total_votes": 24476,
-              "two_party_total": 23858,
-              "margin": 4586,
+              "dem_votes": 4818,
+              "rep_votes": 7111,
+              "other_votes": 309,
+              "total_votes": 12238,
+              "two_party_total": 11929,
+              "margin": 2293,
               "margin_pct": 19.22,
               "winner": "REP",
               "competitiveness": {
@@ -131130,10 +131130,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 9636,
-                "REP": 14222,
-                "LIB": 616,
-                "OTHER": 2
+                "DEM": 4818,
+                "REP": 7111,
+                "LIB": 308,
+                "OTHER": 1
               }
             },
             "TYRRELL": {
@@ -131142,12 +131142,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 1216,
-              "rep_votes": 1382,
-              "other_votes": 54,
-              "total_votes": 2652,
-              "two_party_total": 2598,
-              "margin": 166,
+              "dem_votes": 608,
+              "rep_votes": 691,
+              "other_votes": 27,
+              "total_votes": 1326,
+              "two_party_total": 1299,
+              "margin": 83,
               "margin_pct": 6.39,
               "winner": "REP",
               "competitiveness": {
@@ -131157,9 +131157,9 @@
                 "color": "#fb6a4a"
               },
               "all_parties": {
-                "DEM": 1216,
-                "REP": 1382,
-                "LIB": 54,
+                "DEM": 608,
+                "REP": 691,
+                "LIB": 27,
                 "OTHER": 0
               }
             },
@@ -131169,12 +131169,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 28158,
-              "rep_votes": 68998,
-              "other_votes": 2232,
-              "total_votes": 99388,
-              "two_party_total": 97156,
-              "margin": 40840,
+              "dem_votes": 14079,
+              "rep_votes": 34499,
+              "other_votes": 1116,
+              "total_votes": 49694,
+              "two_party_total": 48578,
+              "margin": 20420,
               "margin_pct": 42.04,
               "winner": "REP",
               "competitiveness": {
@@ -131184,10 +131184,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 28158,
-                "REP": 68998,
-                "LIB": 2172,
-                "OTHER": 60
+                "DEM": 14079,
+                "REP": 34499,
+                "LIB": 1086,
+                "OTHER": 30
               }
             },
             "VANCE": {
@@ -131196,12 +131196,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 16208,
-              "rep_votes": 11028,
-              "other_votes": 516,
-              "total_votes": 27752,
-              "two_party_total": 27236,
-              "margin": -5180,
+              "dem_votes": 8104,
+              "rep_votes": 5514,
+              "other_votes": 258,
+              "total_votes": 13876,
+              "two_party_total": 13618,
+              "margin": -2590,
               "margin_pct": -19.02,
               "winner": "DEM",
               "competitiveness": {
@@ -131211,10 +131211,10 @@
                 "color": "#6baed6"
               },
               "all_parties": {
-                "DEM": 16208,
-                "REP": 11028,
-                "LIB": 504,
-                "OTHER": 12
+                "DEM": 8104,
+                "REP": 5514,
+                "LIB": 252,
+                "OTHER": 6
               }
             },
             "WAKE": {
@@ -131223,12 +131223,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 264364,
-              "rep_votes": 270822,
-              "other_votes": 13164,
-              "total_votes": 548350,
-              "two_party_total": 535186,
-              "margin": 6458,
+              "dem_votes": 132182,
+              "rep_votes": 135411,
+              "other_votes": 6582,
+              "total_votes": 274175,
+              "two_party_total": 267593,
+              "margin": 3229,
               "margin_pct": 1.21,
               "winner": "REP",
               "competitiveness": {
@@ -131238,10 +131238,10 @@
                 "color": "#fcae91"
               },
               "all_parties": {
-                "DEM": 264364,
-                "REP": 270822,
-                "LIB": 12890,
-                "OTHER": 274
+                "DEM": 132182,
+                "REP": 135411,
+                "LIB": 6445,
+                "OTHER": 137
               }
             },
             "WARREN": {
@@ -131250,12 +131250,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 8258,
-              "rep_votes": 4340,
-              "other_votes": 150,
-              "total_votes": 12748,
-              "two_party_total": 12598,
-              "margin": -3918,
+              "dem_votes": 4129,
+              "rep_votes": 2170,
+              "other_votes": 75,
+              "total_votes": 6374,
+              "two_party_total": 6299,
+              "margin": -1959,
               "margin_pct": -31.1,
               "winner": "DEM",
               "competitiveness": {
@@ -131265,10 +131265,10 @@
                 "color": "#08519c"
               },
               "all_parties": {
-                "DEM": 8258,
-                "REP": 4340,
-                "LIB": 146,
-                "OTHER": 4
+                "DEM": 4129,
+                "REP": 2170,
+                "LIB": 73,
+                "OTHER": 2
               }
             },
             "WASHINGTON": {
@@ -131277,12 +131277,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 4928,
-              "rep_votes": 3942,
-              "other_votes": 144,
-              "total_votes": 9014,
-              "two_party_total": 8870,
-              "margin": -986,
+              "dem_votes": 2464,
+              "rep_votes": 1971,
+              "other_votes": 72,
+              "total_votes": 4507,
+              "two_party_total": 4435,
+              "margin": -493,
               "margin_pct": -11.12,
               "winner": "DEM",
               "competitiveness": {
@@ -131292,10 +131292,10 @@
                 "color": "#6baed6"
               },
               "all_parties": {
-                "DEM": 4928,
-                "REP": 3942,
-                "LIB": 140,
-                "OTHER": 4
+                "DEM": 2464,
+                "REP": 1971,
+                "LIB": 70,
+                "OTHER": 2
               }
             },
             "WATAUGA": {
@@ -131304,12 +131304,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 13968,
-              "rep_votes": 18514,
-              "other_votes": 1030,
-              "total_votes": 33512,
-              "two_party_total": 32482,
-              "margin": 4546,
+              "dem_votes": 6984,
+              "rep_votes": 9257,
+              "other_votes": 515,
+              "total_votes": 16756,
+              "two_party_total": 16241,
+              "margin": 2273,
               "margin_pct": 14.0,
               "winner": "REP",
               "competitiveness": {
@@ -131319,10 +131319,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 13968,
-                "REP": 18514,
-                "LIB": 1010,
-                "OTHER": 20
+                "DEM": 6984,
+                "REP": 9257,
+                "LIB": 505,
+                "OTHER": 10
               }
             },
             "WAYNE": {
@@ -131331,12 +131331,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 24176,
-              "rep_votes": 36020,
-              "other_votes": 770,
-              "total_votes": 60966,
-              "two_party_total": 60196,
-              "margin": 11844,
+              "dem_votes": 12088,
+              "rep_votes": 18010,
+              "other_votes": 385,
+              "total_votes": 30483,
+              "two_party_total": 30098,
+              "margin": 5922,
               "margin_pct": 19.68,
               "winner": "REP",
               "competitiveness": {
@@ -131346,10 +131346,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 24176,
-                "REP": 36020,
-                "LIB": 758,
-                "OTHER": 12
+                "DEM": 12088,
+                "REP": 18010,
+                "LIB": 379,
+                "OTHER": 6
               }
             },
             "WILKES": {
@@ -131358,12 +131358,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 11188,
-              "rep_votes": 26348,
-              "other_votes": 1244,
-              "total_votes": 38780,
-              "two_party_total": 37536,
-              "margin": 15160,
+              "dem_votes": 5594,
+              "rep_votes": 13174,
+              "other_votes": 622,
+              "total_votes": 19390,
+              "two_party_total": 18768,
+              "margin": 7580,
               "margin_pct": 40.39,
               "winner": "REP",
               "competitiveness": {
@@ -131373,10 +131373,10 @@
                 "color": "#a50f15"
               },
               "all_parties": {
-                "DEM": 11188,
-                "REP": 26348,
-                "LIB": 1228,
-                "OTHER": 16
+                "DEM": 5594,
+                "REP": 13174,
+                "LIB": 614,
+                "OTHER": 8
               }
             },
             "WILSON": {
@@ -131385,12 +131385,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 27122,
-              "rep_votes": 24784,
-              "other_votes": 834,
-              "total_votes": 52740,
-              "two_party_total": 51906,
-              "margin": -2338,
+              "dem_votes": 13561,
+              "rep_votes": 12392,
+              "other_votes": 417,
+              "total_votes": 26370,
+              "two_party_total": 25953,
+              "margin": -1169,
               "margin_pct": -4.5,
               "winner": "DEM",
               "competitiveness": {
@@ -131400,10 +131400,10 @@
                 "color": "#c6dbef"
               },
               "all_parties": {
-                "DEM": 27122,
-                "REP": 24784,
-                "LIB": 828,
-                "OTHER": 6
+                "DEM": 13561,
+                "REP": 12392,
+                "LIB": 414,
+                "OTHER": 3
               }
             },
             "YADKIN": {
@@ -131412,12 +131412,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 4740,
-              "rep_votes": 17816,
-              "other_votes": 570,
-              "total_votes": 23126,
-              "two_party_total": 22556,
-              "margin": 13076,
+              "dem_votes": 2370,
+              "rep_votes": 8908,
+              "other_votes": 285,
+              "total_votes": 11563,
+              "two_party_total": 11278,
+              "margin": 6538,
               "margin_pct": 57.97,
               "winner": "REP",
               "competitiveness": {
@@ -131427,10 +131427,10 @@
                 "color": "#67000d"
               },
               "all_parties": {
-                "DEM": 4740,
-                "REP": 17816,
-                "LIB": 566,
-                "OTHER": 4
+                "DEM": 2370,
+                "REP": 8908,
+                "LIB": 283,
+                "OTHER": 2
               }
             },
             "YANCEY": {
@@ -131439,12 +131439,12 @@
               "year": "2010",
               "dem_candidate": "Elaine Marshall",
               "rep_candidate": "Richard Burr",
-              "dem_votes": 7878,
-              "rep_votes": 9710,
-              "other_votes": 388,
-              "total_votes": 17976,
-              "two_party_total": 17588,
-              "margin": 1832,
+              "dem_votes": 3939,
+              "rep_votes": 4855,
+              "other_votes": 194,
+              "total_votes": 8988,
+              "two_party_total": 8794,
+              "margin": 916,
               "margin_pct": 10.42,
               "winner": "REP",
               "competitiveness": {
@@ -131454,10 +131454,10 @@
                 "color": "#ef3b2c"
               },
               "all_parties": {
-                "DEM": 7878,
-                "REP": 9710,
-                "LIB": 380,
-                "OTHER": 8
+                "DEM": 3939,
+                "REP": 4855,
+                "LIB": 190,
+                "OTHER": 4
               }
             }
           }

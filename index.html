@@ -844,6 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
     legendColors.forEach(function(el) {
       var orig = el.getAttribute('data-orig-bg');
       if (!orig) {
+        // Always use the inline style for original color
         orig = el.style.background;
         el.setAttribute('data-orig-bg', orig);
       }
@@ -866,9 +867,16 @@ document.addEventListener('DOMContentLoaded', function() {
           '#08519c': '#0066cc',
           '#08306b': '#004d99'
         };
-        var match = orig.match(/#([0-9a-fA-F]{6})/);
-        if (match && cbMap[match[0]]) {
-          el.style.background = cbMap[match[0]];
+        // Use the original color as key (strip spaces, lowercase)
+        var key = orig.trim().toLowerCase();
+        if (cbMap[key]) {
+          el.style.background = cbMap[key];
+        } else {
+          // Fallback: try to extract hex code
+          var match = key.match(/#([0-9a-fA-F]{6})/);
+          if (match && cbMap['#' + match[1]]) {
+            el.style.background = cbMap['#' + match[1]];
+          }
         }
       } else {
         el.style.background = orig;

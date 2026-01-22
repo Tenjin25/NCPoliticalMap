@@ -213,7 +213,7 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <meta charset='utf-8'>
   <title>North Carolina Political Realignment Map (2000-2024)</title>
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes'>
   <meta property="og:title" content="NC Political Realignment Map (2000-2024)">
   <meta property="og:description" content="Interactive visualization of North Carolina's political trends from 2000 to 2024, showing county-level voting patterns.">
   <meta property="og:image" content="preview.png">
@@ -883,7 +883,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const contestSelect = document.getElementById('contestSelect');
       const contestKey = contestSelect && contestSelect.value;
       if (contestKey) {
-        applyContest(contestKey);
+        // Use setTimeout to ensure class is applied before reapplying
+        setTimeout(function() {
+          applyContest(contestKey);
+        }, 10);
       }
     };
   }

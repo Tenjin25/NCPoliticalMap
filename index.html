@@ -3419,9 +3419,11 @@ function filterValidContests(contests) {
         // Match county names (Tennessee uses uppercase in data, proper case in GeoJSON)
         // Tennessee data: "ANDERSON", GeoJSON: "Anderson" 
         // Tennessee data: "MONTGOMERY", GeoJSON: "Montgomery"
-        const normalizedCountyName = countyName.replace(/_/g, ' '); // Handle VAN_BUREN -> VAN BUREN
-        
-        expr.push(['==', ['upcase', ['get', 'NAME20']], normalizedCountyName]);
+        const normalizedCountyName = countyName.replace(/_/g, ' ').trim(); // Handle VAN_BUREN -> VAN BUREN
+        const normalizedCountyNameUpper = normalizedCountyName.toUpperCase();
+
+        // Match either NAME20 or NAMELSAD20 (uppercased) to handle different GeoJSON schemas
+        expr.push(['any', ['==', ['upcase', ['get', 'NAME20']], normalizedCountyNameUpper], ['==', ['upcase', ['get', 'NAMELSAD20']], normalizedCountyNameUpper]]);
         expr.push(color);
         countiesProcessed++;
       });

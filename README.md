@@ -62,7 +62,7 @@ Universities are encouraged to integrate the map into their curriculum and resea
 
 ### Screenshots
 **V2 Layout**
-![Map Screenshot](Screenshots/V2_Preview.png)
+![Map Screenshot](Screenshots/V2_UpdatedStreets.png)
 **Statewide County Map**
 ![Statewide County Map](Screenshots/V2_UpdatedOpacity.png)
 
@@ -82,7 +82,7 @@ Universities are encouraged to integrate the map into their curriculum and resea
 ![Thermometer Bar](Screenshots/V2_ThermometerBar.png)
 
 **Updated Layout**
-![Updated Layout](Screenshots/V2_Layout.png)
+![Updated Layout](Screenshots/V2_UpdatedLayout.png)
 
 ## Usage
 Open index.html in a modern web browser (or visit the live demo link above).

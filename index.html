@@ -3376,52 +3376,43 @@ function filterValidContests(contests) {
       const expr = ['case'];
       let countiesProcessed = 0;
       
-      // Check if accessibility mode is active
-      const isColorblindMode = document.body.classList.contains('colorblind-mode');
-      
-      // Define colorblind-friendly color function
-      function getAccessibilityColor(marginPct, winner) {
-        if (marginPct >= 40) {
-          return winner === 'R' ? '#cc5500' : '#004d99';
-        } else if (marginPct >= 30 && marginPct <= 39.99) {
-          return winner === 'R' ? '#ff6600' : '#0066cc';
-        } else if (marginPct >= 20 && marginPct <= 29.99) {
-          return winner === 'R' ? '#ff8833' : '#0080ff';
-        } else if (marginPct >= 10 && marginPct <= 19.99) {
-          return winner === 'R' ? '#ffaa55' : '#3399ff';
-        } else if (marginPct >= 5.51 && marginPct <= 9.99) {
-          return winner === 'R' ? '#ffcc77' : '#66b3ff';
-        } else if (marginPct >= 1 && marginPct <= 5.5) {
-          return winner === 'R' ? '#ffdd99' : '#99ccff';
-        } else if (marginPct >= 0.51 && marginPct <= 0.99) {
-          return winner === 'R' ? '#ffeecc' : '#b3d9ff';
-        } else {
-          return '#cccccc';
-        }
-      }
-      
       Object.entries(contestData.results).forEach(([countyName, countyResult]) => {
+        // Always check colorblind mode at call time
+        const isColorblindMode = document.body.classList.contains('colorblind-mode');
+        // Colorblind-friendly color function
+        function getAccessibilityColor(marginPct, winner) {
+          if (marginPct >= 40) {
+            return winner === 'R' ? '#cc5500' : '#004d99';
+          } else if (marginPct >= 30 && marginPct <= 39.99) {
+            return winner === 'R' ? '#ff6600' : '#0066cc';
+          } else if (marginPct >= 20 && marginPct <= 29.99) {
+            return winner === 'R' ? '#ff8833' : '#0080ff';
+          } else if (marginPct >= 10 && marginPct <= 19.99) {
+            return winner === 'R' ? '#ffaa55' : '#3399ff';
+          } else if (marginPct >= 5.51 && marginPct <= 9.99) {
+            return winner === 'R' ? '#ffcc77' : '#66b3ff';
+          } else if (marginPct >= 1 && marginPct <= 5.5) {
+            return winner === 'R' ? '#ffdd99' : '#99ccff';
+          } else if (marginPct >= 0.51 && marginPct <= 0.99) {
+            return winner === 'R' ? '#ffeecc' : '#b3d9ff';
+          } else {
+            return '#cccccc';
+          }
+        }
         // Compute color on-the-fly using margin data to ensure consistency
         const demVotes = countyResult.dem_votes || 0;
         const repVotes = countyResult.rep_votes || 0;
         const totalVotes = countyResult.total_votes || countyResult.two_party_total || (demVotes + repVotes);
-        
         if (totalVotes === 0) return; // Skip counties with no votes
-        
         const demPct = (demVotes / totalVotes) * 100;
         const repPct = (repVotes / totalVotes) * 100;
         const marginPct = Math.abs(repPct - demPct);
         const winner = repPct > demPct ? 'R' : 'D';
-        
         // Use accessibility colors if colorblind mode is active
         const color = isColorblindMode ? getAccessibilityColor(marginPct, winner) : categoryColorForMargin(marginPct, winner);
-        
         // Match county names (Tennessee uses uppercase in data, proper case in GeoJSON)
-        // Tennessee data: "ANDERSON", GeoJSON: "Anderson" 
-        // Tennessee data: "MONTGOMERY", GeoJSON: "Montgomery"
         const normalizedCountyName = countyName.replace(/_/g, ' ').trim(); // Handle VAN_BUREN -> VAN BUREN
         const normalizedCountyNameUpper = normalizedCountyName.toUpperCase();
-
         // Match either NAME20 or NAMELSAD20 (uppercased) to handle different GeoJSON schemas
         expr.push(['any', ['==', ['upcase', ['get', 'NAME20']], normalizedCountyNameUpper], ['==', ['upcase', ['get', 'NAMELSAD20']], normalizedCountyNameUpper]]);
         expr.push(color);

@@ -887,6 +887,11 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
           applyContest(contestKey);
         }, 10);
+      } else {
+        // No contest selected: reset map to default color
+        if (window.map && map.getLayer && map.getLayer('county-fill')) {
+          map.setPaintProperty('county-fill', 'fill-color', '#f0f0f0');
+        }
       }
     };
   }

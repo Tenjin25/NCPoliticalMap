@@ -16,7 +16,7 @@ This project is ideal for use in university courses, research projects, and outr
 
 If you use this project in research or coursework, please cite as follows:
 
-> Davis, S. (2025). NC Political Realignment Map (2008-2024). Interactive web application. https://trickconfidence.addictiveservers.com/ultimate_nc_political_map_CLEAN.html
+> Davis, S. (2025). NC Political Realignment Map (2000-2024). Interactive web application. [https://tenjin25.github.io/NCPoliticalMap/)]
 
 ## Contact & Collaboration
 

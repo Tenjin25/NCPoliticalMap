@@ -886,12 +886,36 @@ function setupAccessibilityToggle() {
       
       // Reapply current contest with new color mode
       const contestSelect = document.getElementById('contestSelect');
-      const contestKey = contestSelect ? contestSelect.value : null;
-      console.log('Contest key:', contestKey);
-      if (contestKey && typeof applyContest === 'function') {
-        applyContest(contestKey);
+      if (!contestSelect) {
+        console.log('Contest select not found');
+        return;
+      }
+      
+      const contestValue = contestSelect.value;
+      console.log('Contest value:', contestValue);
+      
+      if (!contestValue) {
+        console.log('No contest selected');
+        return;
+      }
+      
+      // Check if this is the new format (year||cat||key) or old format (type_year)
+      if (contestValue.includes('||')) {
+        // New format: parse and call handleContestSelect
+        console.log('Using new contest format');
+        if (typeof handleContestSelect === 'function') {
+          handleContestSelect(contestValue);
+        } else {
+          console.error('handleContestSelect not available');
+        }
       } else {
-        console.log('No contest selected or applyContest not available');
+        // Old format: call applyContest directly
+        console.log('Using old contest format');
+        if (typeof applyContest === 'function') {
+          applyContest(contestValue);
+        } else {
+          console.error('applyContest not available');
+        }
       }
     };
   } else {
@@ -1435,17 +1459,24 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
 
       currentContest = { year, category: cat, key: contestKey, data: contestObj };
 
-      // Try to reuse existing applyContest/applyCountyContest/updateMapColors logic
-      if (typeof applyContest === 'function') {
-        try { applyContest(`${cat}_${year}`); } catch (e) { console.warn('applyContest failed:', e); }
+      // Apply the county contest directly
+      if (typeof applyCountyContest === 'function') {
+        try { 
+          console.log('Applying contest:', cat, year);
+          applyCountyContest(cat, year); 
+        } catch (e) { 
+          console.warn('applyCountyContest failed:', e); 
+        }
       }
-      if (typeof updateMapColors === 'function') updateMapColors();
-      // Only call updateSidebar if a county is selected
-// Only call showCountyDetails if a county is selected
+      
+      // Only call showCountyDetails if a county is selected
       if (typeof showCountyDetails === 'function' && lastSelectedCounty) {
         showCountyDetails(lastSelectedCounty);
       }
     }
+    
+    // Make handleContestSelect globally available for accessibility toggle
+    window.handleContestSelect = handleContestSelect;
     function populateContestSelectFromCSV(csvData) {
       const sel = document.getElementById('contestSelect');
       if (sel.dataset.populated === 'true') return; // Only populate once per data load
@@ -3440,7 +3471,15 @@ function filterValidContests(contests) {
       
       try {
         // Apply color expression to map
+        console.log('Applying color expression with', countiesProcessed, 'counties, colorblind mode:', isColorblindMode);
         map.setPaintProperty('county-fill', 'fill-color', expr);
+        
+        // Force map repaint to ensure changes are visible
+        if (map.getLayer('county-fill')) {
+          map.setPaintProperty('county-fill', 'fill-opacity', 0.78);
+        }
+        
+        console.log('Color expression applied successfully');
       } catch (error) {
         console.error('Error applying color expression:', error);
         return setStatus('Error applying colors to map');

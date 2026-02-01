@@ -830,37 +830,80 @@ function setupAccessibilityToggle() {
   function updateLegendColors() {
     var colorblind = document.body.classList.contains('colorblind-mode');
     var legendColors = document.querySelectorAll('.legend-color');
+    
+    // Complete bidirectional color mapping
+    var standardColors = {
+      'rep-annihilation': '#67000d',
+      'rep-dominant': '#a50f15',
+      'rep-stronghold': '#cb181d',
+      'rep-safe': '#ef3b2c',
+      'rep-likely': '#fb6a4a',
+      'rep-lean': '#fcae91',
+      'rep-tilt': '#fee8c8',
+      'tossup': '#f7f7f7',
+      'dem-tilt': '#e1f5fe',
+      'dem-lean': '#c6dbef',
+      'dem-likely': '#9ecae1',
+      'dem-safe': '#6baed6',
+      'dem-stronghold': '#3182bd',
+      'dem-dominant': '#08519c',
+      'dem-annihilation': '#08306b'
+    };
+    
+    var colorblindColors = {
+      'rep-annihilation': '#cc5500',
+      'rep-dominant': '#ff6600',
+      'rep-stronghold': '#ff8833',
+      'rep-safe': '#ffaa55',
+      'rep-likely': '#ffcc77',
+      'rep-lean': '#ffdd99',
+      'rep-tilt': '#ffeecc',
+      'tossup': '#cccccc',
+      'dem-tilt': '#b3d9ff',
+      'dem-lean': '#99ccff',
+      'dem-likely': '#66b3ff',
+      'dem-safe': '#3399ff',
+      'dem-stronghold': '#0080ff',
+      'dem-dominant': '#0066cc',
+      'dem-annihilation': '#004d99'
+    };
+    
+    // Helper to convert RGB to hex
+    function rgbToHex(rgb) {
+      if (!rgb || rgb.indexOf('rgb') === -1) return rgb;
+      var parts = rgb.match(/\d+/g);
+      if (!parts || parts.length < 3) return rgb;
+      return '#' + parts.slice(0, 3).map(function(x) {
+        return ('0' + parseInt(x).toString(16)).slice(-2);
+      }).join('');
+    }
+    
+    // Reverse lookup maps
+    var standardToKey = {};
+    var colorblindToKey = {};
+    Object.keys(standardColors).forEach(function(key) {
+      standardToKey[standardColors[key].toLowerCase()] = key;
+      colorblindToKey[colorblindColors[key].toLowerCase()] = key;
+    });
+    
     legendColors.forEach(function(el) {
-      var orig = el.getAttribute('data-orig-bg');
-      if (!orig) {
-        orig = el.style.background;
-        el.setAttribute('data-orig-bg', orig);
+      // Get current color and convert to hex if needed
+      var currentStyle = el.style.background || el.style.backgroundColor;
+      var currentColor = rgbToHex(currentStyle).toLowerCase();
+      
+      // Store original if not stored
+      if (!el.getAttribute('data-orig-bg')) {
+        el.setAttribute('data-orig-bg', currentColor);
       }
-      if (colorblind) {
-        // Map original color to colorblind-friendly color
-        var cbMap = {
-          '#67000d': '#cc5500',
-          '#a50f15': '#ff6600',
-          '#cb181d': '#ff8833',
-          '#ef3b2c': '#ffaa55',
-          '#fb6a4a': '#ffcc77',
-          '#fcae91': '#ffdd99',
-          '#fee8c8': '#ffeecc',
-          '#f7f7f7': '#cccccc',
-          '#e1f5fe': '#b3d9ff',
-          '#c6dbef': '#99ccff',
-          '#9ecae1': '#66b3ff',
-          '#6baed6': '#3399ff',
-          '#3182bd': '#0080ff',
-          '#08519c': '#0066cc',
-          '#08306b': '#004d99'
-        };
-        var match = orig.match(/#([0-9a-fA-F]{6})/);
-        if (match && cbMap[match[0]]) {
-          el.style.background = cbMap[match[0]];
-        }
-      } else {
-        el.style.background = orig;
+      
+      // Find which category this color belongs to
+      var categoryKey = standardToKey[currentColor] || colorblindToKey[currentColor];
+      
+      if (categoryKey) {
+        // Apply the appropriate color scheme
+        var newColor = colorblind ? colorblindColors[categoryKey] : standardColors[categoryKey];
+        el.style.background = newColor;
+        console.log('Updated legend color:', categoryKey, 'from', currentColor, 'to', newColor);
       }
     });
   }

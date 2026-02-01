@@ -813,7 +813,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="mode-toggle active" id="county-mode" onclick="setAnalysisMode('county')">County Results</div>
             </div>
             <div class="control-group">
-                <label>📊 Contest Type:</label>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <label>📊 Contest Type:</label>
+                  <button id="accessibility-toggle" title="Accessibility: Color Blind Mode" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">♿</button>
+                </div>
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>
                 </select>
@@ -3191,6 +3194,30 @@ function filterValidContests(contests) {
       const expr = ['case'];
       let countiesProcessed = 0;
       
+      // Check if colorblind mode is active
+      const isColorblindMode = document.body.classList.contains('colorblind-mode');
+      
+      // Define colorblind-friendly color function
+      function getAccessibilityColor(marginPct, winner) {
+        if (marginPct >= 40) {
+          return winner === 'R' ? '#cc5500' : '#004d99';
+        } else if (marginPct >= 30 && marginPct <= 39.99) {
+          return winner === 'R' ? '#ff6600' : '#0066cc';
+        } else if (marginPct >= 20 && marginPct <= 29.99) {
+          return winner === 'R' ? '#ff8833' : '#0080ff';
+        } else if (marginPct >= 10 && marginPct <= 19.99) {
+          return winner === 'R' ? '#ffaa55' : '#3399ff';
+        } else if (marginPct >= 5.51 && marginPct <= 9.99) {
+          return winner === 'R' ? '#ffcc77' : '#66b3ff';
+        } else if (marginPct >= 1 && marginPct <= 5.5) {
+          return winner === 'R' ? '#ffdd99' : '#99ccff';
+        } else if (marginPct >= 0.51 && marginPct <= 0.99) {
+          return winner === 'R' ? '#ffeecc' : '#b3d9ff';
+        } else {
+          return '#cccccc';
+        }
+      }
+      
       Object.entries(contestData.results).forEach(([countyName, countyResult]) => {
         // Compute color on-the-fly using margin data to ensure consistency
         const demVotes = countyResult.dem_votes || 0;
@@ -3204,8 +3231,8 @@ function filterValidContests(contests) {
         const marginPct = Math.abs(repPct - demPct);
         const winner = repPct > demPct ? 'R' : 'D';
         
-        // Use categoryColorForMargin for consistent colors
-        const color = categoryColorForMargin(marginPct, winner);
+        // Use accessibility colors if colorblind mode is active, otherwise use standard colors
+        const color = isColorblindMode ? getAccessibilityColor(marginPct, winner) : categoryColorForMargin(marginPct, winner);
         
         // Match county names (Tennessee uses uppercase in data, proper case in GeoJSON)
         // Tennessee data: "ANDERSON", GeoJSON: "Anderson" 

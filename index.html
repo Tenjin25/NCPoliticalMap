@@ -330,13 +330,13 @@ body {
   background: #2563eb;
   border: 1px solid #1d4ed8;
   border-radius: 6px;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: white;
   transition: all 0.2s ease;
@@ -684,21 +684,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if (colorblind) {
         // Map original color to colorblind-friendly color
         var cbMap = {
-          '#67000d': '#ff9900',
-          '#a50f15': '#ffb84d',
-          '#cb181d': '#ffd699',
-          '#ef3b2c': '#ffe5cc',
-          '#fb6a4a': '#fff2e6',
-          '#fcae91': '#ffe5cc',
-          '#fee8c8': '#fff2e6',
+          '#67000d': '#cc5500',
+          '#a50f15': '#ff6600',
+          '#cb181d': '#ff8833',
+          '#ef3b2c': '#ffaa55',
+          '#fb6a4a': '#ffcc77',
+          '#fcae91': '#ffdd99',
+          '#fee8c8': '#ffeecc',
           '#f7f7f7': '#cccccc',
-          '#e1f5fe': '#3399ff',
-          '#c6dbef': '#66b3ff',
-          '#9ecae1': '#99ccff',
-          '#6baed6': '#b3d1ff',
-          '#3182bd': '#3366cc',
-          '#08519c': '#003399',
-          '#08306b': '#001f4d'
+          '#e1f5fe': '#b3d9ff',
+          '#c6dbef': '#99ccff',
+          '#9ecae1': '#66b3ff',
+          '#6baed6': '#3399ff',
+          '#3182bd': '#0080ff',
+          '#08519c': '#0066cc',
+          '#08306b': '#004d99'
         };
         var match = orig.match(/#([0-9a-fA-F]{6})/);
         if (match && cbMap[match[0]]) {
@@ -713,72 +713,11 @@ document.addEventListener('DOMContentLoaded', function() {
     accBtn.onclick = function() {
       document.body.classList.toggle('colorblind-mode');
       updateLegendColors();
-      // Update map colors for accessibility mode
-      if (document.body.classList.contains('colorblind-mode')) {
-        // Blue/orange shades for colorblind mode, matching legend categories
-        const expr = ['case'];
-        const contestSelect = document.getElementById('contestSelect');
-        const contestKey = contestSelect && contestSelect.value;
-        if (contestKey && electionData) {
-          const lastUnderscoreIndex = contestKey.lastIndexOf('_');
-          const contestType = contestKey.substring(0, lastUnderscoreIndex);
-          const year = contestKey.substring(lastUnderscoreIndex + 1);
-          const contestData = electionData.filter(row => row.year == year);
-          function normalizeCountyName(name) {
-            return (name || '')
-              .replace(/St\.? Lucie/i, 'St Lucie')
-              .replace(/St\.? Johns/i, 'St Johns')
-              .replace(/[^a-z0-9 ]/gi, '')
-              .replace(/\s+/g, ' ')
-              .trim()
-              .toUpperCase();
-          }
-          function cbColorForMargin(marginPct, winner) {
-              // Use same logic as sidebar: winner labels and rounded margin
-              if (marginPct >= 40) {
-                return winner === 'Republican' ? '#67000d' : '#0c1d56';
-              } else if (marginPct >= 30) {
-                return winner === 'Republican' ? '#7f1d1d' : '#1e3a8a';
-              } else if (marginPct >= 20) {
-                return winner === 'Republican' ? '#991b1b' : '#1e40af';
-              } else if (marginPct >= 10) {
-                return winner === 'Republican' ? '#dc2626' : '#3b82f6';
-              } else if (marginPct >= 5.5) {
-                return winner === 'Republican' ? '#ef4444' : '#60a5fa';
-              } else if (marginPct >= 1) {
-                return winner === 'Republican' ? '#f87171' : '#93c5fd';
-              } else if (marginPct >= 0.5) {
-                return winner === 'Republican' ? '#fca5a5' : '#bfdbfe';
-              } else {
-                return winner === 'Democratic' ? '#2563eb' : (winner === 'Republican' ? '#dc2626' : '#64748b');
-              }
-          }
-          contestData.forEach(row => {
-          const countyName = normalizeCountyName(row.county);
-          const demVotes = row[`${contestType}_dem`] || 0;
-          const repVotes = row[`${contestType}_rep`] || 0;
-          const totalVotes = row[`${contestType}_total`] || 0;
-          if (totalVotes === 0) return;
-          const demPct = (demVotes / totalVotes) * 100;
-          const repPct = (repVotes / totalVotes) * 100;
-          const winner = repPct > demPct ? 'Republican' : (demPct > repPct ? 'Democratic' : 'Tie');
-          const marginPct = Math.abs(repPct - demPct);
-          // Use rounded margin for color assignment
-          const roundedMargin = Math.round(marginPct * 100) / 100;
-          const color = cbColorForMargin(roundedMargin, winner);
-          expr.push(['==', ['upcase', ['get', 'County']], countyName]);
-          expr.push(color);
-          });
-          expr.push('#e0e0e0'); // default color
-          if (map.getLayer('county-fill')) {
-            map.setPaintProperty('county-fill', 'fill-color', expr);
-          }
-        }
-      } else {
-        // Restore normal contest colors
-        const contestSelect = document.getElementById('contestSelect');
-        const contestKey = contestSelect && contestSelect.value;
-        if (contestKey) applyContest(contestKey);
+      // Reapply current contest with new color mode
+      const contestSelect = document.getElementById('contestSelect');
+      const contestKey = contestSelect && contestSelect.value;
+      if (contestKey) {
+        applyContest(contestKey);
       }
     };
   }

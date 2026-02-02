@@ -973,6 +973,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // Setup will be called again after map loads to ensure applyContest exists
   setupAccessibilityToggle();
 });
+
+// Toggle county labels on/off
+let countyLabelsVisible = true;
+function toggleCountyLabels() {
+  if (!map || !map.getLayer('county-label')) {
+    console.log('County labels layer not yet loaded');
+    return;
+  }
+  
+  countyLabelsVisible = !countyLabelsVisible;
+  const visibility = countyLabelsVisible ? 'visible' : 'none';
+  map.setLayoutProperty('county-label', 'visibility', visibility);
+  
+  // Update button appearance
+  const btn = document.getElementById('labels-toggle');
+  if (btn) {
+    btn.style.opacity = countyLabelsVisible ? '1' : '0.5';
+    btn.title = countyLabelsVisible ? 'Hide County Labels' : 'Show County Labels';
+  }
+}
 </script>
 <div id="map"></div>
   <!-- Sidebar for County Details and Analysis (single instance only) -->
@@ -1066,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                   <label>📊 Contest Type:</label>
                   <button id="accessibility-toggle" title="Accessibility: Color Blind Mode" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">♿</button>
+                  <button id="labels-toggle" title="Toggle County Labels" onclick="toggleCountyLabels()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">🏷️</button>
                 </div>
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>

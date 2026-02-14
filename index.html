@@ -2330,15 +2330,19 @@ function toggleSidebar() {
             const props = e.features[0].properties;
             const countyName = props.NAME20 || props.NAMELSAD20 || props.county_name || props.County || props.COUNTYNAME || props.NAME || props.name;
             if (countyName) {
-              showCountyDetails(countyName);
               lastSelectedCounty = countyName;
-              // Optionally, expand sidebar if minimized
+              showCountyDetails(countyName);
+              // Always expand sidebar and show content
               const sidebar = document.getElementById('sidebar');
+              const sidebarContent = document.querySelector('.sidebar-content');
+              const detailsDiv = document.getElementById('county-details');
               if (sidebar && sidebar.classList.contains('minimized')) {
                 sidebar.classList.remove('minimized');
                 const btn = document.getElementById('sidebar-minimize-btn');
                 if (btn) btn.textContent = '−';
               }
+              if (sidebarContent) sidebarContent.style.display = 'block';
+              if (detailsDiv) detailsDiv.style.display = 'block';
             }
           }
         });

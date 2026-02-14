@@ -3314,6 +3314,8 @@ function filterValidContests(contests) {
   const countyName = county.properties.NAME20 || county.properties.NAMELSAD20 || county.properties.county_name || county.properties.name;
       
       if (countyName) {
+        // Update lastSelectedCounty before toggling sidebar
+        lastSelectedCounty = countyName;
         updateSidebar(countyName);
         
         // Expand sidebar if minimized

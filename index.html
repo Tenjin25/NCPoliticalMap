@@ -151,18 +151,7 @@
     .finding-card p {
       font-size: 12px !important;
     }
-    
-    /* Mode toggles - Stack on very small screens */
-    .analysis-mode {
-      gap: 4px !important;
-    }
-    
-    .mode-toggle {
-      padding: 8px 12px !important;
-      font-size: 12px !important;
-    }
-    
-    /* Search input */
+/* Search input */
     #county-search {
       font-size: 14px !important;
       padding: 10px !important;
@@ -193,12 +182,7 @@
       height: 70vh !important;
       max-height: 70vh !important;
     }
-    
-    .mode-toggle {
-      font-size: 11px !important;
-      padding: 6px 8px !important;
-    }
-  }
+}
   
   /* Tablet landscape adjustments */
   @media (min-width: 769px) and (max-width: 1024px) {
@@ -539,54 +523,6 @@ body {
 }
 .controls-content {
   position: relative;
-}
-.analysis-mode {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-.mode-toggle {
-  flex: 1;
-  padding: 8px;
-  text-align: center;
-  border: 2px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 12px;
-  font-weight: 500;
-}
-.mode-toggle.active {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
-}
-.analysis-mode {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 4px;
-}
-.mode-toggle {
-  flex: 1;
-  text-align: center;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  color: #6b7280;
-}
-.mode-toggle.active {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
-}
-.mode-toggle:hover:not(.active) {
-  background: #e5e7eb;
-  color: #374151;
 }
 .view-toggle {
   display: flex;
@@ -1079,10 +1015,7 @@ function toggleCountyLabels() {
             </div>
         </div>
         <div class="controls-content" id="controls-content">
-            <div class="analysis-mode">
-                <div class="mode-toggle active" id="county-mode" onclick="setAnalysisMode('county')">County Results</div>
-            </div>
-            <div class="control-group">
+<div class="control-group">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                   <label>📊 Contest Type:</label>
                   <button id="accessibility-toggle" title="Accessibility: Color Blind Mode" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">♿</button>
@@ -1671,15 +1604,6 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         }
       });
       sel.onchange = () => { applyContest(sel.value); };
-    }
-
-    function setAnalysisMode(mode) {
-      // Update button states
-      document.querySelectorAll('.mode-toggle').forEach(toggle => {
-        toggle.classList.remove('active');
-      });
-      document.getElementById(`${mode}-mode`).classList.add('active');
-      
     }
 
     function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
@@ -3737,7 +3661,6 @@ document.addEventListener('DOMContentLoaded', function() {
   window.toggleMainControls = toggleMainControls;
   window.toggleSidebar = toggleSidebar;
   window.toggleLegend = toggleLegend;
-  window.setAnalysisMode = setAnalysisMode;
 });
 
 // County search functionality - Simple datalist approach like Florida map
@@ -3909,3 +3832,5 @@ if (topSearch) topSearch.parentNode.removeChild(topSearch);
     </script>
 </body>
 </html>
+
+

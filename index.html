@@ -1929,11 +1929,13 @@ function toggleSidebar() {
     function showCountyDetails(countyName) {
       // --- NC Map Card-Style Sidebar ---
       const sidebar = document.getElementById('sidebar');
+      const sidebarContentEl = document.querySelector('.sidebar-content');
       const detailsDiv = document.getElementById('county-details');
       const contentEl = document.getElementById('county-info-content');
       if (!contentEl || !detailsDiv) return;
       if (sidebar) {
         sidebar.classList.remove('minimized');
+        if (sidebarContentEl) sidebarContentEl.style.display = '';
         const btn = document.getElementById('sidebar-minimize-btn');
         if (btn) btn.textContent = '−';
       }
@@ -3035,8 +3037,11 @@ function toggleSidebar() {
         select.appendChild(opt);
       });
       
-      // Set up change handler
-      select.addEventListener('change', onContestChange);
+      // Set up change handler once (prevents duplicate mobile-trigger races)
+      if (select.dataset.changeBound !== 'true') {
+        select.addEventListener('change', onContestChange);
+        select.dataset.changeBound = 'true';
+      }
     }
 
     // Filter contests for dropdown: only those with non-null candidate names and partisan judicial races
@@ -3100,7 +3105,7 @@ function filterValidContests(contests) {
             const parts = value.split('-');
             year = parts[0];
             contestType = parts[1];
-            contestId = parts[2];
+            contestId = parts.slice(2).join('-');
           }
 
           // Defensive checks for nested election data
@@ -3152,7 +3157,7 @@ function filterValidContests(contests) {
         if (lastSelectedCounty) {
           showCountyDetails(lastSelectedCounty);
         }
-        
+
       }, 300); // Wait 300ms before updating
     }
 
@@ -3655,7 +3660,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Set up Tennessee-specific event listeners
-  document.getElementById('contestSelect').addEventListener('change', onContestChange);
+  const contestSelect = document.getElementById('contestSelect');
+  if (contestSelect && contestSelect.dataset.changeBound !== 'true') {
+    contestSelect.addEventListener('change', onContestChange);
+    contestSelect.dataset.changeBound = 'true';
+  }
 
   // Make functions global (already defined above)
   window.toggleMainControls = toggleMainControls;
@@ -3832,5 +3841,6 @@ if (topSearch) topSearch.parentNode.removeChild(topSearch);
     </script>
 </body>
 </html>
+
 
 

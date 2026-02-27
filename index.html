@@ -937,6 +937,8 @@ let partySwingParty = 'all'; // all | DEM | REP | OTHER
 let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
 let partySwingEventsBound = false;
 let swingNeutralFillEnabled = false;
+let swingMetric = 'margin'; // 'margin' | 'party'
+let swingArrowImageLoading = false;
 
 function setCountyFillNeutral(neutralOn) {
   if (!map || !map.getLayer || !map.getLayer('county-fill')) return;
@@ -1066,31 +1068,126 @@ function partyPct(result, party) {
   return (votes / total) * 100;
 }
 
+function twoPartyMarginPct(result) {
+  if (!result) return null;
+  const demVotes = Number(result.dem_votes) || 0;
+  const repVotes = Number(result.rep_votes) || 0;
+  const total = (Number(result.two_party_total) || (demVotes + repVotes));
+  if (!total) return null;
+  const repPct = (repVotes / total) * 100;
+  const demPct = (demVotes / total) * 100;
+  return repPct - demPct; // + => GOP advantage
+}
+
+function ensureSwingArrowImage() {
+  if (!map || typeof map.hasImage !== 'function') return;
+  if (map.hasImage('swing-arrow')) return;
+  if (swingArrowImageLoading) return;
+  swingArrowImageLoading = true;
+
+  // Simple arrow pointing EAST (▶), used as SDF so we can tint via icon-color.
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
+    `<path fill="#ffffff" d="M6 22 L38 22 L38 14 L58 32 L38 50 L38 42 L6 42 Z"/>` +
+    `</svg>`;
+
+  const img = new Image(64, 64);
+  img.onload = () => {
+    try {
+      if (!map.hasImage('swing-arrow')) {
+        map.addImage('swing-arrow', img, { sdf: true });
+      }
+    } catch (e) {
+      console.warn('addImage swing-arrow failed:', e);
+    } finally {
+      swingArrowImageLoading = false;
+      try { ensureSwingLayer(); } catch (e) {}
+    }
+  };
+  img.onerror = (e) => {
+    swingArrowImageLoading = false;
+    console.warn('Failed to load swing-arrow SVG image', e);
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
 function ensureSwingLayer() {
   if (!map) return;
   try {
     if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return;
+    ensureSwingArrowImage();
+    if (!map.hasImage || !map.hasImage('swing-arrow')) return;
     if (!map.getSource('party-swing')) {
       map.addSource('party-swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     }
 
     const before = map.getLayer('county-label') ? 'county-label' : undefined;
     const baseLayout = {
-      'text-field': '▶',
-      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-      'text-allow-overlap': true,
-      'text-ignore-placement': true,
-      'text-rotation-alignment': 'map',
-      'text-pitch-alignment': 'map',
-      'text-rotate': ['get', 'angle'],
-      'text-size': ['interpolate', ['linear'], ['get', 'mag'], 0, 10, 1, 12, 3, 16, 6, 22, 10, 28]
+      'icon-image': 'swing-arrow',
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true,
+      'icon-rotation-alignment': 'map',
+      'icon-pitch-alignment': 'map',
+      'icon-rotate': ['get', 'angle'],
+      // Size roughly like Ekenes: linear-ish scaling by magnitude
+      'icon-size': [
+        'interpolate', ['linear'], ['get', 'mag'],
+        0, 0.35,
+        1, 0.45,
+        2, 0.55,
+        4, 0.75,
+        7, 1.0,
+        10, 1.25
+      ]
     };
 
     const basePaint = {
-      'text-opacity': 0.92,
-      'text-halo-color': '#ffffff',
-      'text-halo-width': 1
+      'icon-opacity': 0.9
     };
+
+    // Outline layers (fake "stroke" by drawing a larger white icon underneath)
+    if (!map.getLayer('party-swing-dem-outline')) {
+      map.addLayer(
+        {
+          id: 'party-swing-dem-outline',
+          type: 'symbol',
+          source: 'party-swing',
+          minzoom: 6,
+          filter: ['==', ['get', 'party'], 'DEM'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-0.9, 0] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+        },
+        before
+      );
+    }
+    if (!map.getLayer('party-swing-rep-outline')) {
+      map.addLayer(
+        {
+          id: 'party-swing-rep-outline',
+          type: 'symbol',
+          source: 'party-swing',
+          minzoom: 6,
+          filter: ['==', ['get', 'party'], 'REP'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0.9, 0] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+        },
+        before
+      );
+    }
+    if (!map.getLayer('party-swing-other-outline')) {
+      map.addLayer(
+        {
+          id: 'party-swing-other-outline',
+          type: 'symbol',
+          source: 'party-swing',
+          minzoom: 6,
+          filter: ['==', ['get', 'party'], 'OTHER'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, -0.9] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+        },
+        before
+      );
+    }
 
     if (!map.getLayer('party-swing-dem')) {
       map.addLayer(
@@ -1100,8 +1197,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'DEM'],
-          layout: { ...baseLayout, 'text-offset': [-0.9, 0] },
-          paint: { ...basePaint, 'text-color': '#2563eb' }
+          layout: { ...baseLayout, 'icon-offset': [-0.9, 0] },
+          paint: { ...basePaint, 'icon-color': '#2563eb' }
         },
         before
       );
@@ -1114,8 +1211,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'REP'],
-          layout: { ...baseLayout, 'text-offset': [0.9, 0] },
-          paint: { ...basePaint, 'text-color': '#dc2626' }
+          layout: { ...baseLayout, 'icon-offset': [0.9, 0] },
+          paint: { ...basePaint, 'icon-color': '#dc2626' }
         },
         before
       );
@@ -1128,8 +1225,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'OTHER'],
-          layout: { ...baseLayout, 'text-offset': [0, -0.9] },
-          paint: { ...basePaint, 'text-color': '#6b7280' }
+          layout: { ...baseLayout, 'icon-offset': [0, -0.9] },
+          paint: { ...basePaint, 'icon-color': '#6b7280' }
         },
         before
       );
@@ -1177,6 +1274,10 @@ function formatSignedPctPoint(delta) {
   return `${sign}${n.toFixed(2)} pp`;
 }
 
+function metricLabel(metric) {
+  return metric === 'margin' ? 'Two-party margin swing' : 'Party share swing';
+}
+
 function showPartySwingDetails(props) {
   const sidebar = document.getElementById('sidebar');
   const sidebarContentEl = document.querySelector('.sidebar-content');
@@ -1207,7 +1308,7 @@ function showPartySwingDetails(props) {
   const color =
     party === 'DEM' ? '#2563eb' :
     party === 'REP' ? '#dc2626' :
-    '#6b7280';
+    '#111827';
 
   const compareText = (fromContest && toContest && fromContest !== toContest)
     ? `${fromContest} (${fromYear}) → ${toContest} (${toYear})`
@@ -1215,12 +1316,23 @@ function showPartySwingDetails(props) {
 
   let html = '';
   html += `<div class="result-summary">`;
-  html += `<h3 class="sidebar-section-title">↔ Party Swing</h3>`;
+  html += `<h3 class="sidebar-section-title">↔ Swing</h3>`;
   html += `<div style="font-size:14px;margin-bottom:8px;color:#374151;"><b>Comparison:</b> ${compareText}</div>`;
-  html += `<div style="font-size:14px;margin-bottom:8px;"><b>Party:</b> <span style="color:${color};font-weight:700;">${partyLabel(party)}</span></div>`;
-  html += `<div style="font-size:14px;margin-bottom:10px;"><b>Change:</b> <span style="color:${color};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
-  if (Number.isFinite(fromPct) && Number.isFinite(toPct)) {
-    html += `<div style="font-size:14px;color:#374151;"><b>Share:</b> ${fromPct.toFixed(2)}% → ${toPct.toFixed(2)}%</div>`;
+  html += `<div style="font-size:14px;margin-bottom:8px;"><b>Metric:</b> ${metricLabel(props.metric || '')}</div>`;
+  if ((props.metric || '') === 'party') {
+    html += `<div style="font-size:14px;margin-bottom:8px;"><b>Party:</b> <span style="color:${color};font-weight:700;">${partyLabel(party)}</span></div>`;
+    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Change:</b> <span style="color:${color};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
+    if (Number.isFinite(fromPct) && Number.isFinite(toPct)) {
+      html += `<div style="font-size:14px;color:#374151;"><b>Share:</b> ${fromPct.toFixed(2)}% → ${toPct.toFixed(2)}%</div>`;
+    }
+  } else {
+    // margin swing
+    const mFrom = props.from_margin !== undefined ? Number(props.from_margin) : null;
+    const mTo = props.to_margin !== undefined ? Number(props.to_margin) : null;
+    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Shift:</b> <span style="color:${delta>=0?'#dc2626':'#2563eb'};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
+    if (Number.isFinite(mFrom) && Number.isFinite(mTo)) {
+      html += `<div style="font-size:14px;color:#374151;"><b>Margin:</b> ${mFrom.toFixed(2)} pp → ${mTo.toFixed(2)} pp</div>`;
+    }
   }
   html += `<div style="margin-top:10px;color:#6b7280;font-size:12px;">Tip: Click the county fill to view full county results.</div>`;
   html += `</div>`;
@@ -1234,15 +1346,35 @@ function setSwingVisibility(visible) {
   const v = visible ? 'visible' : 'none';
   const inAll = partySwingParty === 'all';
   const show = (party) => (inAll || partySwingParty === party) ? v : 'none';
-  if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'visibility', show('DEM'));
-  if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'visibility', show('REP'));
-  if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', show('OTHER'));
+  ['party-swing-dem-outline','party-swing-rep-outline','party-swing-other-outline','party-swing-dem','party-swing-rep','party-swing-other'].forEach(id => {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
+  });
+  if (swingMetric === 'party') {
+    if (map.getLayer('party-swing-dem-outline')) map.setLayoutProperty('party-swing-dem-outline', 'visibility', show('DEM'));
+    if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'visibility', show('DEM'));
+    if (map.getLayer('party-swing-rep-outline')) map.setLayoutProperty('party-swing-rep-outline', 'visibility', show('REP'));
+    if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'visibility', show('REP'));
+    if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', show('OTHER'));
+    if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', show('OTHER'));
+  } else {
+    // margin mode: only DEM/REP are produced; show both outline+fill
+    if (map.getLayer('party-swing-dem-outline')) map.setLayoutProperty('party-swing-dem-outline', 'visibility', v);
+    if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'visibility', v);
+    if (map.getLayer('party-swing-rep-outline')) map.setLayoutProperty('party-swing-rep-outline', 'visibility', v);
+    if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'visibility', v);
+    if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', 'none');
+    if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', 'none');
+  }
 
   // Offset like the Ekenes demo: spread in "All", center in single-party mode
   try {
-    if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'text-offset', inAll ? [-0.9, 0] : [0, 0]);
-    if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'text-offset', inAll ? [0.9, 0] : [0, 0]);
-    if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'text-offset', inAll ? [0, -0.9] : [0, 0]);
+    const spread = (swingMetric === 'party' && inAll);
+    const demOff = spread ? [-0.9, 0] : [0, 0];
+    const repOff = spread ? [0.9, 0] : [0, 0];
+    const othOff = spread ? [0, -0.9] : [0, 0];
+    ['party-swing-dem-outline','party-swing-dem'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', demOff); });
+    ['party-swing-rep-outline','party-swing-rep'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', repOff); });
+    ['party-swing-other-outline','party-swing-other'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', othOff); });
   } catch (e) {}
 }
 
@@ -1290,58 +1422,109 @@ function updateSwingLayer() {
     const coord = countyCentroidsByName.get(key);
     if (!coord) return;
 
-    const parties = partySwingParty === 'all' ? ['DEM', 'REP', 'OTHER'] : [partySwingParty];
-    parties.forEach(party => {
-      const curPct = partyPct(currentRes, party);
-      if (curPct === null) return;
+    if (swingMetric === 'party') {
+      const parties = partySwingParty === 'all' ? ['DEM', 'REP', 'OTHER'] : [partySwingParty];
+      parties.forEach(party => {
+        const curPct = partyPct(currentRes, party);
+        if (curPct === null) return;
+
+        let delta = null;
+        let fromYear = null;
+        let fromPct = null;
+        let fromContestName = null;
+        if (compareResults) {
+          const compRes = compareResults[countyName] || compareResults[key];
+          const compPct = partyPct(compRes, party);
+          if (compPct === null) return;
+          delta = curPct - compPct;
+          fromYear = compareYear;
+          fromPct = compPct;
+          fromContestName = compareContestName || '';
+        } else {
+          const prevRes = prev.obj.results[countyName] || prev.obj.results[key];
+          const prevPct = partyPct(prevRes, party);
+          if (prevPct === null) return;
+          delta = curPct - prevPct;
+          fromYear = prev.year;
+          fromPct = prevPct;
+          fromContestName = (prev.obj && prev.obj.contest_name) ? prev.obj.contest_name : '';
+        }
+
+        const mag = Math.abs(delta);
+        if (mag < 0.05) return;
+
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: coord },
+          properties: {
+            metric: 'party',
+            county: key,
+            party,
+            angle:
+              party === 'REP' ? (delta >= 0 ? 0 : 180) :
+              party === 'DEM' ? (delta >= 0 ? 180 : 0) :
+              (delta >= 0 ? 90 : 270),
+            mag,
+            delta: Number(delta.toFixed(2)),
+            from_year: fromYear,
+            to_year: cur.year,
+            from_pct: Number(fromPct.toFixed(2)),
+            to_pct: Number(curPct.toFixed(2)),
+            from_contest: fromContestName,
+            to_contest: toContestName
+          }
+        });
+      });
+    } else {
+      // Two-party margin swing (rep% - dem%)_to - (rep% - dem%)_from
+      const curMargin = twoPartyMarginPct(currentRes);
+      if (curMargin === null) return;
 
       let delta = null;
       let fromYear = null;
-      let fromPct = null;
+      let fromMargin = null;
       let fromContestName = null;
       if (compareResults) {
         const compRes = compareResults[countyName] || compareResults[key];
-        const compPct = partyPct(compRes, party);
-        if (compPct === null) return;
-        delta = curPct - compPct;
+        const compMargin = twoPartyMarginPct(compRes);
+        if (compMargin === null) return;
+        delta = curMargin - compMargin;
         fromYear = compareYear;
-        fromPct = compPct;
+        fromMargin = compMargin;
         fromContestName = compareContestName || '';
       } else {
         const prevRes = prev.obj.results[countyName] || prev.obj.results[key];
-        const prevPct = partyPct(prevRes, party);
-        if (prevPct === null) return;
-        delta = curPct - prevPct;
+        const prevMargin = twoPartyMarginPct(prevRes);
+        if (prevMargin === null) return;
+        delta = curMargin - prevMargin;
         fromYear = prev.year;
-        fromPct = prevPct;
+        fromMargin = prevMargin;
         fromContestName = (prev.obj && prev.obj.contest_name) ? prev.obj.contest_name : '';
       }
 
       const mag = Math.abs(delta);
       if (mag < 0.05) return;
 
+      // Single centered arrow in margin mode
       features.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: coord },
         properties: {
+          metric: 'margin',
           county: key,
-          party,
-          // Like the Ekenes demo: fixed axis per party, direction encodes sign, size encodes magnitude
-          angle:
-            party === 'REP' ? (delta >= 0 ? 0 : 180) :
-            party === 'DEM' ? (delta >= 0 ? 180 : 0) :
-            (delta >= 0 ? 90 : 270),
+          party: delta >= 0 ? 'REP' : 'DEM',
+          angle: delta >= 0 ? 0 : 180,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,
           to_year: cur.year,
-          from_pct: Number(fromPct.toFixed(2)),
-          to_pct: Number(curPct.toFixed(2)),
+          from_margin: Number(fromMargin.toFixed(2)),
+          to_margin: Number(curMargin.toFixed(2)),
           from_contest: fromContestName,
           to_contest: toContestName
         }
       });
-    });
+    }
   });
 
   map.getSource('party-swing').setData({ type: 'FeatureCollection', features });
@@ -1388,6 +1571,9 @@ function toggleSwingArrows() {
     setCountyFillNeutral(false);
     return;
   }
+
+  const metricSel = document.getElementById('metricSelect');
+  swingMetric = (metricSel && metricSel.value) ? metricSel.value : 'margin';
 
   const partySel = document.getElementById('partySelect');
   partySwingParty = (partySel && partySel.value) ? partySel.value : 'all';
@@ -1498,6 +1684,11 @@ window.toggleSwingArrows = toggleSwingArrows;
                     <option value="">Select a Contest...</option>
                 </select>
                 <div id="swing-controls" style="display:none;margin-top:10px;">
+                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Metric:</label>
+                  <select id="metricSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;margin-bottom:10px;">
+                    <option value="party">Party share swing</option>
+                    <option value="margin" selected>Two-party margin swing</option>
+                  </select>
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
                   <select id="compareSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;">
                     <option value="">Previous election (same office)</option>
@@ -3574,12 +3765,12 @@ function filterValidContests(contests) {
           }
           // Restore neutral-fill state if swing is enabled
           try { if (swingArrowsEnabled) setCountyFillNeutral(true); } catch (e) {}
-          // Clear swing arrows
+        // Clear swing arrows
           try {
             if (map.getSource && map.getSource('party-swing')) {
               map.getSource('party-swing').setData({ type: 'FeatureCollection', features: [] });
             }
-            ['party-swing-dem', 'party-swing-rep', 'party-swing-other'].forEach(id => {
+            ['party-swing-dem-outline','party-swing-rep-outline','party-swing-other-outline','party-swing-dem', 'party-swing-rep', 'party-swing-other'].forEach(id => {
               if (map.getLayer && map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
             });
           } catch (e) {}
@@ -4203,6 +4394,17 @@ document.addEventListener('DOMContentLoaded', function() {
       try { if (swingArrowsEnabled) updateSwingLayer(); } catch (e) {}
     });
     partySelect.dataset.changeBound = 'true';
+  }
+
+  // Metric selector (for swing arrows)
+  const metricSelect = document.getElementById('metricSelect');
+  if (metricSelect && metricSelect.dataset.changeBound !== 'true') {
+    metricSelect.addEventListener('change', () => {
+      swingMetric = metricSelect.value || 'margin';
+      // In margin mode, party filter doesn't apply
+      try { if (swingArrowsEnabled) { setSwingVisibility(true); updateSwingLayer(); } } catch (e) {}
+    });
+    metricSelect.dataset.changeBound = 'true';
   }
 
   // Make functions global (already defined above)

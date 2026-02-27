@@ -967,6 +967,7 @@ function makeArrowCanvas(color) {
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
   ctx.clearRect(0, 0, size, size);
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -987,8 +988,9 @@ function ensureSwingLayer() {
   if (typeof map === 'undefined' || !map) return;
 
   // Pre-colored arrows (no SDF requirements)
-  if (!map.hasImage('swing-arrow-r')) map.addImage('swing-arrow-r', makeArrowCanvas('#d73027'), { pixelRatio: 2 });
-  if (!map.hasImage('swing-arrow-d')) map.addImage('swing-arrow-d', makeArrowCanvas('#4575b4'), { pixelRatio: 2 });
+  // Avoid pixelRatio here (some Mapbox GL builds throw "mismatched image size" for canvas + pixelRatio)
+  if (!map.hasImage('swing-arrow-r')) map.addImage('swing-arrow-r', makeArrowCanvas('#d73027'));
+  if (!map.hasImage('swing-arrow-d')) map.addImage('swing-arrow-d', makeArrowCanvas('#4575b4'));
 
   if (!map.getSource('swing')) {
     map.addSource('swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });

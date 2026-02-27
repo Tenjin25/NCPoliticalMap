@@ -939,12 +939,46 @@ let partySwingEventsBound = false;
 let swingNeutralFillEnabled = false;
 let swingMetric = 'margin'; // 'margin' | 'party'
 let swingSwingImagesLoading = false;
+let swingPrevCountyLabelsVisible = null; // null => not auto-managed
 
 function setSwingHint(text) {
   try {
     const el = document.getElementById('swing-hint');
     if (!el) return;
     el.textContent = text || '';
+  } catch (e) {}
+}
+
+function titleCaseWords(input) {
+  const s = (input || '').toString().trim().toLowerCase();
+  if (!s) return '';
+  return s.split(/\s+/g).map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(' ');
+}
+
+function setCountyLabelsVisible(visible) {
+  try {
+    if (typeof countyLabelsVisible === 'undefined') return;
+    if (countyLabelsVisible === visible) return;
+    if (typeof toggleCountyLabels === 'function') toggleCountyLabels();
+  } catch (e) {}
+}
+
+function syncSwingSideEffects() {
+  try {
+    if (!swingArrowsEnabled) return;
+
+    const shouldHideCountyLabels = (swingMetric === 'party' && partySwingParty === 'all');
+    if (shouldHideCountyLabels) {
+      if (swingPrevCountyLabelsVisible === null) {
+        swingPrevCountyLabelsVisible = (typeof countyLabelsVisible !== 'undefined') ? countyLabelsVisible : null;
+      }
+      setCountyLabelsVisible(false);
+    } else {
+      if (swingPrevCountyLabelsVisible !== null) {
+        setCountyLabelsVisible(Boolean(swingPrevCountyLabelsVisible));
+        swingPrevCountyLabelsVisible = null;
+      }
+    }
   } catch (e) {}
 }
 
@@ -1103,21 +1137,13 @@ function twoPartyMarginPct(result) {
 function ensureSwingSymbolImages() {
   if (!map) return;
   if (typeof map.hasImage !== 'function' || typeof map.addImage !== 'function') return;
-  const needed = ['swing-dot', 'swing-ring', 'swing-party-arrow'].filter(id => !map.hasImage(id));
+  const needed = ['swing-party-arrow'].filter(id => !map.hasImage(id));
   if (!needed.length) return;
   if (swingSwingImagesLoading) return;
   swingSwingImagesLoading = true;
 
   // Match the election-party-swing repo symbol styling (circle/ring + predominant shift arrow).
   const svgsById = {
-    'swing-dot':
-      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
-      `<circle cx="32" cy="32" r="22" fill="#ffffff"/>` +
-      `</svg>`,
-    'swing-ring':
-      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
-      `<circle cx="32" cy="32" r="18" fill="none" stroke="#ffffff" stroke-width="10"/>` +
-      `</svg>`,
     // Used by the repo for "All parties" predominant shift arrows (see election-party-swing/app/symbolUtils.ts aboveSymbol).
     'swing-party-arrow':
       `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32">` +
@@ -1160,19 +1186,19 @@ function ensureSwingLayer() {
   try {
     if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return;
     ensureSwingSymbolImages();
-    if (!map.hasImage || !map.hasImage('swing-dot') || !map.hasImage('swing-ring') || !map.hasImage('swing-party-arrow')) return;
+    if (!map.hasImage || !map.hasImage('swing-party-arrow')) return;
     if (!map.getSource('party-swing')) {
       map.addSource('party-swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     }
 
     const before = map.getLayer('county-label') ? 'county-label' : undefined;
     const baseLayout = {
-      'icon-image': ['case', ['>=', ['get', 'delta'], 0], 'swing-dot', 'swing-ring'],
+      'icon-image': ['coalesce', ['get', 'icon'], 'swing-party-arrow'],
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
       'icon-rotation-alignment': 'map',
       'icon-pitch-alignment': 'map',
-      'icon-rotate': 0,
+      'icon-rotate': ['coalesce', ['get', 'rotation'], 0],
       // Size like the Ekenes swing symbols: scale by magnitude (percentage-point change)
       'icon-size': [
         'interpolate', ['linear'], ['get', 'mag'],
@@ -1190,63 +1216,6 @@ function ensureSwingLayer() {
       'icon-opacity': 0.9
     };
 
-    const arrowLayout = {
-      'icon-image': 'swing-party-arrow',
-      'icon-allow-overlap': true,
-      'icon-ignore-placement': true,
-      'icon-rotation-alignment': 'map',
-      'icon-pitch-alignment': 'map',
-      'icon-rotate': ['coalesce', ['get', 'rotation'], 0],
-      'icon-size': [
-        'interpolate', ['linear'], ['get', 'mag'],
-        0, 0.20,
-        1, 0.32,
-        2, 0.44,
-        4, 0.60,
-        7, 0.80,
-        10, 0.95,
-        15, 1.10
-      ]
-    };
-
-    const arrowColor = [
-      'match', ['get', 'party'],
-      'DEM', '#3c6ccc',
-      'REP', '#dc4b00',
-      'OTHER', '#b5a600',
-      '#111827'
-    ];
-
-    // "All parties" predominant shift arrows (single symbol per county)
-    if (!map.getLayer('party-swing-all-outline')) {
-      map.addLayer(
-        {
-          id: 'party-swing-all-outline',
-          type: 'symbol',
-          source: 'party-swing',
-          minzoom: 5,
-          filter: ['==', ['get', 'metric'], 'party_all'],
-          layout: { ...arrowLayout, 'icon-size': ['*', arrowLayout['icon-size'], 1.18] },
-          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
-        },
-        before
-      );
-    }
-    if (!map.getLayer('party-swing-all')) {
-      map.addLayer(
-        {
-          id: 'party-swing-all',
-          type: 'symbol',
-          source: 'party-swing',
-          minzoom: 5,
-          filter: ['==', ['get', 'metric'], 'party_all'],
-          layout: { ...arrowLayout },
-          paint: { ...basePaint, 'icon-color': arrowColor }
-        },
-        before
-      );
-    }
-
     // Outline layers (fake "stroke" by drawing a larger white icon underneath)
     if (!map.getLayer('party-swing-dem-outline')) {
       map.addLayer(
@@ -1255,8 +1224,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'DEM'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-1.0, 0] },
+          filter: ['==', ['get', 'party'], 'DEM'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-0.85, -0.85] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1269,8 +1238,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'REP'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [1.0, 0] },
+          filter: ['==', ['get', 'party'], 'REP'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0.85, -0.85] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1283,8 +1252,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, -1.0] },
+          filter: ['==', ['get', 'party'], 'OTHER'],
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, 1.05] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1298,8 +1267,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'DEM'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-offset': [-1.0, 0] },
+          filter: ['==', ['get', 'party'], 'DEM'],
+          layout: { ...baseLayout, 'icon-offset': [-0.85, -0.85] },
           paint: { ...basePaint, 'icon-color': '#3c6ccc' }
         },
         before
@@ -1312,8 +1281,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'REP'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-offset': [1.0, 0] },
+          filter: ['==', ['get', 'party'], 'REP'],
+          layout: { ...baseLayout, 'icon-offset': [0.85, -0.85] },
           paint: { ...basePaint, 'icon-color': '#dc4b00' }
         },
         before
@@ -1326,8 +1295,8 @@ function ensureSwingLayer() {
           type: 'symbol',
           source: 'party-swing',
           minzoom: 5,
-          filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['!=', ['get', 'metric'], 'party_all']],
-          layout: { ...baseLayout, 'icon-offset': [0, -1.0] },
+          filter: ['==', ['get', 'party'], 'OTHER'],
+          layout: { ...baseLayout, 'icon-offset': [0, 1.05] },
           paint: { ...basePaint, 'icon-color': '#b5a600' }
         },
         before
@@ -1362,7 +1331,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'DEM'], ['==', ['get', 'metric'], 'party']],
-          layout: { ...baseLabelLayout, 'text-offset': [-2.0, 0], 'text-anchor': 'right' },
+          layout: { ...baseLabelLayout, 'text-offset': [-1.6, -0.9], 'text-anchor': 'right' },
           paint: { ...baseLabelPaint, 'text-color': '#3c6ccc' }
         },
         before
@@ -1376,7 +1345,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'REP'], ['==', ['get', 'metric'], 'party']],
-          layout: { ...baseLabelLayout, 'text-offset': [2.0, 0], 'text-anchor': 'left' },
+          layout: { ...baseLabelLayout, 'text-offset': [1.6, -0.9], 'text-anchor': 'left' },
           paint: { ...baseLabelPaint, 'text-color': '#dc4b00' }
         },
         before
@@ -1390,7 +1359,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['==', ['get', 'metric'], 'party']],
-          layout: { ...baseLabelLayout, 'text-offset': [0, -2.0], 'text-anchor': 'bottom' },
+          layout: { ...baseLabelLayout, 'text-offset': [0, 1.6], 'text-anchor': 'top' },
           paint: { ...baseLabelPaint, 'text-color': '#b5a600' }
         },
         before
@@ -1400,7 +1369,7 @@ function ensureSwingLayer() {
     // Bind interaction once layers exist
     if (!partySwingEventsBound) {
       partySwingEventsBound = true;
-      ['party-swing-all', 'party-swing-dem', 'party-swing-rep', 'party-swing-other', 'party-swing-dem-label', 'party-swing-rep-label', 'party-swing-other-label'].forEach(layerId => {
+      ['party-swing-dem', 'party-swing-rep', 'party-swing-other', 'party-swing-dem-label', 'party-swing-rep-label', 'party-swing-other-label'].forEach(layerId => {
         map.on('mouseenter', layerId, () => {
           try { map.getCanvas().style.cursor = 'pointer'; } catch (e) {}
         });
@@ -1460,7 +1429,7 @@ function showPartySwingDetails(props) {
     if (btn) btn.textContent = '−';
   }
 
-  const countyName = props.county || 'County';
+  const countyName = props.county_display || titleCaseWords(props.county || '') || 'County';
   const countyNameElement = document.getElementById('county-name');
   if (countyNameElement) countyNameElement.textContent = countyName + ' County';
 
@@ -1517,14 +1486,8 @@ function setSwingVisibility(visible) {
   ['party-swing-all-outline','party-swing-all','party-swing-dem-outline','party-swing-rep-outline','party-swing-other-outline','party-swing-dem','party-swing-rep','party-swing-other','party-swing-dem-label','party-swing-rep-label','party-swing-other-label'].forEach(id => {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
   });
-  if (swingMetric === 'party' && inAll) {
-    // Match repo behavior: in "All" show only the predominant shift arrow.
-    if (map.getLayer('party-swing-all-outline')) map.setLayoutProperty('party-swing-all-outline', 'visibility', v);
-    if (map.getLayer('party-swing-all')) map.setLayoutProperty('party-swing-all', 'visibility', v);
-    ['party-swing-dem-outline','party-swing-rep-outline','party-swing-other-outline','party-swing-dem','party-swing-rep','party-swing-other','party-swing-dem-label','party-swing-rep-label','party-swing-other-label'].forEach(id => {
-      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
-    });
-  } else if (swingMetric === 'party') {
+  if (swingMetric === 'party') {
+    // Party share swing: show composite (All) or single-party view.
     if (map.getLayer('party-swing-all-outline')) map.setLayoutProperty('party-swing-all-outline', 'visibility', 'none');
     if (map.getLayer('party-swing-all')) map.setLayoutProperty('party-swing-all', 'visibility', 'none');
     if (map.getLayer('party-swing-dem-outline')) map.setLayoutProperty('party-swing-dem-outline', 'visibility', show('DEM'));
@@ -1534,8 +1497,8 @@ function setSwingVisibility(visible) {
     if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', show('OTHER'));
     if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', show('OTHER'));
 
-    // Labels: only show on the composite "All parties" layout (matches the Ekenes demo behavior)
-    const labelVis = 'none';
+    // Labels: show only on the composite "All" layout (helps read values without county labels)
+    const labelVis = inAll ? v : 'none';
     if (map.getLayer('party-swing-dem-label')) map.setLayoutProperty('party-swing-dem-label', 'visibility', labelVis);
     if (map.getLayer('party-swing-rep-label')) map.setLayoutProperty('party-swing-rep-label', 'visibility', labelVis);
     if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', labelVis);
@@ -1557,9 +1520,10 @@ function setSwingVisibility(visible) {
   // Offset like the Ekenes demo: spread in "All", center in single-party mode
   try {
     const spread = (swingMetric === 'party' && inAll);
-    const demOff = spread ? [-1.0, 0] : [0, 0];
-    const repOff = spread ? [1.0, 0] : [0, 0];
-    const othOff = spread ? [0, -1.0] : [0, 0];
+    // Diagonal composite layout (avoids left/right-only appearance)
+    const demOff = spread ? [-0.85, -0.85] : [0, 0];
+    const repOff = spread ? [0.85, -0.85] : [0, 0];
+    const othOff = spread ? [0, 1.05] : [0, 0];
     ['party-swing-dem-outline','party-swing-dem'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', demOff); });
     ['party-swing-rep-outline','party-swing-rep'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', repOff); });
     ['party-swing-other-outline','party-swing-other'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', othOff); });
@@ -1615,77 +1579,13 @@ function updateSwingLayer() {
   const toContestName = cur.data && cur.data.contest_name ? cur.data.contest_name : '';
   Object.entries(cur.data.results).forEach(([countyName, currentRes]) => {
     const key = normalizeCountyKey(countyName);
+    const countyDisplay = titleCaseWords(key);
     const coord = countyCentroidsByName.get(key);
     if (!coord) return;
 
     if (swingMetric === 'party') {
-      if (partySwingParty === 'all') {
-        const curRep = partyPct(currentRes, 'REP');
-        const curDem = partyPct(currentRes, 'DEM');
-        const curOth = partyPct(currentRes, 'OTHER');
-        if (curRep === null || curDem === null || curOth === null) return;
-
-        let fromYear = null;
-        let fromContestName = null;
-        let fromRep = null;
-        let fromDem = null;
-        let fromOth = null;
-        if (compareResults) {
-          const compRes = compareIndex ? compareIndex.get(key) : null;
-          fromRep = partyPct(compRes, 'REP');
-          fromDem = partyPct(compRes, 'DEM');
-          fromOth = partyPct(compRes, 'OTHER');
-          if (fromRep === null || fromDem === null || fromOth === null) return;
-          fromYear = compareYear;
-          fromContestName = compareContestName || '';
-        } else {
-          const prevRes = prevIndex ? prevIndex.get(key) : null;
-          fromRep = partyPct(prevRes, 'REP');
-          fromDem = partyPct(prevRes, 'DEM');
-          fromOth = partyPct(prevRes, 'OTHER');
-          if (fromRep === null || fromDem === null || fromOth === null) return;
-          fromYear = prev.year;
-          fromContestName = (prev.obj && prev.obj.contest_name) ? prev.obj.contest_name : '';
-        }
-
-        const repChange = curRep - fromRep;
-        const demChange = curDem - fromDem;
-        const othChange = curOth - fromOth;
-
-        // Mirror election-party-swing/app/rendererUtils.ts: Max(repChange, demChange, othChange) with Decode order REP -> DEM -> OTHER.
-        const maxChange = Math.max(repChange, demChange, othChange);
-        const winnerParty =
-          maxChange === repChange ? 'REP' :
-          maxChange === demChange ? 'DEM' :
-          'OTHER';
-
-        const delta = winnerParty === 'REP' ? repChange : winnerParty === 'DEM' ? demChange : othChange;
-        const mag = Math.max(0, delta);
-        if (Math.abs(delta) < 0.01) return;
-
-        const toPct = winnerParty === 'REP' ? curRep : winnerParty === 'DEM' ? curDem : curOth;
-        const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
-
-        features.push({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: coord },
-          properties: {
-            metric: 'party_all',
-            county: key,
-            party: winnerParty,
-            rotation: winnerParty === 'DEM' ? 45 : winnerParty === 'REP' ? -45 : 0,
-            mag,
-            delta: Number(delta.toFixed(2)),
-            from_year: fromYear,
-            to_year: cur.year,
-            from_pct: Number(fromPct.toFixed(2)),
-            to_pct: Number(toPct.toFixed(2)),
-            from_contest: fromContestName,
-            to_contest: toContestName
-          }
-        });
-      } else {
-        const party = partySwingParty;
+      const parties = (partySwingParty === 'all') ? ['DEM', 'REP', 'OTHER'] : [partySwingParty];
+      parties.forEach(party => {
         const curPct = partyPct(currentRes, party);
         if (curPct === null) return;
 
@@ -1714,13 +1614,21 @@ function updateSwingLayer() {
         const mag = Math.abs(delta);
         if (mag < 0.01) return;
 
+        // Arrow SVG is drawn pointing EAST; rotate parties to match the repo look:
+        // DEM/REP are diagonal, OTHER is vertical.
+        const baseRot = (party === 'DEM') ? 45 : (party === 'REP') ? -45 : -90;
+        const rotation = delta >= 0 ? baseRot : (baseRot + 180);
+
         features.push({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: coord },
           properties: {
             metric: 'party',
             county: key,
+            county_display: countyDisplay,
             party,
+            icon: 'swing-party-arrow',
+            rotation,
             mag,
             delta: Number(delta.toFixed(2)),
             from_year: fromYear,
@@ -1731,7 +1639,7 @@ function updateSwingLayer() {
             to_contest: toContestName
           }
         });
-      }
+      });
     } else {
       // Two-party margin swing (rep% - dem%)_to - (rep% - dem%)_from
       const curMargin = twoPartyMarginPct(currentRes);
@@ -1769,8 +1677,10 @@ function updateSwingLayer() {
         properties: {
           metric: 'margin',
           county: key,
+          county_display: countyDisplay,
           party: delta >= 0 ? 'REP' : 'DEM',
-          angle: delta >= 0 ? 0 : 180,
+          icon: 'swing-party-arrow',
+          rotation: delta >= 0 ? -45 : 45,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,
@@ -1827,6 +1737,11 @@ function toggleSwingArrows() {
     setSwingVisibility(false);
     // Restore choropleth when swing is off
     setCountyFillNeutral(false);
+    // Restore county label state if we auto-managed it
+    if (swingPrevCountyLabelsVisible !== null) {
+      setCountyLabelsVisible(Boolean(swingPrevCountyLabelsVisible));
+      swingPrevCountyLabelsVisible = null;
+    }
     return;
   }
 
@@ -1838,6 +1753,7 @@ function toggleSwingArrows() {
 
   // Neutralize choropleth when swing is on (matches Ekenes-style overlay focus)
   setCountyFillNeutral(true);
+  syncSwingSideEffects();
 
   populateCompareSelectFromContestSelect();
   updateSwingLayer();
@@ -1944,8 +1860,8 @@ window.toggleSwingArrows = toggleSwingArrows;
                 <div id="swing-controls" style="display:none;margin-top:10px;">
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Metric:</label>
                   <select id="metricSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;margin-bottom:10px;">
-                    <option value="party">Party share swing</option>
-                    <option value="margin" selected>Two-party margin swing</option>
+                    <option value="party" selected>Party share swing (All parties)</option>
+                    <option value="margin">Two-party margin swing</option>
                   </select>
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
                   <select id="compareSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;">
@@ -4650,6 +4566,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (partySelect && partySelect.dataset.changeBound !== 'true') {
     partySelect.addEventListener('change', () => {
       partySwingParty = partySelect.value || 'all';
+      syncSwingSideEffects();
       try { if (swingArrowsEnabled) updateSwingLayer(); } catch (e) {}
     });
     partySelect.dataset.changeBound = 'true';
@@ -4660,6 +4577,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (metricSelect && metricSelect.dataset.changeBound !== 'true') {
     metricSelect.addEventListener('change', () => {
       swingMetric = metricSelect.value || 'margin';
+      syncSwingSideEffects();
       // In margin mode, party filter doesn't apply
       try { if (swingArrowsEnabled) { setSwingVisibility(true); updateSwingLayer(); } } catch (e) {}
     });

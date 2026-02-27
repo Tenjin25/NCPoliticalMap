@@ -937,7 +937,7 @@ let partySwingParty = 'all'; // all | DEM | REP | OTHER
 let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
 let partySwingEventsBound = false;
 let swingNeutralFillEnabled = false;
-let swingMetric = 'margin'; // 'margin' | 'party'
+let swingMetric = 'party'; // 'party' | 'margin'
 let swingSwingImagesLoading = false;
 let swingPrevCountyLabelsVisible = null; // null => not auto-managed
 
@@ -979,6 +979,8 @@ function syncSwingSideEffects() {
         swingPrevCountyLabelsVisible = null;
       }
     }
+
+    // Party selector stays active; no special-case "dominant" mode in the UI.
   } catch (e) {}
 }
 
@@ -1410,8 +1412,8 @@ function formatSignedPctPoint(delta) {
 
 function metricLabel(metric) {
   if (metric === 'margin') return 'Two-party margin swing';
-  if (metric === 'party_all') return 'Predominant party shift';
   if (metric === 'party') return 'Party share swing';
+  if (metric === 'party_dominant') return 'Dominant party shift';
   return 'Swing';
 }
 
@@ -1456,7 +1458,7 @@ function showPartySwingDetails(props) {
   html += `<h3 class="sidebar-section-title">↔ Swing</h3>`;
   html += `<div style="font-size:14px;margin-bottom:8px;color:#374151;"><b>Comparison:</b> ${compareText}</div>`;
   html += `<div style="font-size:14px;margin-bottom:8px;"><b>Metric:</b> ${metricLabel(props.metric || '')}</div>`;
-  if ((props.metric || '') === 'party' || (props.metric || '') === 'party_all') {
+  if ((props.metric || '') === 'party' || (props.metric || '') === 'party_dominant') {
     html += `<div style="font-size:14px;margin-bottom:8px;"><b>Party:</b> <span style="color:${color};font-weight:700;">${partyLabel(party)}</span></div>`;
     html += `<div style="font-size:14px;margin-bottom:10px;"><b>Change:</b> <span style="color:${color};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
     if (Number.isFinite(fromPct) && Number.isFinite(toPct)) {
@@ -1466,7 +1468,7 @@ function showPartySwingDetails(props) {
     // margin swing
     const mFrom = props.from_margin !== undefined ? Number(props.from_margin) : null;
     const mTo = props.to_margin !== undefined ? Number(props.to_margin) : null;
-    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Shift:</b> <span style="color:${delta>=0?'#dc2626':'#2563eb'};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
+    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Shift:</b> <span style="color:${delta>=0?'#dc4b00':'#3c6ccc'};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
     if (Number.isFinite(mFrom) && Number.isFinite(mTo)) {
       html += `<div style="font-size:14px;color:#374151;"><b>Margin:</b> ${mFrom.toFixed(2)} pp → ${mTo.toFixed(2)} pp</div>`;
     }
@@ -1497,8 +1499,8 @@ function setSwingVisibility(visible) {
     if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', show('OTHER'));
     if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', show('OTHER'));
 
-    // Labels: show only on the composite "All" layout (helps read values without county labels)
-    const labelVis = inAll ? v : 'none';
+    // Labels off by default; click the arrow for details.
+    const labelVis = 'none';
     if (map.getLayer('party-swing-dem-label')) map.setLayoutProperty('party-swing-dem-label', 'visibility', labelVis);
     if (map.getLayer('party-swing-rep-label')) map.setLayoutProperty('party-swing-rep-label', 'visibility', labelVis);
     if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', labelVis);
@@ -1517,13 +1519,11 @@ function setSwingVisibility(visible) {
     if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', 'none');
   }
 
-  // Offset like the Ekenes demo: spread in "All", center in single-party mode
+  // Placement: centered; we show one "dominant" arrow in Party=All mode.
   try {
-    const spread = (swingMetric === 'party' && inAll);
-    // Diagonal composite layout (avoids left/right-only appearance)
-    const demOff = spread ? [-0.85, -0.85] : [0, 0];
-    const repOff = spread ? [0.85, -0.85] : [0, 0];
-    const othOff = spread ? [0, 1.05] : [0, 0];
+    const demOff = [0, 0];
+    const repOff = [0, 0];
+    const othOff = [0, 0];
     ['party-swing-dem-outline','party-swing-dem'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', demOff); });
     ['party-swing-rep-outline','party-swing-rep'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', repOff); });
     ['party-swing-other-outline','party-swing-other'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', othOff); });
@@ -1584,10 +1584,86 @@ function updateSwingLayer() {
     if (!coord) return;
 
     if (swingMetric === 'party') {
-      const parties = (partySwingParty === 'all') ? ['DEM', 'REP', 'OTHER'] : [partySwingParty];
-      parties.forEach(party => {
-        const curPct = partyPct(currentRes, party);
-        if (curPct === null) return;
+      if (partySwingParty === 'all') {
+        // "Dominant shift": show ONE arrow for the party with the largest swing (abs pp).
+        const curRep = partyPct(currentRes, 'REP');
+        const curDem = partyPct(currentRes, 'DEM');
+        const curOth = partyPct(currentRes, 'OTHER');
+        if (curRep === null || curDem === null || curOth === null) return;
+
+        let fromYear = null;
+        let fromContestName = null;
+        let fromRep = null;
+        let fromDem = null;
+        let fromOth = null;
+        if (compareResults) {
+          const compRes = compareIndex ? compareIndex.get(key) : null;
+          fromRep = partyPct(compRes, 'REP');
+          fromDem = partyPct(compRes, 'DEM');
+          fromOth = partyPct(compRes, 'OTHER');
+          if (fromRep === null || fromDem === null || fromOth === null) return;
+          fromYear = compareYear;
+          fromContestName = compareContestName || '';
+        } else {
+          const prevRes = prevIndex ? prevIndex.get(key) : null;
+          fromRep = partyPct(prevRes, 'REP');
+          fromDem = partyPct(prevRes, 'DEM');
+          fromOth = partyPct(prevRes, 'OTHER');
+          if (fromRep === null || fromDem === null || fromOth === null) return;
+          fromYear = prev.year;
+          fromContestName = (prev.obj && prev.obj.contest_name) ? prev.obj.contest_name : '';
+        }
+
+        const repChange = curRep - fromRep;
+        const demChange = curDem - fromDem;
+        const othChange = curOth - fromOth;
+
+        const repAbs = Math.abs(repChange);
+        const demAbs = Math.abs(demChange);
+        const othAbs = Math.abs(othChange);
+        const maxAbs = Math.max(repAbs, demAbs, othAbs);
+        if (maxAbs < 0.01) return;
+
+        const winnerParty =
+          maxAbs === repAbs ? 'REP' :
+          maxAbs === demAbs ? 'DEM' :
+          'OTHER';
+
+        const delta = winnerParty === 'REP' ? repChange : winnerParty === 'DEM' ? demChange : othChange;
+        const mag = Math.abs(delta);
+
+        const toPct = winnerParty === 'REP' ? curRep : winnerParty === 'DEM' ? curDem : curOth;
+        const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
+
+        // Arrow SVG points EAST; "towards Republicans" -> red, angled up-right (-45).
+        const baseRot = winnerParty === 'DEM' ? 45 : winnerParty === 'REP' ? -45 : -90;
+        const rotation = delta >= 0 ? baseRot : (baseRot + 180);
+
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: coord },
+          properties: {
+            metric: 'party_dominant',
+            county: key,
+            county_display: countyDisplay,
+            party: winnerParty,
+            icon: 'swing-party-arrow',
+            rotation,
+            mag,
+            delta: Number(delta.toFixed(2)),
+            from_year: fromYear,
+            to_year: cur.year,
+            from_pct: Number(fromPct.toFixed(2)),
+            to_pct: Number(toPct.toFixed(2)),
+            from_contest: fromContestName,
+            to_contest: toContestName
+          }
+        });
+      } else {
+        const parties = [partySwingParty];
+        parties.forEach(party => {
+          const curPct = partyPct(currentRes, party);
+          if (curPct === null) return;
 
         let delta = null;
         let fromYear = null;
@@ -1639,7 +1715,8 @@ function updateSwingLayer() {
             to_contest: toContestName
           }
         });
-      });
+        });
+      }
     } else {
       // Two-party margin swing (rep% - dem%)_to - (rep% - dem%)_from
       const curMargin = twoPartyMarginPct(currentRes);
@@ -1746,7 +1823,7 @@ function toggleSwingArrows() {
   }
 
   const metricSel = document.getElementById('metricSelect');
-  swingMetric = (metricSel && metricSel.value) ? metricSel.value : 'margin';
+  swingMetric = (metricSel && metricSel.value) ? metricSel.value : 'party';
 
   const partySel = document.getElementById('partySelect');
   partySwingParty = (partySel && partySel.value) ? partySel.value : 'all';
@@ -1860,7 +1937,7 @@ window.toggleSwingArrows = toggleSwingArrows;
                 <div id="swing-controls" style="display:none;margin-top:10px;">
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Metric:</label>
                   <select id="metricSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;margin-bottom:10px;">
-                    <option value="party" selected>Party share swing (All parties)</option>
+                    <option value="party" selected>Party shift (dominant only)</option>
                     <option value="margin">Two-party margin swing</option>
                   </select>
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
@@ -4576,7 +4653,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const metricSelect = document.getElementById('metricSelect');
   if (metricSelect && metricSelect.dataset.changeBound !== 'true') {
     metricSelect.addEventListener('change', () => {
-      swingMetric = metricSelect.value || 'margin';
+      swingMetric = metricSelect.value || 'party';
       syncSwingSideEffects();
       // In margin mode, party filter doesn't apply
       try { if (swingArrowsEnabled) { setSwingVisibility(true); updateSwingLayer(); } } catch (e) {}

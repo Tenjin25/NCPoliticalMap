@@ -937,7 +937,7 @@ let partySwingParty = 'all'; // all | DEM | REP | OTHER
 let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
 let partySwingEventsBound = false;
 let swingNeutralFillEnabled = false;
-let swingMetric = 'party'; // 'party' | 'margin'
+let swingMetric = 'margin'; // 'party' | 'margin'
 let swingSwingImagesLoading = false;
 let swingPrevCountyLabelsVisible = null; // null => not auto-managed
 
@@ -967,7 +967,9 @@ function syncSwingSideEffects() {
   try {
     if (!swingArrowsEnabled) return;
 
-    const shouldHideCountyLabels = (swingMetric === 'party' && partySwingParty === 'all');
+    const shouldHideCountyLabels =
+      (swingMetric === 'margin') ||
+      (swingMetric === 'party' && partySwingParty === 'all');
     if (shouldHideCountyLabels) {
       if (swingPrevCountyLabelsVisible === null) {
         swingPrevCountyLabelsVisible = (typeof countyLabelsVisible !== 'undefined') ? countyLabelsVisible : null;
@@ -980,7 +982,21 @@ function syncSwingSideEffects() {
       }
     }
 
-    // Party selector stays active; no special-case "dominant" mode in the UI.
+    // Party selector stays active; in margin mode it doesn't apply so disable it to reduce confusion.
+    const partySelect = document.getElementById('partySelect');
+    if (partySelect) {
+      if (swingMetric === 'margin') {
+        partySwingParty = 'all';
+        partySelect.value = 'all';
+        partySelect.disabled = true;
+        partySelect.style.opacity = '0.6';
+        partySelect.title = 'Not used for margin swing';
+      } else {
+        partySelect.disabled = false;
+        partySelect.style.opacity = '';
+        partySelect.title = '';
+      }
+    }
   } catch (e) {}
 }
 
@@ -1461,7 +1477,7 @@ function showPartySwingDetails(props) {
   if ((props.metric || '') === 'party' || (props.metric || '') === 'party_dominant') {
     html += `<div style="font-size:14px;margin-bottom:8px;"><b>Party:</b> <span style="color:${color};font-weight:700;">${partyLabel(party)}</span></div>`;
     html += `<div style="font-size:14px;margin-bottom:10px;"><b>Change:</b> <span style="color:${color};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
-    if (Number.isFinite(fromPct) && Number.isFinite(toPct)) {
+    if ((props.metric || '') === 'party' && Number.isFinite(fromPct) && Number.isFinite(toPct)) {
       html += `<div style="font-size:14px;color:#374151;"><b>Share:</b> ${fromPct.toFixed(2)}% → ${toPct.toFixed(2)}%</div>`;
     }
   } else {
@@ -1585,7 +1601,9 @@ function updateSwingLayer() {
 
     if (swingMetric === 'party') {
       if (partySwingParty === 'all') {
-        // "Dominant shift": show ONE arrow for the party with the largest swing (abs pp).
+        // "Dominant shift": show ONE arrow for the party with the largest GAIN in vote share (pp).
+        // This keeps arrows consistently "up-ish" (no down arrows) and matches the idea of
+        // "shifted most towards Republicans/Democrats/Other".
         const curRep = partyPct(currentRes, 'REP');
         const curDem = partyPct(currentRes, 'DEM');
         const curOth = partyPct(currentRes, 'OTHER');
@@ -1618,26 +1636,24 @@ function updateSwingLayer() {
         const demChange = curDem - fromDem;
         const othChange = curOth - fromOth;
 
-        const repAbs = Math.abs(repChange);
-        const demAbs = Math.abs(demChange);
-        const othAbs = Math.abs(othChange);
-        const maxAbs = Math.max(repAbs, demAbs, othAbs);
-        if (maxAbs < 0.01) return;
+        const maxChange = Math.max(repChange, demChange, othChange);
+        if (maxChange < 0.01) return;
 
+        // Resolve ties deterministically: REP > DEM > OTHER (same ordering as the original demo's Decode).
         const winnerParty =
-          maxAbs === repAbs ? 'REP' :
-          maxAbs === demAbs ? 'DEM' :
+          maxChange === repChange ? 'REP' :
+          maxChange === demChange ? 'DEM' :
           'OTHER';
 
-        const delta = winnerParty === 'REP' ? repChange : winnerParty === 'DEM' ? demChange : othChange;
-        const mag = Math.abs(delta);
+        const delta = maxChange;
+        const mag = maxChange;
 
         const toPct = winnerParty === 'REP' ? curRep : winnerParty === 'DEM' ? curDem : curOth;
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
 
-        // Arrow SVG points EAST; "towards Republicans" -> red, angled up-right (-45).
+        // Arrow SVG points EAST; rotate by party so "towards Republicans" is red, angled up-right.
         const baseRot = winnerParty === 'DEM' ? 45 : winnerParty === 'REP' ? -45 : -90;
-        const rotation = delta >= 0 ? baseRot : (baseRot + 180);
+        const rotation = baseRot;
 
         features.push({
           type: 'Feature',
@@ -1823,7 +1839,7 @@ function toggleSwingArrows() {
   }
 
   const metricSel = document.getElementById('metricSelect');
-  swingMetric = (metricSel && metricSel.value) ? metricSel.value : 'party';
+  swingMetric = (metricSel && metricSel.value) ? metricSel.value : 'margin';
 
   const partySel = document.getElementById('partySelect');
   partySwingParty = (partySel && partySel.value) ? partySel.value : 'all';
@@ -1937,8 +1953,8 @@ window.toggleSwingArrows = toggleSwingArrows;
                 <div id="swing-controls" style="display:none;margin-top:10px;">
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Metric:</label>
                   <select id="metricSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;margin-bottom:10px;">
-                    <option value="party" selected>Party shift (dominant only)</option>
-                    <option value="margin">Two-party margin swing</option>
+                    <option value="margin" selected>Margin of victory swing</option>
+                    <option value="party">Party shift (dominant only)</option>
                   </select>
                   <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
                   <select id="compareSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;">
@@ -4653,7 +4669,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const metricSelect = document.getElementById('metricSelect');
   if (metricSelect && metricSelect.dataset.changeBound !== 'true') {
     metricSelect.addEventListener('change', () => {
-      swingMetric = metricSelect.value || 'party';
+      swingMetric = metricSelect.value || 'margin';
       syncSwingSideEffects();
       // In margin mode, party filter doesn't apply
       try { if (swingArrowsEnabled) { setSwingVisibility(true); updateSwingLayer(); } } catch (e) {}

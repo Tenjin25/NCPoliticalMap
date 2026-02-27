@@ -933,6 +933,50 @@ function toggleCountyLabels() {
 // --- Swing arrows (county-level shift vs previous election) ---
 let swingArrowsEnabled = false;
 let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
+let compareContestEncoded = ''; // "" => previous election for selected contest
+
+function getContestFromEncoded(encoded) {
+  const value = (encoded || '').toString();
+  if (!value) return null;
+
+  let year, cat, contestKey;
+  if (value.includes('||')) {
+    const parts = value.split('||');
+    if (parts.length < 3) return null;
+    year = parts[0];
+    cat = parts[1];
+    contestKey = parts[2];
+  } else if (value.includes('-')) {
+    // Old format fallback: year-contestType-contestId
+    const parts = value.split('-');
+    if (parts.length < 3) return null;
+    year = parts[0];
+    cat = parts[1];
+    contestKey = parts.slice(2).join('-');
+  } else {
+    return null;
+  }
+
+  const obj =
+    electionData &&
+    electionData.results_by_year &&
+    electionData.results_by_year[year] &&
+    electionData.results_by_year[year][cat] &&
+    electionData.results_by_year[year][cat][contestKey];
+
+  if (!obj) return null;
+  return { year, category: cat, key: contestKey, data: obj };
+}
+
+function getCurrentContestInfo() {
+  if (!currentContest) return null;
+  const year = currentContest.year;
+  const category = currentContest.category || currentContest.contestType;
+  const key = currentContest.key || currentContest.contestId;
+  const data = currentContest.data;
+  if (!year || !category || !key || !data) return null;
+  return { year, category, key, data };
+}
 
 function normalizeCountyKey(name) {
   return (name || '')
@@ -987,11 +1031,6 @@ function makeArrowCanvas(color) {
 function ensureSwingLayer() {
   if (typeof map === 'undefined' || !map) return;
 
-  // Pre-colored arrows (no SDF requirements)
-  // Avoid pixelRatio here (some Mapbox GL builds throw "mismatched image size" for canvas + pixelRatio)
-  if (!map.hasImage('swing-arrow-r')) map.addImage('swing-arrow-r', makeArrowCanvas('#d73027'));
-  if (!map.hasImage('swing-arrow-d')) map.addImage('swing-arrow-d', makeArrowCanvas('#4575b4'));
-
   if (!map.getSource('swing')) {
     map.addSource('swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
   }
@@ -1005,15 +1044,22 @@ function ensureSwingLayer() {
         source: 'swing',
         minzoom: 6,
         layout: {
-          'icon-image': ['match', ['get', 'dir'], 'R', 'swing-arrow-r', 'D', 'swing-arrow-d', 'swing-arrow-r'],
-          'icon-allow-overlap': true,
-          'icon-ignore-placement': true,
-          'icon-rotation-alignment': 'map',
-          'icon-pitch-alignment': 'map',
-          'icon-rotate': ['get', 'angle'],
-          'icon-size': ['interpolate', ['linear'], ['get', 'mag'], 0, 0.2, 10, 0.85, 20, 1.25, 30, 1.45]
+          // Use text glyph arrows instead of addImage(canvas) to avoid Mapbox "mismatched image size" errors
+          'text-field': '▶',
+          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+          'text-rotation-alignment': 'map',
+          'text-pitch-alignment': 'map',
+          'text-rotate': ['get', 'angle'],
+          'text-size': ['interpolate', ['linear'], ['get', 'mag'], 0, 10, 10, 14, 20, 18, 30, 22]
         },
-        paint: { 'icon-opacity': 0.9 }
+        paint: {
+          'text-color': ['match', ['get', 'dir'], 'R', '#d73027', 'D', '#4575b4', '#111827'],
+          'text-opacity': 0.92,
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1
+        }
       },
       before
     );
@@ -1076,39 +1122,66 @@ function signedMarginPct(result) {
 function updateSwingLayer() {
   if (!swingArrowsEnabled) return;
   if (typeof map === 'undefined' || !map || !map.getSource('swing')) return;
-  if (!currentContest || !currentContest.data || !currentContest.data.results) {
+  const cur = getCurrentContestInfo();
+  if (!cur || !cur.data || !cur.data.results) {
     map.getSource('swing').setData({ type: 'FeatureCollection', features: [] });
     return;
   }
   if (!countyCentroidsByName) countyCentroidsByName = buildCountyCentroidIndex(window.countiesData);
 
-  const year = currentContest.year;
-  const category = currentContest.category;
-  const contestId = currentContest.key;
+  const year = cur.year;
+  const category = cur.category;
+  const contestId = cur.key;
 
-  const prev = getPreviousContestObject(year, category, contestId);
-  if (!prev || !prev.obj || !prev.obj.results) {
-    map.getSource('swing').setData({ type: 'FeatureCollection', features: [] });
-    return;
+  const compare = getContestFromEncoded(compareContestEncoded);
+  let compareResults = null;
+  let compareYear = null;
+  if (compare && compare.data && compare.data.results) {
+    compareResults = compare.data.results;
+    compareYear = compare.year;
+  }
+
+  let prev = null;
+  if (!compareResults) {
+    prev = getPreviousContestObject(year, category, contestId);
+    if (!prev || !prev.obj || !prev.obj.results) {
+      map.getSource('swing').setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
   }
 
   const features = [];
-  Object.entries(currentContest.data.results).forEach(([countyName, currentRes]) => {
+  Object.entries(cur.data.results).forEach(([countyName, currentRes]) => {
     const key = normalizeCountyKey(countyName);
     const coord = countyCentroidsByName && countyCentroidsByName.get(key);
     if (!coord) return;
 
-    const prevRes = prev.obj.results[countyName] || prev.obj.results[key];
     const curSigned = signedMarginPct(currentRes);
-    const prevSigned = signedMarginPct(prevRes);
-    if (curSigned === null || prevSigned === null) return;
+    if (curSigned === null) return;
 
-    const swing = curSigned - prevSigned; // + => GOP shift, - => DEM shift
+    let swing = null;
+    let fromYear = null;
+
+    if (compareResults) {
+      const compRes = compareResults[countyName] || compareResults[key];
+      const compSigned = signedMarginPct(compRes);
+      if (compSigned === null) return;
+      swing = curSigned - compSigned; // + => more GOP than compare contest
+      fromYear = compareYear;
+    } else {
+      const prevRes = prev.obj.results[countyName] || prev.obj.results[key];
+      const prevSigned = signedMarginPct(prevRes);
+      if (prevSigned === null) return;
+      swing = curSigned - prevSigned; // + => GOP shift vs previous election
+      fromYear = prev.year;
+    }
+
     const mag = Math.min(Math.abs(swing), 30);
     if (mag < 0.1) return;
 
     const dir = swing >= 0 ? 'R' : 'D';
-    const angle = dir === 'R' ? 90 : 270; // east vs west
+    // Using glyph '▶' (points east). Rotate 0 for east, 180 for west.
+    const angle = dir === 'R' ? 0 : 180;
 
     features.push({
       type: 'Feature',
@@ -1118,7 +1191,7 @@ function updateSwingLayer() {
         angle,
         mag,
         swing: Number(swing.toFixed(2)),
-        from_year: prev.year,
+        from_year: fromYear,
         to_year: year
       }
     });
@@ -1126,6 +1199,7 @@ function updateSwingLayer() {
 
   map.getSource('swing').setData({ type: 'FeatureCollection', features });
   setSwingVisibility((typeof currentView === 'undefined' ? 'counties' : currentView) === 'counties');
+  try { console.log('[swing] arrows:', features.length, 'compare:', !!compareResults, 'from:', compareResults ? compareYear : (prev && prev.year), 'to:', year); } catch (e) {}
 }
 
 function toggleSwingArrows() {
@@ -1133,7 +1207,7 @@ function toggleSwingArrows() {
   const btn = document.getElementById('swing-toggle');
   if (btn) {
     btn.style.opacity = swingArrowsEnabled ? '1' : '0.5';
-    btn.title = swingArrowsEnabled ? 'Hide Swing Arrows' : 'Show Swing Arrows (vs previous election)';
+    btn.title = swingArrowsEnabled ? 'Hide Swing Arrows' : 'Show Swing Arrows (previous election or compare contest)';
   }
 
   if (typeof map === 'undefined' || !map) return;
@@ -1238,6 +1312,12 @@ function toggleSwingArrows() {
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>
                 </select>
+                <div style="margin-top:8px;">
+                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
+                  <select id="compareSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;">
+                    <option value="">Previous election (same office)</option>
+                  </select>
+                </div>
             </div>
         </div>
     </div>
@@ -1613,45 +1693,59 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         buildGranularContestDropdown();
 
         // --- Granular Contest Dropdown Builder ---
-        // This function builds grouped/nicknamed contest options for clarity
+        // Builds grouped contest options for both primary and compare selectors.
         function buildGranularContestDropdown() {
-          const sel = document.getElementById('contestSelect');
-          sel.innerHTML = '<option value="">Select a contest...</option>';
-          // Use allowedOffices order to maintain consistent dropdown grouping
-          const labels = allowedOffices.filter(office => groupedByOffice[office]);
-          labels.forEach(officeLabel => {
-            const contests = groupedByOffice[officeLabel];
-            const og = document.createElement('optgroup');
-            og.label = officeLabel;
-            let sortedContests = contests;
-            // Sort judicial races numerically by seat/position and year
-            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
-              sortedContests = contests.slice().sort((a, b) => {
-                function extractSeatNum(name) {
-                  if (!name) return 0;
-                  const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
-                  return match ? parseInt(match[2], 10) : 0;
-                }
-                const yearDiff = parseInt(a.year) - parseInt(b.year);
-                if (yearDiff !== 0) return yearDiff;
-                return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
-              });
-            } else {
-              sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
-            }
-            sortedContests.forEach(item => {
-              const o = document.createElement('option');
-              o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-              let displayName = `${officeLabel} (${item.year})`;
-              if (item.contestName && !officeLabel.includes(item.contestName)) {
-                displayName = `${item.contestName} (${item.year})`;
+          const contestSel = document.getElementById('contestSelect');
+          if (!contestSel) return;
+          const compareSel = document.getElementById('compareSelect');
+
+          function fillSelect(selectEl, defaultText) {
+            if (!selectEl) return;
+            selectEl.innerHTML = '';
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = defaultText;
+            selectEl.appendChild(opt);
+
+            const labels = allowedOffices.filter(office => groupedByOffice[office]);
+            labels.forEach(officeLabel => {
+              const contests = groupedByOffice[officeLabel];
+              const og = document.createElement('optgroup');
+              og.label = officeLabel;
+              let sortedContests = contests;
+
+              if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
+                sortedContests = contests.slice().sort((a, b) => {
+                  function extractSeatNum(name) {
+                    if (!name) return 0;
+                    const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
+                    return match ? parseInt(match[2], 10) : 0;
+                  }
+                  const yearDiff = parseInt(a.year) - parseInt(b.year);
+                  if (yearDiff !== 0) return yearDiff;
+                  return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
+                });
+              } else {
+                sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
               }
-              o.textContent = displayName;
-              og.appendChild(o);
+
+              sortedContests.forEach(item => {
+                const o = document.createElement('option');
+                o.value = `${item.year}||${item.cat}||${item.contestKey}`;
+                let displayName = `${officeLabel} (${item.year})`;
+                if (item.contestName && !officeLabel.includes(item.contestName)) {
+                  displayName = `${item.contestName} (${item.year})`;
+                }
+                o.textContent = displayName;
+                og.appendChild(o);
+              });
+
+              selectEl.appendChild(og);
             });
-            sel.appendChild(og);
-          });
           }
+
+          fillSelect(contestSel, 'Select a contest...');
+          fillSelect(compareSel, 'Previous election (same office)');
         }
 
       // Remove duplicate sel.onchange assignment here to avoid conflicts.
@@ -3286,7 +3380,7 @@ function filterValidContests(contests) {
 
     let updateTimeout = null;
 
-    function onContestChange() {
+function onContestChange() {
       const select = document.getElementById('contestSelect');
       const value = select.value;
       
@@ -3378,6 +3472,14 @@ function filterValidContests(contests) {
             let label = rawLabel.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '').trim();
             contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
           }
+        }
+
+        // Swing arrows depend on currentContest; keep them in sync with dropdown changes
+        try {
+          if (typeof ensureSwingLayer === 'function') ensureSwingLayer();
+          if (typeof updateSwingLayer === 'function') updateSwingLayer();
+        } catch (e) {
+          console.warn('Swing arrows update failed (onContestChange):', e);
         }
         
         // Update sidebar if a county is currently selected
@@ -3909,6 +4011,21 @@ document.addEventListener('DOMContentLoaded', function() {
   if (contestSelect && contestSelect.dataset.changeBound !== 'true') {
     contestSelect.addEventListener('change', onContestChange);
     contestSelect.dataset.changeBound = 'true';
+  }
+
+  // Compare selector for swing arrows (lets you compare President vs Governor, etc.)
+  const compareSelect = document.getElementById('compareSelect');
+  if (compareSelect && compareSelect.dataset.changeBound !== 'true') {
+    compareSelect.addEventListener('change', () => {
+      compareContestEncoded = compareSelect.value || '';
+      try {
+        if (typeof ensureSwingLayer === 'function') ensureSwingLayer();
+        if (typeof updateSwingLayer === 'function') updateSwingLayer();
+      } catch (e) {
+        console.warn('Swing arrows update failed (compareSelect):', e);
+      }
+    });
+    compareSelect.dataset.changeBound = 'true';
   }
 
   // Make functions global (already defined above)

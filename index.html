@@ -1659,7 +1659,7 @@ function updateSwingLayer() {
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
 
         // Arrow SVG points EAST; rotate by party so "towards Republicans" is red, angled up-right.
-        const baseRot = winnerParty === 'DEM' ? 45 : winnerParty === 'REP' ? -45 : -90;
+        const baseRot = winnerParty === 'DEM' ? 135 : winnerParty === 'REP' ? 45 : 90;
         const rotation = baseRot;
 
         features.push({
@@ -1715,7 +1715,7 @@ function updateSwingLayer() {
 
         // Arrow SVG is drawn pointing EAST; rotate parties to match the repo look:
         // DEM/REP are diagonal, OTHER is vertical.
-        const baseRot = (party === 'DEM') ? 45 : (party === 'REP') ? -45 : -90;
+        const baseRot = (party === 'DEM') ? 135 : (party === 'REP') ? 45 : 90;
         const rotation = delta >= 0 ? baseRot : (baseRot + 180);
 
         features.push({
@@ -1781,7 +1781,7 @@ function updateSwingLayer() {
           party: delta >= 0 ? 'REP' : 'DEM',
           icon: 'swing-party-arrow',
           // Arrow SVG points EAST: GOP shift => up-right, DEM shift => up-left
-          rotation: delta >= 0 ? -45 : 135,
+          rotation: delta >= 0 ? 45 : 135,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,

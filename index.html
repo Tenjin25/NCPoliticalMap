@@ -940,6 +940,14 @@ let swingNeutralFillEnabled = false;
 let swingMetric = 'margin'; // 'margin' | 'party'
 let swingSwingImagesLoading = false;
 
+function setSwingHint(text) {
+  try {
+    const el = document.getElementById('swing-hint');
+    if (!el) return;
+    el.textContent = text || '';
+  } catch (e) {}
+}
+
 function setCountyFillNeutral(neutralOn) {
   if (!map || !map.getLayer || !map.getLayer('county-fill')) return;
   try {
@@ -1094,7 +1102,7 @@ function twoPartyMarginPct(result) {
 
 function ensureSwingSymbolImages() {
   if (!map) return;
-  if (typeof map.hasImage !== 'function' || typeof map.loadImage !== 'function') return;
+  if (typeof map.hasImage !== 'function' || typeof map.addImage !== 'function') return;
   const needed = ['swing-dot', 'swing-ring', 'swing-party-arrow'].filter(id => !map.hasImage(id));
   if (!needed.length) return;
   if (swingSwingImagesLoading) return;
@@ -1121,11 +1129,10 @@ function ensureSwingSymbolImages() {
   needed.forEach((id) => {
     const svg = svgsById[id];
     const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    map.loadImage(url, (err, image) => {
+    const img = new Image(64, 64);
+    img.onload = () => {
       try {
-        if (!err && image && !map.hasImage(id)) {
-          map.addImage(id, image, { sdf: true });
-        }
+        if (!map.hasImage(id)) map.addImage(id, img, { sdf: true });
       } catch (e) {
         console.warn(`addImage ${id} failed:`, e);
       } finally {
@@ -1135,7 +1142,16 @@ function ensureSwingSymbolImages() {
           try { ensureSwingLayer(); } catch (e) {}
         }
       }
-    });
+    };
+    img.onerror = (e) => {
+      console.warn(`Failed to load ${id} SVG image`, e);
+      remaining -= 1;
+      if (remaining <= 0) {
+        swingSwingImagesLoading = false;
+        try { ensureSwingLayer(); } catch (e) {}
+      }
+    };
+    img.src = url;
   });
 }
 
@@ -1208,7 +1224,7 @@ function ensureSwingLayer() {
           id: 'party-swing-all-outline',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['==', ['get', 'metric'], 'party_all'],
           layout: { ...arrowLayout, 'icon-size': ['*', arrowLayout['icon-size'], 1.18] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
@@ -1222,7 +1238,7 @@ function ensureSwingLayer() {
           id: 'party-swing-all',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['==', ['get', 'metric'], 'party_all'],
           layout: { ...arrowLayout },
           paint: { ...basePaint, 'icon-color': arrowColor }
@@ -1238,7 +1254,7 @@ function ensureSwingLayer() {
           id: 'party-swing-dem-outline',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'DEM'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
@@ -1252,7 +1268,7 @@ function ensureSwingLayer() {
           id: 'party-swing-rep-outline',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'REP'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
@@ -1266,7 +1282,7 @@ function ensureSwingLayer() {
           id: 'party-swing-other-outline',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, -1.0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
@@ -1281,7 +1297,7 @@ function ensureSwingLayer() {
           id: 'party-swing-dem',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'DEM'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-offset': [-1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#3c6ccc' }
@@ -1295,7 +1311,7 @@ function ensureSwingLayer() {
           id: 'party-swing-rep',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'REP'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-offset': [1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#dc4b00' }
@@ -1309,7 +1325,7 @@ function ensureSwingLayer() {
           id: 'party-swing-other',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 6,
+          minzoom: 5,
           filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['!=', ['get', 'metric'], 'party_all']],
           layout: { ...baseLayout, 'icon-offset': [0, -1.0] },
           paint: { ...basePaint, 'icon-color': '#b5a600' }
@@ -1344,7 +1360,7 @@ function ensureSwingLayer() {
           id: 'party-swing-dem-label',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 7.2,
+          minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'DEM'], ['==', ['get', 'metric'], 'party']],
           layout: { ...baseLabelLayout, 'text-offset': [-2.0, 0], 'text-anchor': 'right' },
           paint: { ...baseLabelPaint, 'text-color': '#3c6ccc' }
@@ -1358,7 +1374,7 @@ function ensureSwingLayer() {
           id: 'party-swing-rep-label',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 7.2,
+          minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'REP'], ['==', ['get', 'metric'], 'party']],
           layout: { ...baseLabelLayout, 'text-offset': [2.0, 0], 'text-anchor': 'left' },
           paint: { ...baseLabelPaint, 'text-color': '#dc4b00' }
@@ -1372,7 +1388,7 @@ function ensureSwingLayer() {
           id: 'party-swing-other-label',
           type: 'symbol',
           source: 'party-swing',
-          minzoom: 7.2,
+          minzoom: 6.5,
           filter: ['all', ['==', ['get', 'party'], 'OTHER'], ['==', ['get', 'metric'], 'party']],
           layout: { ...baseLabelLayout, 'text-offset': [0, -2.0], 'text-anchor': 'bottom' },
           paint: { ...baseLabelPaint, 'text-color': '#b5a600' }
@@ -1556,14 +1572,17 @@ function updateSwingLayer() {
 
   const cur = getCurrentContestInfo();
   if (!cur || !cur.data || !cur.data.results) {
+    setSwingHint('Select a contest first.');
     map.getSource('party-swing').setData({ type: 'FeatureCollection', features: [] });
     return;
   }
+  setSwingHint('');
 
   if (!countyCentroidsByName && window.countiesData) {
     countyCentroidsByName = buildCountyCentroidIndex(window.countiesData);
   }
   if (!countyCentroidsByName) {
+    setSwingHint('County centroids not ready yet.');
     map.getSource('party-swing').setData({ type: 'FeatureCollection', features: [] });
     return;
   }
@@ -1585,6 +1604,7 @@ function updateSwingLayer() {
   if (!compareResults) {
     prev = getPreviousContestObject(cur.year, cur.category, cur.key);
     if (!prev || !prev.obj || !prev.obj.results) {
+      setSwingHint('No previous election found for this contest.');
       map.getSource('party-swing').setData({ type: 'FeatureCollection', features: [] });
       return;
     }
@@ -1641,7 +1661,7 @@ function updateSwingLayer() {
 
         const delta = winnerParty === 'REP' ? repChange : winnerParty === 'DEM' ? demChange : othChange;
         const mag = Math.max(0, delta);
-        if (Math.abs(delta) < 0.05) return;
+        if (Math.abs(delta) < 0.01) return;
 
         const toPct = winnerParty === 'REP' ? curRep : winnerParty === 'DEM' ? curDem : curOth;
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
@@ -1692,7 +1712,7 @@ function updateSwingLayer() {
         }
 
         const mag = Math.abs(delta);
-        if (mag < 0.05) return;
+        if (mag < 0.01) return;
 
         features.push({
           type: 'Feature',
@@ -1740,7 +1760,7 @@ function updateSwingLayer() {
       }
 
       const mag = Math.abs(delta);
-      if (mag < 0.05) return;
+      if (mag < 0.01) return;
 
       // Single centered arrow in margin mode
       features.push({
@@ -1767,6 +1787,7 @@ function updateSwingLayer() {
   map.getSource('party-swing').setData({ type: 'FeatureCollection', features });
   const inCounties = (typeof currentView === 'undefined') || currentView === 'counties';
   setSwingVisibility(inCounties);
+  setSwingHint(features.length ? `Swing symbols: ${features.length}` : 'No swing symbols (try a different comparison/year).');
 }
 
 function populateCompareSelectFromContestSelect() {
@@ -1937,6 +1958,7 @@ window.toggleSwingArrows = toggleSwingArrows;
                     <option value="REP">Republican</option>
                     <option value="OTHER">Other</option>
                   </select>
+                  <div id="swing-hint" style="margin-top:8px;font-size:12px;color:#6b7280;"></div>
                 </div>
             </div>
         </div>

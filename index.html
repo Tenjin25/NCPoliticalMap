@@ -1183,7 +1183,14 @@ function ensureSwingSymbolImages() {
         remaining -= 1;
         if (remaining <= 0) {
           swingSwingImagesLoading = false;
-          try { ensureSwingLayer(); } catch (e) {}
+          try {
+            ensureSwingLayer();
+            // Avoid "needs two clicks": once the image/layers exist, immediately refresh if swing is enabled.
+            if (swingArrowsEnabled) {
+              setSwingVisibility(true);
+              updateSwingLayer();
+            }
+          } catch (e) {}
         }
       }
     };
@@ -1773,7 +1780,8 @@ function updateSwingLayer() {
           county_display: countyDisplay,
           party: delta >= 0 ? 'REP' : 'DEM',
           icon: 'swing-party-arrow',
-          rotation: delta >= 0 ? -45 : 45,
+          // Arrow SVG points EAST: GOP shift => up-right, DEM shift => up-left
+          rotation: delta >= 0 ? -45 : 135,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,

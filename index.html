@@ -913,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Toggle county labels on/off
 let countyLabelsVisible = true;
 function toggleCountyLabels() {
-  if (typeof map === 'undefined' || !map || !map.getLayer('county-label')) {
+  if (!map || !map.getLayer('county-label')) {
     console.log('County labels layer not yet loaded');
     return;
   }
@@ -928,293 +928,6 @@ function toggleCountyLabels() {
     btn.style.opacity = countyLabelsVisible ? '1' : '0.5';
     btn.title = countyLabelsVisible ? 'Hide County Labels' : 'Show County Labels';
   }
-}
-
-// --- Swing arrows (county-level shift vs previous election) ---
-let swingArrowsEnabled = false;
-let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
-let compareContestEncoded = ''; // "" => previous election for selected contest
-
-function getContestFromEncoded(encoded) {
-  const value = (encoded || '').toString();
-  if (!value) return null;
-
-  let year, cat, contestKey;
-  if (value.includes('||')) {
-    const parts = value.split('||');
-    if (parts.length < 3) return null;
-    year = parts[0];
-    cat = parts[1];
-    contestKey = parts[2];
-  } else if (value.includes('-')) {
-    // Old format fallback: year-contestType-contestId
-    const parts = value.split('-');
-    if (parts.length < 3) return null;
-    year = parts[0];
-    cat = parts[1];
-    contestKey = parts.slice(2).join('-');
-  } else {
-    return null;
-  }
-
-  const obj =
-    electionData &&
-    electionData.results_by_year &&
-    electionData.results_by_year[year] &&
-    electionData.results_by_year[year][cat] &&
-    electionData.results_by_year[year][cat][contestKey];
-
-  if (!obj) return null;
-  return { year, category: cat, key: contestKey, data: obj };
-}
-
-function getCurrentContestInfo() {
-  if (!currentContest) return null;
-  const year = currentContest.year;
-  const category = currentContest.category || currentContest.contestType;
-  const key = currentContest.key || currentContest.contestId;
-  const data = currentContest.data;
-  if (!year || !category || !key || !data) return null;
-  return { year, category, key, data };
-}
-
-function normalizeCountyKey(name) {
-  return (name || '')
-    .toString()
-    .replace(/_/g, ' ')
-    .replace(/[^a-z0-9 ]/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toUpperCase();
-}
-
-function buildCountyCentroidIndex(geojson) {
-  const idx = new Map();
-  if (!geojson || !Array.isArray(geojson.features)) return idx;
-  geojson.features.forEach(f => {
-    const p = f.properties || {};
-    const raw =
-      p.NAME20 || p.NAMELSAD20 || p.county_name || p.County || p.COUNTYNAME || p.NAME || p.name || '';
-    const key = normalizeCountyKey(raw);
-    if (!key) return;
-    try {
-      const c = turf.centroid(f).geometry.coordinates;
-      if (Array.isArray(c) && c.length === 2) idx.set(key, c);
-    } catch (e) {}
-  });
-  return idx;
-}
-
-function makeArrowCanvas(color) {
-  const size = 64;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return canvas;
-  ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  // Up-pointing arrow: head + shaft
-  ctx.moveTo(size / 2, 6);
-  ctx.lineTo(size - 10, 26);
-  ctx.lineTo(size * 0.66, 26);
-  ctx.lineTo(size * 0.66, size - 8);
-  ctx.lineTo(size * 0.34, size - 8);
-  ctx.lineTo(size * 0.34, 26);
-  ctx.lineTo(10, 26);
-  ctx.closePath();
-  ctx.fill();
-  return canvas;
-}
-
-function ensureSwingLayer() {
-  if (typeof map === 'undefined' || !map) return;
-
-  if (!map.getSource('swing')) {
-    map.addSource('swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  }
-
-  if (!map.getLayer('swing-arrows')) {
-    const before = map.getLayer('county-label') ? 'county-label' : undefined;
-    map.addLayer(
-      {
-        id: 'swing-arrows',
-        type: 'symbol',
-        source: 'swing',
-        minzoom: 6,
-        layout: {
-          // Use text glyph arrows instead of addImage(canvas) to avoid Mapbox "mismatched image size" errors
-          'text-field': '▶',
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-allow-overlap': true,
-          'text-ignore-placement': true,
-          'text-rotation-alignment': 'map',
-          'text-pitch-alignment': 'map',
-          'text-rotate': ['get', 'angle'],
-          'text-size': ['interpolate', ['linear'], ['get', 'mag'], 0, 10, 10, 14, 20, 18, 30, 22]
-        },
-        paint: {
-          'text-color': ['match', ['get', 'dir'], 'R', '#d73027', 'D', '#4575b4', '#111827'],
-          'text-opacity': 0.92,
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 1
-        }
-      },
-      before
-    );
-  }
-}
-
-function setSwingVisibility(visible) {
-  if (typeof map === 'undefined' || !map || !map.getLayer('swing-arrows')) return;
-  map.setLayoutProperty('swing-arrows', 'visibility', visible ? 'visible' : 'none');
-}
-
-function stripYearSuffix(contestId, year) {
-  const y = (year || '').toString();
-  const suffix = '_' + y;
-  if (contestId && contestId.endsWith(suffix)) return contestId.slice(0, -suffix.length);
-  return contestId || '';
-}
-
-function getPreviousContestObject(year, category, contestId) {
-  if (!electionData || !electionData.results_by_year) return null;
-  const years = Object.keys(electionData.results_by_year)
-    .map(y => parseInt(y, 10))
-    .filter(n => !Number.isNaN(n))
-    .sort((a, b) => a - b);
-
-  const currentYearNum = parseInt(year, 10);
-  if (Number.isNaN(currentYearNum)) return null;
-
-  const base = stripYearSuffix(contestId, year);
-  for (let i = years.length - 1; i >= 0; i--) {
-    const y = years[i];
-    if (y >= currentYearNum) continue;
-    const yStr = String(y);
-    const catObj = electionData.results_by_year[yStr] && electionData.results_by_year[yStr][category];
-    if (!catObj) continue;
-
-    const exact = base ? `${base}_${yStr}` : null;
-    if (exact && catObj[exact]) return { year: yStr, obj: catObj[exact], id: exact };
-
-    const keys = Object.keys(catObj);
-    const found = keys.find(k => (base ? k.startsWith(base + '_') : true) && k.includes(yStr));
-    if (found && catObj[found]) return { year: yStr, obj: catObj[found], id: found };
-  }
-
-  return null;
-}
-
-function signedMarginPct(result) {
-  if (!result) return null;
-  const marginPct = Number(result.margin_pct);
-  if (!Number.isFinite(marginPct)) return null;
-  const w = (result.winner || '').toString().toUpperCase();
-  const isRep = w === 'REP' || w === 'R' || w.startsWith('REP');
-  const isDem = w === 'DEM' || w === 'D' || w.startsWith('DEM');
-  if (isRep) return +marginPct;
-  if (isDem) return -marginPct;
-  return null;
-}
-
-function updateSwingLayer() {
-  if (!swingArrowsEnabled) return;
-  if (typeof map === 'undefined' || !map || !map.getSource('swing')) return;
-  const cur = getCurrentContestInfo();
-  if (!cur || !cur.data || !cur.data.results) {
-    map.getSource('swing').setData({ type: 'FeatureCollection', features: [] });
-    return;
-  }
-  if (!countyCentroidsByName) countyCentroidsByName = buildCountyCentroidIndex(window.countiesData);
-
-  const year = cur.year;
-  const category = cur.category;
-  const contestId = cur.key;
-
-  const compare = getContestFromEncoded(compareContestEncoded);
-  let compareResults = null;
-  let compareYear = null;
-  if (compare && compare.data && compare.data.results) {
-    compareResults = compare.data.results;
-    compareYear = compare.year;
-  }
-
-  let prev = null;
-  if (!compareResults) {
-    prev = getPreviousContestObject(year, category, contestId);
-    if (!prev || !prev.obj || !prev.obj.results) {
-      map.getSource('swing').setData({ type: 'FeatureCollection', features: [] });
-      return;
-    }
-  }
-
-  const features = [];
-  Object.entries(cur.data.results).forEach(([countyName, currentRes]) => {
-    const key = normalizeCountyKey(countyName);
-    const coord = countyCentroidsByName && countyCentroidsByName.get(key);
-    if (!coord) return;
-
-    const curSigned = signedMarginPct(currentRes);
-    if (curSigned === null) return;
-
-    let swing = null;
-    let fromYear = null;
-
-    if (compareResults) {
-      const compRes = compareResults[countyName] || compareResults[key];
-      const compSigned = signedMarginPct(compRes);
-      if (compSigned === null) return;
-      swing = curSigned - compSigned; // + => more GOP than compare contest
-      fromYear = compareYear;
-    } else {
-      const prevRes = prev.obj.results[countyName] || prev.obj.results[key];
-      const prevSigned = signedMarginPct(prevRes);
-      if (prevSigned === null) return;
-      swing = curSigned - prevSigned; // + => GOP shift vs previous election
-      fromYear = prev.year;
-    }
-
-    const mag = Math.min(Math.abs(swing), 30);
-    if (mag < 0.1) return;
-
-    const dir = swing >= 0 ? 'R' : 'D';
-    // Using glyph '▶' (points east). Rotate 0 for east, 180 for west.
-    const angle = dir === 'R' ? 0 : 180;
-
-    features.push({
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: coord },
-      properties: {
-        dir,
-        angle,
-        mag,
-        swing: Number(swing.toFixed(2)),
-        from_year: fromYear,
-        to_year: year
-      }
-    });
-  });
-
-  map.getSource('swing').setData({ type: 'FeatureCollection', features });
-  setSwingVisibility((typeof currentView === 'undefined' ? 'counties' : currentView) === 'counties');
-  try { console.log('[swing] arrows:', features.length, 'compare:', !!compareResults, 'from:', compareResults ? compareYear : (prev && prev.year), 'to:', year); } catch (e) {}
-}
-
-function toggleSwingArrows() {
-  swingArrowsEnabled = !swingArrowsEnabled;
-  const btn = document.getElementById('swing-toggle');
-  if (btn) {
-    btn.style.opacity = swingArrowsEnabled ? '1' : '0.5';
-    btn.title = swingArrowsEnabled ? 'Hide Swing Arrows' : 'Show Swing Arrows (previous election or compare contest)';
-  }
-
-  if (typeof map === 'undefined' || !map) return;
-  ensureSwingLayer();
-
-  if (!swingArrowsEnabled) return setSwingVisibility(false);
-  updateSwingLayer();
 }
 </script>
 <div id="map"></div>
@@ -1307,17 +1020,10 @@ function toggleSwingArrows() {
                   <label>📊 Contest Type:</label>
                   <button id="accessibility-toggle" title="Accessibility: Color Blind Mode" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">♿</button>
                   <button id="labels-toggle" title="Toggle County Labels" onclick="toggleCountyLabels()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">🏷️</button>
-                  <button id="swing-toggle" title="Toggle Swing Arrows (vs previous election)" onclick="toggleSwingArrows()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;letter-spacing:0.5px;">SW</button>
                 </div>
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>
                 </select>
-                <div style="margin-top:8px;">
-                  <label style="font-size:13px;color:#374151;display:block;margin-bottom:6px;">Compare to:</label>
-                  <select id="compareSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid #d1d5db;">
-                    <option value="">Previous election (same office)</option>
-                  </select>
-                </div>
             </div>
         </div>
     </div>
@@ -1693,59 +1399,45 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         buildGranularContestDropdown();
 
         // --- Granular Contest Dropdown Builder ---
-        // Builds grouped contest options for both primary and compare selectors.
+        // This function builds grouped/nicknamed contest options for clarity
         function buildGranularContestDropdown() {
-          const contestSel = document.getElementById('contestSelect');
-          if (!contestSel) return;
-          const compareSel = document.getElementById('compareSelect');
-
-          function fillSelect(selectEl, defaultText) {
-            if (!selectEl) return;
-            selectEl.innerHTML = '';
-            const opt = document.createElement('option');
-            opt.value = '';
-            opt.textContent = defaultText;
-            selectEl.appendChild(opt);
-
-            const labels = allowedOffices.filter(office => groupedByOffice[office]);
-            labels.forEach(officeLabel => {
-              const contests = groupedByOffice[officeLabel];
-              const og = document.createElement('optgroup');
-              og.label = officeLabel;
-              let sortedContests = contests;
-
-              if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
-                sortedContests = contests.slice().sort((a, b) => {
-                  function extractSeatNum(name) {
-                    if (!name) return 0;
-                    const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
-                    return match ? parseInt(match[2], 10) : 0;
-                  }
-                  const yearDiff = parseInt(a.year) - parseInt(b.year);
-                  if (yearDiff !== 0) return yearDiff;
-                  return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
-                });
-              } else {
-                sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
-              }
-
-              sortedContests.forEach(item => {
-                const o = document.createElement('option');
-                o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-                let displayName = `${officeLabel} (${item.year})`;
-                if (item.contestName && !officeLabel.includes(item.contestName)) {
-                  displayName = `${item.contestName} (${item.year})`;
+          const sel = document.getElementById('contestSelect');
+          sel.innerHTML = '<option value="">Select a contest...</option>';
+          // Use allowedOffices order to maintain consistent dropdown grouping
+          const labels = allowedOffices.filter(office => groupedByOffice[office]);
+          labels.forEach(officeLabel => {
+            const contests = groupedByOffice[officeLabel];
+            const og = document.createElement('optgroup');
+            og.label = officeLabel;
+            let sortedContests = contests;
+            // Sort judicial races numerically by seat/position and year
+            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
+              sortedContests = contests.slice().sort((a, b) => {
+                function extractSeatNum(name) {
+                  if (!name) return 0;
+                  const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
+                  return match ? parseInt(match[2], 10) : 0;
                 }
-                o.textContent = displayName;
-                og.appendChild(o);
+                const yearDiff = parseInt(a.year) - parseInt(b.year);
+                if (yearDiff !== 0) return yearDiff;
+                return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
               });
-
-              selectEl.appendChild(og);
+            } else {
+              sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
+            }
+            sortedContests.forEach(item => {
+              const o = document.createElement('option');
+              o.value = `${item.year}||${item.cat}||${item.contestKey}`;
+              let displayName = `${officeLabel} (${item.year})`;
+              if (item.contestName && !officeLabel.includes(item.contestName)) {
+                displayName = `${item.contestName} (${item.year})`;
+              }
+              o.textContent = displayName;
+              og.appendChild(o);
             });
+            sel.appendChild(og);
+          });
           }
-
-          fillSelect(contestSel, 'Select a contest...');
-          fillSelect(compareSel, 'Previous election (same office)');
         }
 
       // Remove duplicate sel.onchange assignment here to avoid conflicts.
@@ -1768,14 +1460,11 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       if (typeof applyCountyContest === 'function') {
         try { 
           console.log('Applying contest:', cat, year);
-          applyCountyContest(cat, year, contestKey); 
+          applyCountyContest(cat, year); 
         } catch (e) { 
           console.warn('applyCountyContest failed:', e); 
         }
       }
-
-      // Update swing arrows (if enabled) for the newly selected contest
-      try { updateSwingLayer(); } catch (e) { console.warn('updateSwingLayer failed:', e); }
       
       // Only call showCountyDetails if a county is selected
       if (typeof showCountyDetails === 'function' && lastSelectedCounty) {
@@ -2104,15 +1793,6 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         addStateSenatelayers();
       } else if (view === 'vtds_2000') {
         add2000VTDLayers();
-      }
-
-      // Swing arrows only apply to county view
-      try {
-        if (typeof ensureSwingLayer === 'function') ensureSwingLayer();
-        if (typeof setSwingVisibility === 'function') setSwingVisibility(view === 'counties' && swingArrowsEnabled);
-        if (view === 'counties' && typeof updateSwingLayer === 'function') updateSwingLayer();
-      } catch (e) {
-        console.warn('Swing arrows sync failed:', e);
       }
       
   // Repopulate contest selector
@@ -3189,7 +2869,6 @@ function toggleSidebar() {
         
   countiesData = await response.json();
   window.countiesData = countiesData;
-  try { countyCentroidsByName = buildCountyCentroidIndex(countiesData); } catch (e) { countyCentroidsByName = null; }
         
         // Validate county data
         if (!countiesData.features || countiesData.features.length === 0) {
@@ -3380,7 +3059,7 @@ function filterValidContests(contests) {
 
     let updateTimeout = null;
 
-function onContestChange() {
+    function onContestChange() {
       const select = document.getElementById('contestSelect');
       const value = select.value;
       
@@ -3472,14 +3151,6 @@ function onContestChange() {
             let label = rawLabel.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '').trim();
             contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
           }
-        }
-
-        // Swing arrows depend on currentContest; keep them in sync with dropdown changes
-        try {
-          if (typeof ensureSwingLayer === 'function') ensureSwingLayer();
-          if (typeof updateSwingLayer === 'function') updateSwingLayer();
-        } catch (e) {
-          console.warn('Swing arrows update failed (onContestChange):', e);
         }
         
         // Update sidebar if a county is currently selected
@@ -3717,7 +3388,7 @@ function onContestChange() {
       setupAccessibilityToggle();
     }
 
-    function applyCountyContest(contestType, year, contestKey) {
+    function applyCountyContest(contestType, year) {
       
       // Get contest data from Tennessee JSON structure
       if (!electionData || !electionData.results_by_year || !electionData.results_by_year[year]) {
@@ -3729,19 +3400,9 @@ function onContestChange() {
         return setStatus('No data available for this contest type');
       }
       
-      // Prefer an explicitly selected contestKey (new dropdown format: year||cat||contestKey)
-      let contestData = contestKey && yearData[contestType][contestKey] ? yearData[contestType][contestKey] : null;
-
-      // If currentContest matches, prefer it (keeps selection consistent)
-      if (!contestData && currentContest && currentContest.year == year && currentContest.category === contestType) {
-        contestData = currentContest.data;
-      }
-
-      // Fallback: use the first contest of this type
-      if (!contestData) {
-        const firstId = Object.keys(yearData[contestType])[0];
-        contestData = yearData[contestType][firstId];
-      }
+      // Find the first contest of this type (e.g., us_senate_2006_1)
+      const contestId = Object.keys(yearData[contestType])[0];
+      const contestData = yearData[contestType][contestId];
       
       if (!contestData || !contestData.results) {
         return setStatus('No contest results found');
@@ -3821,14 +3482,6 @@ function onContestChange() {
       } catch (error) {
         console.error('Error applying color expression:', error);
         return setStatus('Error applying colors to map');
-      }
-
-      // Update swing arrows if enabled
-      try {
-        ensureSwingLayer();
-        updateSwingLayer();
-      } catch (e) {
-        console.warn('Swing arrows update failed:', e);
       }
       
   // Update contest display (do not show state prefix to avoid brief out-of-state flashes)
@@ -4011,21 +3664,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (contestSelect && contestSelect.dataset.changeBound !== 'true') {
     contestSelect.addEventListener('change', onContestChange);
     contestSelect.dataset.changeBound = 'true';
-  }
-
-  // Compare selector for swing arrows (lets you compare President vs Governor, etc.)
-  const compareSelect = document.getElementById('compareSelect');
-  if (compareSelect && compareSelect.dataset.changeBound !== 'true') {
-    compareSelect.addEventListener('change', () => {
-      compareContestEncoded = compareSelect.value || '';
-      try {
-        if (typeof ensureSwingLayer === 'function') ensureSwingLayer();
-        if (typeof updateSwingLayer === 'function') updateSwingLayer();
-      } catch (e) {
-        console.warn('Swing arrows update failed (compareSelect):', e);
-      }
-    });
-    compareSelect.dataset.changeBound = 'true';
   }
 
   // Make functions global (already defined above)

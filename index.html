@@ -938,7 +938,7 @@ let countyCentroidsByName = null; // Map(normalizedCountyName -> [lng, lat])
 let partySwingEventsBound = false;
 let swingNeutralFillEnabled = false;
 let swingMetric = 'margin'; // 'margin' | 'party'
-let swingArrowImageLoading = false;
+let swingSwingImagesLoading = false;
 
 function setCountyFillNeutral(neutralOn) {
   if (!map || !map.getLayer || !map.getLayer('county-fill')) return;
@@ -1079,65 +1079,76 @@ function twoPartyMarginPct(result) {
   return repPct - demPct; // + => GOP advantage
 }
 
-function ensureSwingArrowImage() {
-  if (!map || typeof map.hasImage !== 'function') return;
-  if (map.hasImage('swing-arrow')) return;
-  if (swingArrowImageLoading) return;
-  swingArrowImageLoading = true;
+function ensureSwingSymbolImages() {
+  if (!map) return;
+  if (typeof map.hasImage !== 'function' || typeof map.loadImage !== 'function') return;
+  const needed = ['swing-dot', 'swing-ring'].filter(id => !map.hasImage(id));
+  if (!needed.length) return;
+  if (swingSwingImagesLoading) return;
+  swingSwingImagesLoading = true;
 
   // Simple arrow pointing EAST (▶), used as SDF so we can tint via icon-color.
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
-    `<path fill="#ffffff" d="M6 22 L38 22 L38 14 L58 32 L38 50 L38 42 L6 42 Z"/>` +
-    `</svg>`;
+  const svgsById = {
+    'swing-dot':
+      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
+      `<circle cx="32" cy="32" r="22" fill="#ffffff"/>` +
+      `</svg>`,
+    'swing-ring':
+      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">` +
+      `<circle cx="32" cy="32" r="18" fill="none" stroke="#ffffff" stroke-width="10"/>` +
+      `</svg>`
+  };
 
-  const img = new Image(64, 64);
-  img.onload = () => {
-    try {
-      if (!map.hasImage('swing-arrow')) {
-        map.addImage('swing-arrow', img, { sdf: true });
+  let remaining = needed.length;
+  needed.forEach((id) => {
+    const svg = svgsById[id];
+    const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    map.loadImage(url, (err, image) => {
+      try {
+        if (!err && image && !map.hasImage(id)) {
+          map.addImage(id, image, { sdf: true });
+        }
+      } catch (e) {
+        console.warn(`addImage ${id} failed:`, e);
+      } finally {
+        remaining -= 1;
+        if (remaining <= 0) {
+          swingSwingImagesLoading = false;
+          try { ensureSwingLayer(); } catch (e) {}
+        }
       }
-    } catch (e) {
-      console.warn('addImage swing-arrow failed:', e);
-    } finally {
-      swingArrowImageLoading = false;
-      try { ensureSwingLayer(); } catch (e) {}
-    }
-  };
-  img.onerror = (e) => {
-    swingArrowImageLoading = false;
-    console.warn('Failed to load swing-arrow SVG image', e);
-  };
-  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  });
 }
 
 function ensureSwingLayer() {
   if (!map) return;
   try {
     if (typeof map.isStyleLoaded === 'function' && !map.isStyleLoaded()) return;
-    ensureSwingArrowImage();
-    if (!map.hasImage || !map.hasImage('swing-arrow')) return;
+    ensureSwingSymbolImages();
+    if (!map.hasImage || !map.hasImage('swing-dot') || !map.hasImage('swing-ring')) return;
     if (!map.getSource('party-swing')) {
       map.addSource('party-swing', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     }
 
     const before = map.getLayer('county-label') ? 'county-label' : undefined;
     const baseLayout = {
-      'icon-image': 'swing-arrow',
+      'icon-image': ['case', ['>=', ['get', 'delta'], 0], 'swing-dot', 'swing-ring'],
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
       'icon-rotation-alignment': 'map',
       'icon-pitch-alignment': 'map',
-      'icon-rotate': ['get', 'angle'],
-      // Size roughly like Ekenes: linear-ish scaling by magnitude
+      'icon-rotate': 0,
+      // Size like the Ekenes swing symbols: scale by magnitude (percentage-point change)
       'icon-size': [
         'interpolate', ['linear'], ['get', 'mag'],
-        0, 0.35,
-        1, 0.45,
-        2, 0.55,
-        4, 0.75,
-        7, 1.0,
-        10, 1.25
+        0, 0.18,
+        1, 0.28,
+        2, 0.38,
+        4, 0.52,
+        7, 0.70,
+        10, 0.85,
+        15, 1.05
       ]
     };
 
@@ -1154,7 +1165,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'DEM'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-0.9, 0] },
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1168,7 +1179,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'REP'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0.9, 0] },
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1182,7 +1193,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'OTHER'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, -0.9] },
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, -1.0] },
           paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
         },
         before
@@ -1197,7 +1208,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'DEM'],
-          layout: { ...baseLayout, 'icon-offset': [-0.9, 0] },
+          layout: { ...baseLayout, 'icon-offset': [-1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#2563eb' }
         },
         before
@@ -1211,7 +1222,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'REP'],
-          layout: { ...baseLayout, 'icon-offset': [0.9, 0] },
+          layout: { ...baseLayout, 'icon-offset': [1.0, 0] },
           paint: { ...basePaint, 'icon-color': '#dc2626' }
         },
         before
@@ -1225,7 +1236,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 6,
           filter: ['==', ['get', 'party'], 'OTHER'],
-          layout: { ...baseLayout, 'icon-offset': [0, -0.9] },
+          layout: { ...baseLayout, 'icon-offset': [0, -1.0] },
           paint: { ...basePaint, 'icon-color': '#6b7280' }
         },
         before
@@ -1369,9 +1380,9 @@ function setSwingVisibility(visible) {
   // Offset like the Ekenes demo: spread in "All", center in single-party mode
   try {
     const spread = (swingMetric === 'party' && inAll);
-    const demOff = spread ? [-0.9, 0] : [0, 0];
-    const repOff = spread ? [0.9, 0] : [0, 0];
-    const othOff = spread ? [0, -0.9] : [0, 0];
+    const demOff = spread ? [-1.0, 0] : [0, 0];
+    const repOff = spread ? [1.0, 0] : [0, 0];
+    const othOff = spread ? [0, -1.0] : [0, 0];
     ['party-swing-dem-outline','party-swing-dem'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', demOff); });
     ['party-swing-rep-outline','party-swing-rep'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', repOff); });
     ['party-swing-other-outline','party-swing-other'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', othOff); });

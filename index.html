@@ -1164,7 +1164,7 @@ function ensureSwingSymbolImages() {
   const svgsById = {
     'swing-party-arrow':
       `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32">` +
-      `<path fill="#ffffff" d="M16 2 L30 16 L22 16 L22 30 L10 30 L10 16 L2 16 Z" />` +
+      `<path fill="#ffffff" d="M16 2 L30 16 L22 16 L22 30 L16 24 L10 30 L10 16 L2 16 Z" />` +
       `</svg>`
   };
 
@@ -1230,9 +1230,9 @@ function ensureSwingLayer() {
         ['get', 'mag'],
         0, 0.15,
         2, 0.35,
-        5, 0.60,
+        5, 0.65,
         10, 0.85,
-        20, 1.25
+        20, 1.35
       ]
     };
 
@@ -1249,8 +1249,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'DEM'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [-0.85, -0.85] },
-          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.2] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 1 }
         },
         before
       );
@@ -1263,8 +1263,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'REP'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0.85, -0.85] },
-          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.2] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 1 }
         },
         before
       );
@@ -1277,8 +1277,8 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'OTHER'],
-          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.18], 'icon-offset': [0, 1.05] },
-          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 0.95 }
+          layout: { ...baseLayout, 'icon-size': ['*', baseLayout['icon-size'], 1.2] },
+          paint: { ...basePaint, 'icon-color': '#ffffff', 'icon-opacity': 1 }
         },
         before
       );
@@ -1292,7 +1292,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'DEM'],
-          layout: { ...baseLayout, 'icon-offset': [-0.85, -0.85] },
+          layout: { ...baseLayout },
           paint: { ...basePaint, 'icon-color': '#3c6ccc' }
         },
         before
@@ -1306,7 +1306,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'REP'],
-          layout: { ...baseLayout, 'icon-offset': [0.85, -0.85] },
+          layout: { ...baseLayout },
           paint: { ...basePaint, 'icon-color': '#dc4b00' }
         },
         before
@@ -1320,7 +1320,7 @@ function ensureSwingLayer() {
           source: 'party-swing',
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'OTHER'],
-          layout: { ...baseLayout, 'icon-offset': [0, 1.05] },
+          layout: { ...baseLayout },
           paint: { ...basePaint, 'icon-color': '#b5a600' }
         },
         before
@@ -1541,15 +1541,7 @@ function setSwingVisibility(visible) {
     if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', 'none');
   }
 
-  // Placement: centered; we show one "dominant" arrow in Party=All mode.
-  try {
-    const demOff = [0, 0];
-    const repOff = [0, 0];
-    const othOff = [0, 0];
-    ['party-swing-dem-outline','party-swing-dem'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', demOff); });
-    ['party-swing-rep-outline','party-swing-rep'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', repOff); });
-    ['party-swing-other-outline','party-swing-other'].forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'icon-offset', othOff); });
-  } catch (e) {}
+  // No icon-offset; arrows render centered in the county.
 }
 
 function updateSwingLayer() {
@@ -1658,7 +1650,7 @@ function updateSwingLayer() {
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
 
         // Arrow SVG points EAST; rotate by party so "towards Republicans" is red, angled up-right.
-        const baseRot = winnerParty === 'DEM' ? 225 : winnerParty === 'REP' ? 315 : 270;
+        const baseRot = winnerParty === 'REP' ? 45 : winnerParty === 'DEM' ? 315 : 0;
         const rotation = baseRot;
 
         features.push({
@@ -1714,7 +1706,7 @@ function updateSwingLayer() {
 
         // Arrow SVG is drawn pointing EAST; rotate parties to match the repo look:
         // DEM/REP are diagonal, OTHER is vertical.
-        const baseRot = (party === 'DEM') ? 225 : (party === 'REP') ? 315 : 270;
+        const baseRot = (party === 'REP') ? 45 : (party === 'DEM') ? 315 : 0;
         const rotation = delta >= 0 ? baseRot : (baseRot + 180);
 
         features.push({
@@ -1780,8 +1772,8 @@ function updateSwingLayer() {
           party: delta >= 0 ? 'REP' : 'DEM',
           icon: 'swing-party-arrow',
           // Arrow SVG points EAST: GOP shift => up-right, DEM shift => up-left
-          // Degrees: 315° = NE (up-right) for GOP gains; 225° = NW (up-left) for Dem gains
-          rotation: delta >= 0 ? 315 : 225,
+          // Arrow points UP by default: 45° = NE (up-right) for GOP gains; 315° = NW (up-left) for Dem gains
+          rotation: delta >= 0 ? 45 : 315,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,

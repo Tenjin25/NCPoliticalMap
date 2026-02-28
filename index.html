@@ -1162,10 +1162,9 @@ function ensureSwingSymbolImages() {
 
   // Match the election-party-swing repo symbol styling (circle/ring + predominant shift arrow).
   const svgsById = {
-    // Used by the repo for "All parties" predominant shift arrows (see election-party-swing/app/symbolUtils.ts aboveSymbol).
     'swing-party-arrow':
       `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32">` +
-      `<polygon fill="#ffffff" points="16.1,0 16.1,20.9 25.7,10.9 25.7,19.1 12.9,31.9 0,19.1 0,11 9.6,21 9.6,0"/>` +
+      `<path fill="#ffffff" d="M16 2 L30 16 L22 16 L22 30 L10 30 L10 16 L2 16 Z" />` +
       `</svg>`
   };
 
@@ -1224,16 +1223,16 @@ function ensureSwingLayer() {
       'icon-rotation-alignment': 'map',
       'icon-pitch-alignment': 'map',
       'icon-rotate': ['coalesce', ['get', 'rotation'], 0],
-      // Size like the Ekenes swing symbols: scale by magnitude (percentage-point change)
+      // Scale by magnitude (percentage-point change)
       'icon-size': [
-        'interpolate', ['linear'], ['get', 'mag'],
-        0, 0.18,
-        1, 0.28,
-        2, 0.38,
-        4, 0.52,
-        7, 0.70,
+        'interpolate',
+        ['linear'],
+        ['get', 'mag'],
+        0, 0.15,
+        2, 0.35,
+        5, 0.60,
         10, 0.85,
-        15, 1.05
+        20, 1.25
       ]
     };
 
@@ -1659,7 +1658,7 @@ function updateSwingLayer() {
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
 
         // Arrow SVG points EAST; rotate by party so "towards Republicans" is red, angled up-right.
-        const baseRot = winnerParty === 'DEM' ? 135 : winnerParty === 'REP' ? 45 : 90;
+        const baseRot = winnerParty === 'DEM' ? 225 : winnerParty === 'REP' ? 315 : 270;
         const rotation = baseRot;
 
         features.push({
@@ -1715,7 +1714,7 @@ function updateSwingLayer() {
 
         // Arrow SVG is drawn pointing EAST; rotate parties to match the repo look:
         // DEM/REP are diagonal, OTHER is vertical.
-        const baseRot = (party === 'DEM') ? 135 : (party === 'REP') ? 45 : 90;
+        const baseRot = (party === 'DEM') ? 225 : (party === 'REP') ? 315 : 270;
         const rotation = delta >= 0 ? baseRot : (baseRot + 180);
 
         features.push({
@@ -1781,7 +1780,8 @@ function updateSwingLayer() {
           party: delta >= 0 ? 'REP' : 'DEM',
           icon: 'swing-party-arrow',
           // Arrow SVG points EAST: GOP shift => up-right, DEM shift => up-left
-          rotation: delta >= 0 ? 45 : 135,
+          // Degrees: 315° = NE (up-right) for GOP gains; 225° = NW (up-left) for Dem gains
+          rotation: delta >= 0 ? 315 : 225,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,

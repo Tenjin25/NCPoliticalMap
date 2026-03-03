@@ -2035,14 +2035,19 @@ window.toggleSwingArrows = toggleSwingArrows;
 
     function updateSelectedCountyOutline(countyName) {
       selectedCountyOutlineName = countyName ? normalizeCountyOutlineName(countyName) : null;
-      if (!map || !map.getLayer || !map.getLayer('county-outline')) return;
+      if (!map || !map.getLayer) return;
+
+      const hasOutline = !!map.getLayer('county-outline');
+      const hasOutlineGlow = !!map.getLayer('county-outline-glow');
+      if (!hasOutline && !hasOutlineGlow) return;
 
       if (!selectedCountyOutlineName) {
-        map.setFilter('county-outline', ['==', 1, 0]);
+        if (hasOutline) map.setFilter('county-outline', ['==', 1, 0]);
+        if (hasOutlineGlow) map.setFilter('county-outline-glow', ['==', 1, 0]);
         return;
       }
 
-      map.setFilter('county-outline', [
+      const selectedFilter = [
         '==',
         [
           'upcase',
@@ -2059,7 +2064,9 @@ window.toggleSwingArrows = toggleSwingArrows;
           ]
         ],
         selectedCountyOutlineName
-      ]);
+      ];
+      if (hasOutlineGlow) map.setFilter('county-outline-glow', selectedFilter);
+      if (hasOutline) map.setFilter('county-outline', selectedFilter);
     }
 
 
@@ -2769,6 +2776,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           map.removeLayer(`${type}-stroke`);
         }
       });
+      if (map.getLayer('county-outline-glow')) map.removeLayer('county-outline-glow');
       if (map.getLayer('county-outline')) map.removeLayer('county-outline');
       if (map.getLayer('county-label')) map.removeLayer('county-label');
       
@@ -3220,19 +3228,37 @@ function toggleSidebar() {
           paint: { 'line-color': '#333', 'line-width': 1 } 
         });
         map.addLayer({
+          id: 'county-outline-glow',
+          type: 'line',
+          source: 'counties',
+          filter: ['==', 1, 0],
+          paint: {
+            'line-color': '#ffffff',
+            'line-opacity': 0.9,
+            'line-width': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              5, 2.2,
+              10, 4.5
+            ],
+            'line-blur': 0.4
+          }
+        });
+        map.addLayer({
           id: 'county-outline',
           type: 'line',
           source: 'counties',
           filter: ['==', 1, 0],
           paint: {
-            'line-color': '#1d4ed8',
-            'line-opacity': 0.8,
+            'line-color': '#0f172a',
+            'line-opacity': 0.95,
             'line-width': [
               'interpolate',
               ['linear'],
               ['zoom'],
-              5, 1.1,
-              10, 2.2
+              5, 1.3,
+              10, 2.8
             ]
           }
         });
@@ -3258,8 +3284,7 @@ function toggleSidebar() {
         map.on('mouseleave', 'county-fill', () => {
           map.getCanvas().style.cursor = '';
         });
-        // Add county click event handler
-        map.on('click', 'county-fill', (e) => {
+        const handleCountyLayerClick = (e) => {
           if (e.features && e.features[0] && e.features[0].properties) {
             const props = e.features[0].properties;
             const countyName = props.NAME20 || props.NAMELSAD20 || props.county_name || props.County || props.COUNTYNAME || props.NAME || props.name;
@@ -3280,7 +3305,11 @@ function toggleSidebar() {
               if (detailsDiv) detailsDiv.style.display = 'block';
             }
           }
-        });
+        };
+        // Add county click/tap handlers for fill, border, and labels
+        map.on('click', 'county-fill', handleCountyLayerClick);
+        map.on('click', 'county-stroke', handleCountyLayerClick);
+        map.on('click', 'county-label', handleCountyLayerClick);
         // Quick hover tooltip with basic info
         map.on('mouseenter', 'county-fill', (e) => {
           map.getCanvas().style.cursor = 'pointer';
@@ -3890,7 +3919,7 @@ function toggleSidebar() {
         // Add counties to map safely
         if (map.getSource('counties')) {
           // Remove all possible layers that use this source first
-          const layersToRemove = ['county-fill', 'county-border', 'county-stroke', 'county-outline', 'counties-fill', 'counties-stroke', 'county-label', 'counties-label'];
+          const layersToRemove = ['county-fill', 'county-border', 'county-stroke', 'county-outline-glow', 'county-outline', 'counties-fill', 'counties-stroke', 'county-label', 'counties-label'];
           layersToRemove.forEach(layerId => {
             if (map.getLayer(layerId)) {
               map.removeLayer(layerId);

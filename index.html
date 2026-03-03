@@ -2021,6 +2021,46 @@ window.toggleSwingArrows = toggleSwingArrows;
     let electionData = null;
     let currentContest = null;
     let currentView = 'counties'; // Default to county view for Tennessee map
+    let selectedCountyOutlineName = null;
+
+    function normalizeCountyOutlineName(name) {
+      return (name || '')
+        .toString()
+        .replace(/\s+county\s*$/i, '')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toUpperCase();
+    }
+
+    function updateSelectedCountyOutline(countyName) {
+      selectedCountyOutlineName = countyName ? normalizeCountyOutlineName(countyName) : null;
+      if (!map || !map.getLayer || !map.getLayer('county-outline')) return;
+
+      if (!selectedCountyOutlineName) {
+        map.setFilter('county-outline', ['==', 1, 0]);
+        return;
+      }
+
+      map.setFilter('county-outline', [
+        '==',
+        [
+          'upcase',
+          [
+            'coalesce',
+            ['get', 'NAME20'],
+            ['get', 'NAMELSAD20'],
+            ['get', 'county_name'],
+            ['get', 'County'],
+            ['get', 'COUNTYNAME'],
+            ['get', 'NAME'],
+            ['get', 'name'],
+            ''
+          ]
+        ],
+        selectedCountyOutlineName
+      ]);
+    }
 
 
     function setStatus(text, timeout = 4000) {
@@ -2729,6 +2769,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           map.removeLayer(`${type}-stroke`);
         }
       });
+      if (map.getLayer('county-outline')) map.removeLayer('county-outline');
+      if (map.getLayer('county-label')) map.removeLayer('county-label');
       
       // Add appropriate layers
       if (view === 'counties') {
@@ -2889,6 +2931,7 @@ function toggleSidebar() {
       }
       const countyNameElement = document.getElementById('county-name');
       if (countyNameElement) countyNameElement.textContent = countyName + ' County';
+      updateSelectedCountyOutline(countyName);
       let sidebarContent = '';
       
       // Guard: check if we have a selected contest and election data
@@ -3176,6 +3219,23 @@ function toggleSidebar() {
           source: 'counties', 
           paint: { 'line-color': '#333', 'line-width': 1 } 
         });
+        map.addLayer({
+          id: 'county-outline',
+          type: 'line',
+          source: 'counties',
+          filter: ['==', 1, 0],
+          paint: {
+            'line-color': '#1d4ed8',
+            'line-opacity': 0.8,
+            'line-width': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              5, 1.1,
+              10, 2.2
+            ]
+          }
+        });
         // County label layer (restore font and background)
         map.addLayer({
           id: 'county-label',
@@ -3205,6 +3265,7 @@ function toggleSidebar() {
             const countyName = props.NAME20 || props.NAMELSAD20 || props.county_name || props.County || props.COUNTYNAME || props.NAME || props.name;
             if (countyName) {
               lastSelectedCounty = countyName;
+              updateSelectedCountyOutline(countyName);
               showCountyDetails(countyName);
               // Always expand sidebar and show content
               const sidebar = document.getElementById('sidebar');
@@ -3227,6 +3288,7 @@ function toggleSidebar() {
         map.on('mouseleave', 'county-fill', () => {
           map.getCanvas().style.cursor = '';
         });
+        updateSelectedCountyOutline(lastSelectedCounty);
       }
     }
 
@@ -3361,6 +3423,7 @@ function toggleSidebar() {
 
     function clearCountyDetails() {
       document.getElementById('county-details').style.display = 'none';
+      updateSelectedCountyOutline(null);
     }
 
 
@@ -4222,6 +4285,7 @@ function filterValidContests(contests) {
       if (countyName) {
         // Update lastSelectedCounty before toggling sidebar
         lastSelectedCounty = countyName;
+        updateSelectedCountyOutline(countyName);
         updateSidebar(countyName);
         
         // Expand sidebar if minimized

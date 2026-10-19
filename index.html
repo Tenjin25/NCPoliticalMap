@@ -1142,14 +1142,13 @@ function partyPct(result, party) {
 }
 
 function twoPartyMarginPct(result) {
+  // Kept under the original name for existing swing-layer callers.
+  // Signed all-vote margin: Republican share minus Democratic share.
   if (!result) return null;
   const demVotes = Number(result.dem_votes) || 0;
   const repVotes = Number(result.rep_votes) || 0;
-  const total = (Number(result.two_party_total) || (demVotes + repVotes));
-  if (!total) return null;
-  const repPct = (repVotes / total) * 100;
-  const demPct = (demVotes / total) * 100;
-  return repPct - demPct; // + => GOP advantage
+  const total = Number(result.total_votes) || 0;
+  return total > 0 ? (repVotes - demVotes) * 100 / total : null;
 }
 
 function ensureSwingSymbolImages() {
@@ -2619,9 +2618,9 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       for (let i = 0; i < left; i++) cents[order[i]]++;
       return cents.map(c => c / 100);
     }
-    function atlasTwoPartyMargin(dem, rep) {
-      const total = (Number(dem) || 0) + (Number(rep) || 0);
-      return total ? atlasRound2(Math.abs(rep - dem) * 100 / total) : 0;
+    function atlasAllVoteMargin(dem, rep, totalVotes) {
+      const total = Number(totalVotes) || 0;
+      return total > 0 ? atlasRound2(Math.abs((Number(rep) || 0) - (Number(dem) || 0)) * 100 / total) : 0;
     }
 
     function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
@@ -2639,8 +2638,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       // Bar and breakdown use all votes; percentages sum to exactly 100.00.
       const otherVotes = Math.max(0, totalVotes - demVotes - repVotes);
       const [demPct, repPct, otherPct] = atlasVoteShares(demVotes, repVotes, otherVotes);
-      // Competitiveness and victory margin use the two-party denominator.
-      const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
+      // Victory margin and competitiveness use all votes, including third-party votes.
+      const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
       // Determine winner and get actual candidate name
       let demCandidate = currentContest?.data?.dem_candidate || '';
       let repCandidate = currentContest?.data?.rep_candidate || '';
@@ -2934,6 +2933,19 @@ function toggleSidebar() {
   }
 }
 
+
+// For officially nonpartisan NC judicial ballots, do not interpret collapsed
+// OTHER votes as a 0.00% partisan tie. County candidate returns are required.
+function atlasUnresolvedJudicialResult(result) {
+  return !!(result && result.party_alignment_status === 'unresolved_candidate_split');
+}
+function atlasMissingJudicialNotice() {
+  return '<div style="padding:12px;border:1px solid #cbd5e1;border-radius:8px;color:#334155;background:#f8fafc;">' +
+    '<strong>Nonpartisan judicial election — candidate breakdown unavailable</strong><p style="margin:8px 0 0;">' +
+    'This source groups all candidates under Other. Democratic/Republican backing and county margins cannot be determined from the aggregated votes. ' +
+    'Restore candidate-level results before showing partisan margins or map colors.</p></div>';
+}
+
     function showCountyDetails(countyName) {
       // --- NC Map Card-Style Sidebar ---
       const sidebar = document.getElementById('sidebar');
@@ -2988,6 +3000,12 @@ function toggleSidebar() {
         return;
       }
       
+      if (atlasUnresolvedJudicialResult(countyData)) {
+        contentEl.innerHTML = atlasMissingJudicialNotice();
+        detailsDiv.style.display = 'block';
+        return;
+      }
+
       // Get votes from the Tennessee data structure
       const demVotes = countyData.dem_votes || 0;
       const repVotes = countyData.rep_votes || 0;
@@ -3042,8 +3060,8 @@ function toggleSidebar() {
       
       // Margin calculation and winner determination
       const margin = demVotes - repVotes;
-      // The backend margin_pct is a TWO-PARTY margin, not all-candidate margin.
-      const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
+      // Margin is winner-minus-loser divided by all candidate votes.
+      const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
       // Determine winner from vote counts since winner field doesn't exist in data
       const winner = demVotes > repVotes ? 'Democratic' : (repVotes > demVotes ? 'Republican' : 'Tie');
       const winnerCandidate = winner === 'Democratic' ? demCandidate : repCandidate;
@@ -3118,6 +3136,9 @@ function toggleSidebar() {
       if (countyData.precincts || countyData.Precincts || countyData.PRECINCTS) {
         precincts = countyData.precincts || countyData.Precincts || countyData.PRECINCTS;
       }
+      const isNonpartisanIdeology = countyData.contest_partisan_style === 'nonpartisan_ideology';
+      const demDisplayLabel = isNonpartisanIdeology ? (countyData.dem_label || 'Liberal') : 'D';
+      const repDisplayLabel = isNonpartisanIdeology ? (countyData.rep_label || 'Conservative') : 'R';
       // Card-style layout
       sidebarContent += '<div class="result-summary">';
       sidebarContent += '<h3 class="sidebar-section-title">📊 Election Results</h3>';
@@ -3126,7 +3147,7 @@ function toggleSidebar() {
       sidebarContent += `</div>`;
     sidebarContent += `<div class="winner-section">`;
   sidebarContent += '<h3 class="sidebar-section-title">🏆 Winner</h3>';
-  sidebarContent += `<p class="sidebar-winner" style="color: ${winnerColor}; font-weight: bold;">${winnerCandidate} (${winner === 'Republican' ? 'R' : 'D'})</p>`;
+  sidebarContent += `<p class="sidebar-winner" style="color: ${winnerColor}; font-weight: bold;">${winnerCandidate} (${winner === 'Republican' ? repDisplayLabel : demDisplayLabel})</p>`;
   sidebarContent += `</div>`;
   sidebarContent += `<div class="margin-section">`;
   sidebarContent += '<h3 class="sidebar-section-title">📈 Margin</h3>';
@@ -3134,7 +3155,7 @@ function toggleSidebar() {
   if (winner !== 'Republican') {
     marginColor = isColorblind ? cbColorForMargin(parseFloat(marginPct), 'D') : '#2563eb';
   }
-  sidebarContent += `<p class="sidebar-margin" style="color: ${marginColor}; font-weight: bold;">${winner === 'Republican' ? 'R+' : 'D+'}${marginPct.toFixed(2)}%</p>`;
+  sidebarContent += `<p class="sidebar-margin" style="color: ${marginColor}; font-weight: bold;">${isNonpartisanIdeology ? (winner === 'Republican' ? 'Conservative +' : 'Liberal +') : (winner === 'Republican' ? 'R+' : 'D+')}${marginPct.toFixed(2)}%</p>`;
   sidebarContent += `<p class="sidebar-margin-details" style="color: #6b7280;">(${Math.abs(margin).toLocaleString()} vote margin)</p>`;
   sidebarContent += `</div>`;
   sidebarContent += `<div class="vote-breakdown">`;
@@ -3161,8 +3182,8 @@ function toggleSidebar() {
     // Non-accessibility mode: always use regular blue for Democratic vote breakdown
     demColor = '#2563eb';
   }
-  sidebarContent += `<p class="sidebar-breakdown"><span style="color: ${demColor}; font-weight: bold;">${demCandidate} (D)</span> : ${demPct.toFixed(2)}% (${demVotes.toLocaleString()})</p>`;
-  sidebarContent += `<p class="sidebar-breakdown"><span style="color: ${repColor}; font-weight: bold;">${repCandidate} (R)</span> : ${repPct.toFixed(2)}% (${repVotes.toLocaleString()})</p>`;
+  sidebarContent += `<p class="sidebar-breakdown"><span style="color: ${demColor}; font-weight: bold;">${demCandidate} (${demDisplayLabel})</span> : ${demPct.toFixed(2)}% (${demVotes.toLocaleString()})</p>`;
+  sidebarContent += `<p class="sidebar-breakdown"><span style="color: ${repColor}; font-weight: bold;">${repCandidate} (${repDisplayLabel})</span> : ${repPct.toFixed(2)}% (${repVotes.toLocaleString()})</p>`;
   if (otherVotes > 0) {
     sidebarContent += `<p class="sidebar-breakdown"><span style="color: #6b7280; font-weight: bold;">Other Candidates</span> : ${otherPct.toFixed(2)}% (${otherVotes.toLocaleString()})</p>`;
   }
@@ -4362,6 +4383,13 @@ function filterValidContests(contests) {
         return;
       }
       
+      if (atlasUnresolvedJudicialResult(result)) {
+        sidebarContent.innerHTML = atlasMissingJudicialNotice();
+        return;
+      }
+
+      const judicialDemLabel = result.contest_partisan_style === 'nonpartisan_ideology' ? (result.dem_label || 'Liberal') : 'Democratic';
+      const judicialRepLabel = result.contest_partisan_style === 'nonpartisan_ideology' ? (result.rep_label || 'Conservative') : 'Republican';
       const html = `
         <div style="margin-bottom: 16px;">
           <strong>${currentContest.data.contest_name}</strong><br>
@@ -4370,11 +4398,11 @@ function filterValidContests(contests) {
         
         <div style="margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span><strong>Democratic:</strong> ${result.dem_candidate || 'Unknown'}</span>
+            <span><strong>${judicialDemLabel}:</strong> ${result.dem_candidate || 'Unknown'}</span>
             <span>${result.dem_votes?.toLocaleString() || 0} votes</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span><strong>Republican:</strong> ${result.rep_candidate || 'Unknown'}</span>
+            <span><strong>${judicialRepLabel}:</strong> ${result.rep_candidate || 'Unknown'}</span>
             <span>${result.rep_votes?.toLocaleString() || 0} votes</span>
           </div>
           ${result.other_votes > 0 ? `
@@ -4523,7 +4551,7 @@ function filterValidContests(contests) {
         
         if (totalVotes === 0) return; // Skip counties with no votes
         
-        const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
+        const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
         const winner = repVotes > demVotes ? 'R' : 'D';
         
         // Use accessibility colors if colorblind mode is active, otherwise use standard colors

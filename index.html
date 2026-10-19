@@ -2600,11 +2600,11 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       sel.onchange = () => { applyContest(sel.value); };
     }
 
-    // Shared election arithmetic: retain vote-count precision until final display.
+    // Shared election arithmetic: truncate margins to 2 decimals (do not round up).
     function atlasRound2(value) {
       const n = Number(value);
       if (!Number.isFinite(n)) return 0;
-      return Number(Math.round(Number(`${n}e2`)) + 'e-2');
+      return Math.trunc(n * 100 + Math.sign(n) * 1e-9) / 100;
     }
     function atlasVoteShares(dem, rep, other) {
       const votes = [dem, rep, other].map(v => Math.max(0, Number(v) || 0));
@@ -2618,9 +2618,14 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       for (let i = 0; i < left; i++) cents[order[i]]++;
       return cents.map(c => c / 100);
     }
+    // Use this signed margin directly from vote counts: never subtract rounded vote shares.
+    function atlasSignedMargin(dem, rep, totalVotes) {
+      const total = Number(totalVotes) || 0;
+      return total > 0 ? Math.sign((Number(rep) || 0) - (Number(dem) || 0)) * Math.floor(Math.abs((Number(rep) || 0) - (Number(dem) || 0)) * 10000 / total + 1e-9) / 100 : 0;
+    }
     function atlasAllVoteMargin(dem, rep, totalVotes) {
       const total = Number(totalVotes) || 0;
-      return total > 0 ? atlasRound2(Math.abs((Number(rep) || 0) - (Number(dem) || 0)) * 100 / total) : 0;
+      return Math.abs(atlasSignedMargin(dem, rep, totalVotes));
     }
 
     function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
@@ -3003,6 +3008,37 @@ function atlasMissingJudicialNotice() {
       if (atlasUnresolvedJudicialResult(countyData)) {
         contentEl.innerHTML = atlasMissingJudicialNotice();
         detailsDiv.style.display = 'block';
+        return;
+      }
+
+      // Candidate-level judicial elections: preserve every candidate, and distinguish
+      // actual county plurality from documented endorsements.
+      if (Array.isArray(countyData.candidate_results) && countyData.candidate_results.length > 1 &&
+          countyData.candidate_vote_comparison === 'highest_vs_second_highest') {
+        const slate = [...countyData.candidate_results].sort((a,b) => Number(b.votes)-Number(a.votes));
+        const allVotes = Number(countyData.total_votes) || 0;
+        const voteFmt = v => Number(v||0).toLocaleString('en-US');
+        const top = slate[0], second = slate[1];
+        const pct = allVotes > 0 ? (Number(top.votes)-Number(second.votes))*100/allVotes : 0;
+        const verified = countyData.party_alignment_status === 'verified_endorsement';
+        const affiliate = name => {
+          if (!verified) return '';
+          if (name === countyData.dem_candidate) return ' <span style="color:#3182bd">(Democratic-backed / Liberal)</span>';
+          if (name === countyData.rep_candidate) return ' <span style="color:#cb181d">(Republican-backed / Conservative)</span>';
+          return '';
+        };
+        const esc = t => String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const caption = verified ? 'Party backing is documented; ranking is by individual candidate votes.'
+          : 'No verified two-party pairing. Results are ranked by candidate votes, not assigned a party.';
+        contentEl.innerHTML = `<div class="result-summary">` +
+          `<h3 class="sidebar-section-title">${esc(contestName)} (${esc(year)})</h3>` +
+          `<div><b>Leading candidate:</b> ${esc(top.candidate)}${affiliate(top.candidate)}</div>` +
+          `<div><b>Runner-up:</b> ${esc(second.candidate)}${affiliate(second.candidate)}</div>` +
+          `<div><b>Plurality margin:</b> ${atlasRound2(pct).toFixed(2)}% (${voteFmt(Number(top.votes)-Number(second.votes))} votes)</div>` +
+          `<div><b>Total votes:</b> ${voteFmt(allVotes)}</div>` +
+          `<p style="font-size:12px;color:#64748b">${caption}</p>` +
+          `<div style="margin-top:8px">${slate.map((c,i)=>`<div style="padding:4px 0;border-bottom:1px solid #e5e7eb">${i+1}. ${esc(c.candidate)}${affiliate(c.candidate)} — ${voteFmt(c.votes)} (${allVotes ? (100*Number(c.votes)/allVotes).toFixed(2) : '0.00'}%)</div>`).join('')}</div></div>`;
+        detailsDiv.style.display='block';
         return;
       }
 
@@ -3520,7 +3556,7 @@ function atlasMissingJudicialNotice() {
               
               trends.push({
                 year: year,
-                display: `${year}: ${winner}+${marginAbs.toFixed(2)}`,
+                display: `${year}: ${winner}+${atlasRound2(marginAbs).toFixed(2)}`,
                 margin: margin,
                 type: 'house'
               });
@@ -3559,7 +3595,7 @@ function atlasMissingJudicialNotice() {
               
               trends.push({
                 year: year,
-                display: `${year}: ${candidateInfo}+${marginAbs.toFixed(2)}`,
+                display: `${year}: ${candidateInfo}+${atlasRound2(marginAbs).toFixed(2)}`,
                 margin: margin,
                 type: 'president'
               });
@@ -3596,7 +3632,7 @@ function atlasMissingJudicialNotice() {
             candidateInfo = margin > 0 ? getCandidateName(year, 'Governor', 'Democrat') : getCandidateName(year, 'Governor', 'Republican');
             trends.push({
               year: year,
-              display: `${year}: ${candidateInfo}+${marginAbs.toFixed(2)}`,
+              display: `${year}: ${candidateInfo}+${atlasRound2(marginAbs).toFixed(2)}`,
               margin: margin,
               type: 'governor'
             });
@@ -3621,7 +3657,7 @@ function atlasMissingJudicialNotice() {
               
               trends.push({
                 year: year,
-                display: `${year}: ${winner}+${marginAbs.toFixed(2)} (House)`,
+                display: `${year}: ${winner}+${atlasRound2(marginAbs).toFixed(2)} (House)`,
                 margin: margin,
                 type: 'state_house'
               });
@@ -4418,7 +4454,7 @@ function filterValidContests(contests) {
         </div>
         
         <div style="margin-bottom: 16px;">
-          <strong>Margin:</strong> ${result.margin_pct?.toFixed(2) || 0}% 
+          <strong>Margin:</strong> ${atlasAllVoteMargin(result.dem_votes, result.rep_votes, result.total_votes).toFixed(2)}% 
           (${Math.abs(result.margin || 0).toLocaleString()} votes)
         </div>
         
@@ -4620,7 +4656,7 @@ function filterValidContests(contests) {
         const demPct = (demVotes / totalVotes) * 100;
         const repPct = (repVotes / totalVotes) * 100;
         const winner = repPct > demPct ? 'R' : 'D';
-        const marginPct = Math.abs(repPct - demPct);
+        const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
         const color = categoryColorForMargin(marginPct, winner);
         
         expr.push(['==', ['get', 'DISTRICT'], district]);
@@ -4667,7 +4703,7 @@ function filterValidContests(contests) {
       const demPct = (totalDem / totalVotes) * 100;
       const repPct = (totalRep / totalVotes) * 100;
       const winner = repPct > demPct ? 'R' : 'D';
-      const marginPct = Math.abs(repPct - demPct);
+      const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
       const color = categoryColorForMargin(marginPct, winner);
 
       // Apply uniform color to all districts (showing statewide result)
@@ -4979,3 +5015,7 @@ if (topSearch) topSearch.parentNode.removeChild(topSearch);
     </script>
 </body>
 </html>
+
+
+
+

@@ -2601,6 +2601,29 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       sel.onchange = () => { applyContest(sel.value); };
     }
 
+    // Shared election arithmetic: retain vote-count precision until final display.
+    function atlasRound2(value) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return 0;
+      return Number(Math.round(Number(`${n}e2`)) + 'e-2');
+    }
+    function atlasVoteShares(dem, rep, other) {
+      const votes = [dem, rep, other].map(v => Math.max(0, Number(v) || 0));
+      const total = votes.reduce((a, b) => a + b, 0);
+      if (!total) return [0, 0, 0];
+      const exact = votes.map(v => v * 10000 / total);
+      const cents = exact.map(Math.floor);
+      let left = 10000 - cents.reduce((a, b) => a + b, 0);
+      const order = [0, 1, 2].sort((a, b) =>
+        (exact[b] - cents[b]) - (exact[a] - cents[a]) || a - b);
+      for (let i = 0; i < left; i++) cents[order[i]]++;
+      return cents.map(c => c / 100);
+    }
+    function atlasTwoPartyMargin(dem, rep) {
+      const total = (Number(dem) || 0) + (Number(rep) || 0);
+      return total ? atlasRound2(Math.abs(rep - dem) * 100 / total) : 0;
+    }
+
     function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
       const statewideContent = document.getElementById('statewide-content');
       const tempBar = document.getElementById('statewide-temperature-bar');
@@ -2613,24 +2636,11 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         return;
       }
       
-      const demPct = (demVotes / totalVotes) * 100;
-      const repPct = (repVotes / totalVotes) * 100;
-      let otherVotes = 0;
-      let otherPct = 0;
-      // Try to get otherVotes from contest data if available
-      if (currentContest && currentContest.data && typeof currentContest.data.other_votes === 'number') {
-        otherVotes = currentContest.data.other_votes;
-      } else {
-        // Fallback: if totalVotes is available, compute other as the remainder
-        // This covers cases where contest-level other_votes wasn't recorded during aggregation
-        if (typeof totalVotes === 'number' && Number.isFinite(totalVotes)) {
-          otherVotes = Math.max(0, totalVotes - (Number(demVotes) || 0) - (Number(repVotes) || 0));
-        } else {
-          otherVotes = 0;
-        }
-      }
-      otherPct = totalVotes > 0 ? (otherVotes / totalVotes) * 100 : 0;
-      const marginPct = Math.abs(demPct - repPct);
+      // Bar and breakdown use all votes; percentages sum to exactly 100.00.
+      const otherVotes = Math.max(0, totalVotes - demVotes - repVotes);
+      const [demPct, repPct, otherPct] = atlasVoteShares(demVotes, repVotes, otherVotes);
+      // Competitiveness and victory margin use the two-party denominator.
+      const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
       // Determine winner and get actual candidate name
       let demCandidate = currentContest?.data?.dem_candidate || '';
       let repCandidate = currentContest?.data?.rep_candidate || '';
@@ -2990,9 +3000,7 @@ function toggleSidebar() {
         return;
       }
       
-      const demPct = (demVotes / totalVotes * 100);
-      const repPct = (repVotes / totalVotes * 100);
-      const otherPct = (otherVotes / totalVotes * 100);
+      const [demPct, repPct, otherPct] = atlasVoteShares(demVotes, repVotes, otherVotes);
       
       // Get candidate names from the contest data, not the county data
       // Candidate names: prefer contest-level, fallback to derived most-common from county-level results,
@@ -3034,8 +3042,8 @@ function toggleSidebar() {
       
       // Margin calculation and winner determination
       const margin = demVotes - repVotes;
-      // Calculate margin percentage correctly as absolute value of margin divided by total votes
-      const marginPct = totalVotes > 0 ? Math.abs(margin) / totalVotes * 100 : 0;
+      // The backend margin_pct is a TWO-PARTY margin, not all-candidate margin.
+      const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
       // Determine winner from vote counts since winner field doesn't exist in data
       const winner = demVotes > repVotes ? 'Democratic' : (repVotes > demVotes ? 'Republican' : 'Tie');
       const winnerCandidate = winner === 'Democratic' ? demCandidate : repCandidate;
@@ -3050,7 +3058,7 @@ function toggleSidebar() {
       const countyCompColor = countyCompetitiveness.color || '#6b7280';
         // Always assign competitiveness category based on rounded margin percentage
         let countyCompLabel = '';
-        const roundedMargin = Math.round(marginPct * 100) / 100;
+        const roundedMargin = atlasRound2(marginPct);
         if (roundedMargin >= 40) {
           countyCompLabel = winner === 'Republican' ? "Annihilation Republican" : "Annihilation Democratic";
         } else if (roundedMargin >= 30) {
@@ -4490,17 +4498,17 @@ function filterValidContests(contests) {
       function getAccessibilityColor(marginPct, winner) {
         if (marginPct >= 40) {
           return winner === 'R' ? '#cc5500' : '#004d99';
-        } else if (marginPct >= 30 && marginPct <= 39.99) {
+        } else if (marginPct >= 30) {
           return winner === 'R' ? '#ff6600' : '#0066cc';
-        } else if (marginPct >= 20 && marginPct <= 29.99) {
+        } else if (marginPct >= 20) {
           return winner === 'R' ? '#ff8833' : '#0080ff';
-        } else if (marginPct >= 10 && marginPct <= 19.99) {
+        } else if (marginPct >= 10) {
           return winner === 'R' ? '#ffaa55' : '#3399ff';
-        } else if (marginPct >= 5.51 && marginPct <= 9.99) {
+        } else if (marginPct >= 5.5) {
           return winner === 'R' ? '#ffcc77' : '#66b3ff';
-        } else if (marginPct >= 1 && marginPct <= 5.5) {
+        } else if (marginPct >= 1) {
           return winner === 'R' ? '#ffdd99' : '#99ccff';
-        } else if (marginPct >= 0.51 && marginPct <= 0.99) {
+        } else if (marginPct >= 0.5) {
           return winner === 'R' ? '#ffeecc' : '#b3d9ff';
         } else {
           return '#cccccc';
@@ -4515,10 +4523,8 @@ function filterValidContests(contests) {
         
         if (totalVotes === 0) return; // Skip counties with no votes
         
-        const demPct = (demVotes / totalVotes) * 100;
-        const repPct = (repVotes / totalVotes) * 100;
-        const marginPct = Math.abs(repPct - demPct);
-        const winner = repPct > demPct ? 'R' : 'D';
+        const marginPct = atlasTwoPartyMargin(demVotes, repVotes);
+        const winner = repVotes > demVotes ? 'R' : 'D';
         
         // Use accessibility colors if colorblind mode is active, otherwise use standard colors
         const color = isColorblindMode ? getAccessibilityColor(marginPct, winner) : categoryColorForMargin(marginPct, winner);
@@ -4945,7 +4951,3 @@ if (topSearch) topSearch.parentNode.removeChild(topSearch);
     </script>
 </body>
 </html>
-
-
-
-

@@ -2760,9 +2760,9 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       breakdownRow += `</div>`;
       statewideContent.innerHTML = `
         <div class="statewide-margin" style="margin-bottom:0;">
-          <div class="margin-text" style="color: ${compColor};font-size:18px;font-weight:700;text-align:left;">
-            Winner: <span style="color:${winner === 'Republican' ? '#dc2626' : '#2563eb'}">${winnerCandidate}${winner === 'Tie' ? '' : ` (${winner === 'Republican' ? 'R' : 'D'})`}</span><br>
-            Margin: <span style="color:${winner === 'Republican' ? '#dc2626' : '#2563eb'}">${winner === 'Tie' ? 'Tied' : (winner === 'Republican' ? 'R+' : 'D+') + atlasFormatMargin(marginPct, demVotes, repVotes, totalVotes) + '%'}</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repVotes-demVotes).toLocaleString()} votes)</span>
+          <div class="margin-text" style="color:#374151;font-size:18px;font-weight:700;text-align:left;">
+            Winner: <span style="color:${winner === 'Republican' ? '#dc2626' : winner === 'Democratic' ? '#2563eb' : '#64748b'}">${winnerCandidate}${winner === 'Tie' ? '' : ` (${winner === 'Republican' ? 'R' : 'D'})`}</span><br>
+            Margin: <span style="color:${winner === 'Republican' ? '#dc2626' : winner === 'Democratic' ? '#2563eb' : '#64748b'}">${winner === 'Tie' ? 'Tied' : (winner === 'Republican' ? 'R+' : 'D+') + atlasFormatMargin(marginPct, demVotes, repVotes, totalVotes) + '%'}</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repVotes-demVotes).toLocaleString()} votes)</span>
           </div>
           <div style="margin-top:8px;">
             ${barHTML}
@@ -2771,8 +2771,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           <div style="margin-top:10px;font-size:15px;color:#374151;font-weight:600;">
             Total Votes: ${totalVotes.toLocaleString()}
           </div>
-          <div style="margin-top:4px;font-size:15px;font-weight:600;color:${compColor};">
-            Competitiveness: ${compLabel}
+          <div style="margin-top:4px;font-size:15px;font-weight:600;color:#374151;">
+            Competitiveness: <span style="color:${compColor};font-weight:700;">${compLabel}</span>
           </div>
         </div>
       `;

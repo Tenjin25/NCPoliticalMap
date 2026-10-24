@@ -3211,10 +3211,8 @@ function atlasMissingJudicialNotice() {
   sidebarContent += `</div>`;
   sidebarContent += `<div class="margin-section">`;
   sidebarContent += '<h3 class="sidebar-section-title">📈 Margin</h3>';
-  let marginColor = atlasElectionTierColor(demVotes, repVotes, totalVotes);
-  if (winner !== 'Republican') {
-    marginColor = isColorblind ? cbColorForMargin(parseFloat(marginPct), 'D') : '#2563eb';
-  }
+  // Margin text follows the winning side, not the competitiveness tier.
+  const marginColor = winner === 'Republican' ? '#dc2626' : winner === 'Democratic' ? '#2563eb' : '#64748b';
   sidebarContent += `<p class="sidebar-margin" style="color: ${marginColor}; font-weight: bold;">${isNonpartisanIdeology ? (winner === 'Republican' ? 'Conservative +' : 'Liberal +') : (winner === 'Republican' ? 'R+' : 'D+')}${marginPct.toFixed(2)}%</p>`;
   sidebarContent += `<p class="sidebar-margin-details" style="color: #6b7280;">(${Math.abs(margin).toLocaleString()} vote margin)</p>`;
   sidebarContent += `</div>`;

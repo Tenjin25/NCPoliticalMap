@@ -2739,7 +2739,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         compLabel = winner === 'Democratic' ? 'Tossup (Democratic Win - <0.50%)' : 'Tossup (Republican Win - <0.50%)';
         compColor = winner === 'Democratic' ? '#2563eb' : '#dc2626';
       }
-      compColor = atlasElectionTierColor(demVotes, repVotes, totalVotes);
+      compColor = atlasRatingTextColor(demVotes, repVotes, totalVotes);
       // Build the horizontal bar with D/R/Other if present
       let barHTML = '';
       let barFlex = '';
@@ -3277,7 +3277,7 @@ function atlasMissingJudicialNotice() {
       }
   }
   
-  finalCompColor = atlasElectionTierColor(demVotes, repVotes, totalVotes);
+  finalCompColor = countyData.party_alignment_status === 'unverified' ? '#64748b' : atlasRatingTextColor(demVotes, repVotes, totalVotes);
   sidebarContent += `<div class="competitiveness-section">`;
   sidebarContent += '<h3 class="sidebar-section-title">🎯 Competitiveness</h3>';
   sidebarContent += `<p style="color: ${finalCompColor}; font-weight: bold;">${finalCompLabel}</p>`;
@@ -3814,7 +3814,7 @@ function atlasMissingJudicialNotice() {
             } else {
               competitiveness = `Tossup (${winner} win)`;
             }
-            const compColor = atlasElectionTierColor(demVotes, repVotes, totalVotes);
+            const compColor = atlasRatingTextColor(demVotes, repVotes, totalVotes);
 
             electionInfo = `
               <div style="margin-bottom: 16px;">
@@ -4538,6 +4538,23 @@ function filterValidContests(contests) {
       return document.body.classList.contains('colorblind-mode')
         ? getAccessibilityColor(margin, side)
         : categoryColorForMargin(margin, side);
+    }
+    // Rating text uses a brighter, readable party-tinted palette independently of map fills.
+    function atlasRatingTextColor(demVotes, repVotes, totalVotes) {
+      const d = Number(demVotes) || 0;
+      const r = Number(repVotes) || 0;
+      const t = Number(totalVotes) || d + r;
+      if (t <= 0 || d === r) return '#64748b';
+      if (document.body.classList.contains('colorblind-mode')) {
+        return r > d ? '#b45309' : '#176b70';
+      }
+      const m = Math.abs(atlasSignedMargin(d, r, t));
+      // Original tossup rating: show the winning side in its full party color.
+      if (m < 0.5) return r > d ? '#dc2626' : '#2563eb';
+      const colors = r > d
+        ? ['#b91c1c','#c92626','#d92b2b','#e23632','#e7473e','#ed5650','#db6762']
+        : ['#1554ad','#1764c2','#2275d2','#2b80dc','#338ae2','#428fe1','#569bd9'];
+      return colors[m >= 40 ? 0 : m >= 30 ? 1 : m >= 20 ? 2 : m >= 10 ? 3 : m >= 5.5 ? 4 : m >= 1 ? 5 : 6];
     }
     function atlasTierColorByWinner(margin, winner) {
       const w = String(winner || '').toLowerCase();

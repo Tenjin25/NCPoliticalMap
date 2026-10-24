@@ -755,6 +755,14 @@ body {
     }
   /* Removed empty ruleset for #map.sidebar-minimized */
     </style>
+<style id="nc-atlas-trend-arrow-style">
+.trend-arrow { display:inline-block; margin-left:3px; line-height:1; font-weight:900; vertical-align:baseline; }
+.trend-arrow-right.tone-rep { color:#dc2626; }
+.trend-arrow-left.tone-dem { color:#2563eb; }
+.trend-arrow-soft { font-size:1em; opacity:.8; }
+.trend-arrow-medium { font-size:1.25em; }
+.trend-arrow-strong { font-size:1.6em; text-shadow:0 0 1px currentColor; }
+</style>
 </head>
 <body>
 <!-- Move JS to <script> block -->
@@ -1017,7 +1025,7 @@ function setCountyFillNeutral(neutralOn) {
         try { applyCountyContest(currentContest.contestType, currentContest.year, currentContest.contestId); } catch (e) {}
       }
       // Restore a sensible default opacity (updateMapColors may override)
-      try { map.setPaintProperty('county-fill', 'fill-opacity', 0.78); } catch (e) {}
+      try { map.setPaintProperty('county-fill', 'fill-opacity', 0.92); } catch (e) {}
     }
   } catch (e) {
     console.warn('setCountyFillNeutral failed:', e);
@@ -1151,6 +1159,16 @@ function twoPartyMarginPct(result) {
   return total > 0 ? (repVotes - demVotes) * 100 / total : null;
 }
 
+// NC Election Atlas direction/strength semantics shared by shift readouts.
+function ncTrendArrowHTML(delta) {
+  const n = Number(delta);
+  if (!Number.isFinite(n) || Math.abs(n) < 0.01) return '';
+  const strength = Math.abs(n) >= 7.5 ? 'trend-arrow-strong' : (Math.abs(n) >= 2 ? 'trend-arrow-medium' : 'trend-arrow-soft');
+  const direction = n > 0 ? 'trend-arrow-right' : 'trend-arrow-left';
+  const tone = n > 0 ? 'tone-rep' : 'tone-dem';
+  return `<span class="trend-arrow ${direction} ${strength} ${tone}" aria-hidden="true">${n > 0 ? '→' : '←'}</span>`;
+}
+
 function ensureSwingSymbolImages() {
   if (!map) return;
   if (typeof map.hasImage !== 'function' || typeof map.addImage !== 'function') return;
@@ -1159,11 +1177,11 @@ function ensureSwingSymbolImages() {
   if (swingSwingImagesLoading) return;
   swingSwingImagesLoading = true;
 
-  // Match the election-party-swing repo symbol styling (circle/ring + predominant shift arrow).
+  // Final NC Election Atlas shift arrows: horizontal right/left, scaled by shift strength.
   const svgsById = {
     'swing-party-arrow':
       `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32">` +
-      `<path fill="#ffffff" d="M16 2 L30 16 L22 16 L22 30 L16 24 L10 30 L10 16 L2 16 Z" />` +
+      `<path fill="#ffffff" d="M3 12 H20 V6 L30 16 L20 26 V20 H3 Z" />` +
       `</svg>`
   };
 
@@ -1224,19 +1242,13 @@ function ensureSwingLayer() {
       'icon-rotate': ['coalesce', ['get', 'rotation'], 0],
       // Scale by magnitude (percentage-point change)
       'icon-size': [
-        'interpolate',
-        ['linear'],
-        ['get', 'mag'],
-        0, 0.15,
-        2, 0.35,
-        5, 0.65,
-        10, 0.85,
-        20, 1.35
+        'step', ['get', 'mag'],
+        0.28, 2, 0.38, 7.5, 0.51
       ]
     };
 
     const basePaint = {
-      'icon-opacity': 0.9
+      'icon-opacity': 0.96
     };
 
     // Outline layers (fake "stroke" by drawing a larger white icon underneath)
@@ -1292,7 +1304,7 @@ function ensureSwingLayer() {
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'DEM'],
           layout: { ...baseLayout },
-          paint: { ...basePaint, 'icon-color': '#3c6ccc' }
+          paint: { ...basePaint, 'icon-color': '#2563eb' }
         },
         before
       );
@@ -1306,7 +1318,7 @@ function ensureSwingLayer() {
           minzoom: 5,
           filter: ['==', ['get', 'party'], 'REP'],
           layout: { ...baseLayout },
-          paint: { ...basePaint, 'icon-color': '#dc4b00' }
+          paint: { ...basePaint, 'icon-color': '#dc2626' }
         },
         before
       );
@@ -1476,7 +1488,7 @@ function showPartySwingDetails(props) {
 
   let html = '';
   html += `<div class="result-summary">`;
-  html += `<h3 class="sidebar-section-title">↔ Swing</h3>`;
+  html += `<h3 class="sidebar-section-title">County shift</h3>`;
   html += `<div style="font-size:14px;margin-bottom:8px;color:#374151;"><b>Comparison:</b> ${compareText}</div>`;
   html += `<div style="font-size:14px;margin-bottom:8px;"><b>Metric:</b> ${metricLabel(props.metric || '')}</div>`;
   if ((props.metric || '') === 'party' || (props.metric || '') === 'party_dominant') {
@@ -1489,7 +1501,7 @@ function showPartySwingDetails(props) {
     // margin swing
     const mFrom = props.from_margin !== undefined ? Number(props.from_margin) : null;
     const mTo = props.to_margin !== undefined ? Number(props.to_margin) : null;
-    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Shift:</b> <span style="color:${delta>=0?'#dc4b00':'#3c6ccc'};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
+    html += `<div style="font-size:14px;margin-bottom:10px;"><b>Shift:</b> <span style="color:${delta>=0?'#dc2626':'#2563eb'};font-weight:800;">${formatSignedPctPoint(delta)}</span></div>`;
     if (Number.isFinite(mFrom) && Number.isFinite(mTo)) {
       html += `<div style="font-size:14px;color:#374151;"><b>Margin:</b> ${mFrom.toFixed(2)} pp → ${mTo.toFixed(2)} pp</div>`;
     }
@@ -1501,46 +1513,36 @@ function showPartySwingDetails(props) {
   detailsDiv.style.display = 'block';
 }
 
+// Final NC Election Atlas shift palette: county fills, not arrows.
+function atlasCountyShiftColor(shift) {
+  const n = Number(shift);
+  if (!Number.isFinite(n)) return '#e5e7eb';
+  const a = Math.abs(n);
+  if (a < 0.5) return '#f8fafc';
+  const bin = a >= 25 ? 6 : a >= 20 ? 5 : a >= 15 ? 4 : a >= 10 ? 3 : a >= 5 ? 2 : a >= 1 ? 1 : 0;
+  const republicans = ['#fee2e2','#fecaca','#fca5a5','#f87171','#ef4444','#dc2626','#7f1d1d'];
+  const democrats = ['#dbeafe','#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1e3a8a'];
+  return (n >= 0 ? republicans : democrats)[bin];
+}
+function applyCountySwingColors(features) {
+  if (!map || !map.getLayer('county-fill')) return;
+  const expr = ['match', ['upcase', ['to-string', ['coalesce', ['get','NAME20'], ['get','CountyName'], ['get','COUNTYNAME'], ['get','county_nam'], ['get','NAME'], '']]]];
+  for (const feature of features) {
+    const county = String(feature.properties?.county || '').trim().toUpperCase();
+    if (!county) continue;
+    expr.push(county, atlasCountyShiftColor(feature.properties?.delta));
+  }
+  expr.push('#e5e7eb');
+  map.setPaintProperty('county-fill', 'fill-color', expr);
+  map.setPaintProperty('county-fill', 'fill-opacity', 0.92);
+  map.setLayoutProperty('county-fill', 'visibility', 'visible');
+}
 function setSwingVisibility(visible) {
   if (!map) return;
-  const v = visible ? 'visible' : 'none';
-  const inAll = partySwingParty === 'all';
-  const show = (party) => (inAll || partySwingParty === party) ? v : 'none';
+  // All historical symbol layers are permanently hidden: the county choropleth carries swing.
   ['party-swing-all-outline','party-swing-all','party-swing-dem-outline','party-swing-rep-outline','party-swing-other-outline','party-swing-dem','party-swing-rep','party-swing-other','party-swing-dem-label','party-swing-rep-label','party-swing-other-label'].forEach(id => {
-    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
   });
-  if (swingMetric === 'party') {
-    // Party share swing: show composite (All) or single-party view.
-    if (map.getLayer('party-swing-all-outline')) map.setLayoutProperty('party-swing-all-outline', 'visibility', 'none');
-    if (map.getLayer('party-swing-all')) map.setLayoutProperty('party-swing-all', 'visibility', 'none');
-    if (map.getLayer('party-swing-dem-outline')) map.setLayoutProperty('party-swing-dem-outline', 'visibility', show('DEM'));
-    if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'visibility', show('DEM'));
-    if (map.getLayer('party-swing-rep-outline')) map.setLayoutProperty('party-swing-rep-outline', 'visibility', show('REP'));
-    if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'visibility', show('REP'));
-    if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', show('OTHER'));
-    if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', show('OTHER'));
-
-    // Labels off by default; click the arrow for details.
-    const labelVis = 'none';
-    if (map.getLayer('party-swing-dem-label')) map.setLayoutProperty('party-swing-dem-label', 'visibility', labelVis);
-    if (map.getLayer('party-swing-rep-label')) map.setLayoutProperty('party-swing-rep-label', 'visibility', labelVis);
-    if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', labelVis);
-  } else {
-    // margin mode: only DEM/REP are produced; show both outline+fill
-    if (map.getLayer('party-swing-all-outline')) map.setLayoutProperty('party-swing-all-outline', 'visibility', 'none');
-    if (map.getLayer('party-swing-all')) map.setLayoutProperty('party-swing-all', 'visibility', 'none');
-    if (map.getLayer('party-swing-dem-outline')) map.setLayoutProperty('party-swing-dem-outline', 'visibility', v);
-    if (map.getLayer('party-swing-dem')) map.setLayoutProperty('party-swing-dem', 'visibility', v);
-    if (map.getLayer('party-swing-rep-outline')) map.setLayoutProperty('party-swing-rep-outline', 'visibility', v);
-    if (map.getLayer('party-swing-rep')) map.setLayoutProperty('party-swing-rep', 'visibility', v);
-    if (map.getLayer('party-swing-other-outline')) map.setLayoutProperty('party-swing-other-outline', 'visibility', 'none');
-    if (map.getLayer('party-swing-other')) map.setLayoutProperty('party-swing-other', 'visibility', 'none');
-    if (map.getLayer('party-swing-dem-label')) map.setLayoutProperty('party-swing-dem-label', 'visibility', 'none');
-    if (map.getLayer('party-swing-rep-label')) map.setLayoutProperty('party-swing-rep-label', 'visibility', 'none');
-    if (map.getLayer('party-swing-other-label')) map.setLayoutProperty('party-swing-other-label', 'visibility', 'none');
-  }
-
-  // No icon-offset; arrows render centered in the county.
 }
 
 function updateSwingLayer() {
@@ -1648,8 +1650,8 @@ function updateSwingLayer() {
         const toPct = winnerParty === 'REP' ? curRep : winnerParty === 'DEM' ? curDem : curOth;
         const fromPct = winnerParty === 'REP' ? fromRep : winnerParty === 'DEM' ? fromDem : fromOth;
 
-        // Arrow SVG points EAST; rotate by party so "towards Republicans" is red, angled up-right.
-        const baseRot = winnerParty === 'REP' ? 45 : winnerParty === 'DEM' ? 315 : 0;
+        // Final Atlas: Republican shift →, Democratic shift ←.
+        const baseRot = winnerParty === 'DEM' ? 180 : 0;
         const rotation = baseRot;
 
         features.push({
@@ -1703,9 +1705,8 @@ function updateSwingLayer() {
         const mag = Math.abs(delta);
         if (mag < 0.01) return;
 
-        // Arrow SVG is drawn pointing EAST; rotate parties to match the repo look:
-        // DEM/REP are diagonal, OTHER is vertical.
-        const baseRot = (party === 'REP') ? 45 : (party === 'DEM') ? 315 : 0;
+        // Final Atlas horizontal directional arrows.
+        const baseRot = party === 'DEM' ? 180 : 0;
         const rotation = delta >= 0 ? baseRot : (baseRot + 180);
 
         features.push({
@@ -1770,9 +1771,8 @@ function updateSwingLayer() {
           county_display: countyDisplay,
           party: delta >= 0 ? 'REP' : 'DEM',
           icon: 'swing-party-arrow',
-          // Arrow SVG points EAST: GOP shift => up-right, DEM shift => up-left
-          // Arrow points UP by default: 45° = NE (up-right) for GOP gains; 315° = NW (up-left) for Dem gains
-          rotation: delta >= 0 ? 45 : 315,
+          // Same direction convention as the final Atlas: Republican →, Democratic ←.
+          rotation: delta >= 0 ? 0 : 180,
           mag,
           delta: Number(delta.toFixed(2)),
           from_year: fromYear,
@@ -1786,10 +1786,11 @@ function updateSwingLayer() {
     }
   });
 
-  map.getSource('party-swing').setData({ type: 'FeatureCollection', features });
+  map.getSource('party-swing').setData({ type: 'FeatureCollection', features: [] });
+  if (swingArrowsEnabled) applyCountySwingColors(features);
   const inCounties = (typeof currentView === 'undefined') || currentView === 'counties';
   setSwingVisibility(inCounties);
-  setSwingHint(features.length ? `Swing symbols: ${features.length}` : 'No swing symbols (try a different comparison/year).');
+  setSwingHint(features.length ? `Counties colored by shift: ${features.length}` : 'No comparable county shifts for this contest.');
 }
 
 function populateCompareSelectFromContestSelect() {
@@ -1824,6 +1825,7 @@ function toggleSwingArrows() {
 
   if (!map) return;
   ensureSwingLayer();
+  setSwingVisibility(false);
 
   if (!swingArrowsEnabled) {
     setSwingVisibility(false);
@@ -1843,8 +1845,7 @@ function toggleSwingArrows() {
   const partySel = document.getElementById('partySelect');
   partySwingParty = (partySel && partySel.value) ? partySel.value : 'all';
 
-  // Neutralize choropleth when swing is on (matches Ekenes-style overlay focus)
-  setCountyFillNeutral(true);
+  // Replace election winner/margin fills with shift-based county colors.
   syncSwingSideEffects();
 
   populateCompareSelectFromContestSelect();
@@ -1885,17 +1886,17 @@ window.toggleSwingArrows = toggleSwingArrows;
           <h4>🔍 Research Findings </h4>
           <div class="finding-card">
             <h5>Cabarrus County - Suburban Shift</h5>
-            <p><strong>Competitive Trend:</strong> While still leaning Republican, Cabarrus has become significantly more competitive. <span class="metric">2020: R+9.45%</span> → <span class="metric">2024: R+7.70%</span></p>
-            <p><strong>2020 Breakthrough:</strong> Trump 53.94% vs Biden 44.50% - first time since 2008 a Democrat cracked 40%.</p>
-            <p><strong>2024 Continuation:</strong> Trump 53.03% vs Harris 45.34%, maintaining the competitive trend, also narrowing further.</p>
+            <p><strong>Competitive Trend:</strong> While still leaning Republican, Cabarrus has become significantly more competitive. <span class="metric" id="research-cabarrus-2020">2020: R+9.44%</span> → <span class="metric" id="research-cabarrus-2024">2024: R+7.69%</span></p>
+            <p><strong>2020 Breakthrough:</strong> <span id="research-cabarrus-share-2020">Trump 53.94% vs Biden 44.50%</span> - first time since 2008 a Democrat cracked 40%.</p>
+            <p><strong>2024 Continuation:</strong> <span id="research-cabarrus-share-2024">Trump 53.03% vs Harris 45.34%</span>, maintaining the competitive trend, also narrowing further.</p>
             <p><strong>Demographics:</strong> Unaffiliated registration now surpasses both major parties. Fast-growing communities are: Concord, Kannapolis, Harrisburg</p>
             <p><strong>Geography:</strong> Charlotte metro spillover along I-85 is driving suburban growth and political transformation.</p>
           </div>
           <div class="finding-card">
             <h5>Alamance County - Statistical Consistency</h5>
-                <p><strong>Competitive Trend:</strong> Steady competitiveness with remarkably consistent Democratic performance. <span class="metric">2020: R+8.40%</span> → <span class="metric">2024: R+8.16%</span></p>
-                <p><strong>2020 Results:</strong> Trump 53.50% vs Biden 45.10% - first time since 2008 a Democrat reached 45% (Obama got 44.94%).</p>
-                <p><strong>2024 Consistency:</strong> Trump 53.36% vs Harris 45.22% - nearly identical Democratic share (45.10% vs 45.22%).</p>
+                <p><strong>Competitive Trend:</strong> Steady competitiveness with remarkably consistent Democratic performance. <span class="metric" id="research-alamance-2020">2020: R+8.40%</span> → <span class="metric" id="research-alamance-2024">2024: R+8.14%</span></p>
+                <p><strong>2020 Results:</strong> <span id="research-alamance-share-2020">Trump 53.50% vs Biden 45.10%</span> - first time since 2008 a Democrat reached 45% (Obama got 44.94%).</p>
+                <p><strong>2024 Consistency:</strong> <span id="research-alamance-share-2024">Trump 53.36% vs Harris 45.22%</span> - nearly identical Democratic share (<span id="research-alamance-dem-2020">45.10%</span> vs <span id="research-alamance-dem-2024">45.22%</span>).</p>
                 <p><strong>Growth Centers:</strong> Graham, Burlington, and especially Mebane (I-40/I-85 corridor). Buc-ee's opening late 2026/early 2027 signals rapid commercial growth.</p>
                 <p><strong>Key Insight:</strong> Statistical similarity across cycles highlights persistent competitive trends in this swing county.</p>
           </div>
@@ -1944,7 +1945,7 @@ window.toggleSwingArrows = toggleSwingArrows;
                   <label>📊 Contest Type:</label>
                   <button id="accessibility-toggle" title="Accessibility: Color Blind Mode" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">♿</button>
                   <button id="labels-toggle" title="Toggle County Labels" onclick="toggleCountyLabels()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;">🏷️</button>
-                  <button id="swing-toggle" title="Toggle Swing Arrows" onclick="toggleSwingArrows()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;letter-spacing:0.5px;">SW</button>
+                  <button id="swing-toggle" title="Toggle county shift colors" onclick="toggleSwingArrows()" style="background:#1f2937;color:#fff;border-radius:50%;width:32px;height:32px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;letter-spacing:0.5px;">SW</button>
                 </div>
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>
@@ -2015,7 +2016,7 @@ window.toggleSwingArrows = toggleSwingArrows;
 
     mapboxgl.accessToken = CONFIG.mapboxToken;
 
-    const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/streets-v12', center: CONFIG.center, zoom: CONFIG.zoom });
+    const map = new mapboxgl.Map({ container: 'map', style: 'mapbox://styles/mapbox/light-v11', center: CONFIG.center, zoom: CONFIG.zoom });
 
     let electionData = null;
     let currentContest = null;
@@ -2194,6 +2195,100 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       return nameMap[contestType] || contestType.toUpperCase();
     }
 
+    // NC Election Atlas style: normalize displayed office names from stable contest keys.
+    // Keep backend contest keys unchanged for data loading and seat continuity.
+    function atlasNormalizedContestName(contestKey, rawName = '', year = '') {
+      const key = String(contestKey || '').replace(/_\d{4}$/, '').toLowerCase();
+      const raw = String(rawName || '').trim();
+      const office = {
+        president: 'President of the United States', us_president: 'President of the United States',
+        president_vice_president: 'President of the United States',
+        governor: 'Governor', nc_governor: 'Governor',
+        lieutenant_governor: 'Lieutenant Governor', nc_lieutenant_governor: 'Lieutenant Governor',
+        us_senate: 'United States Senator', nc_us_senate: 'United States Senator',
+        attorney_general: 'Attorney General', nc_attorney_general: 'Attorney General',
+        auditor: 'State Auditor', nc_auditor: 'State Auditor',
+        treasurer: 'Treasurer', nc_treasurer: 'Treasurer',
+        secretary_of_state: 'Secretary of State', nc_secretary_of_state: 'Secretary of State',
+        commissioner_of_labor: 'Commissioner of Labor', nc_commissioner_of_labor: 'Commissioner of Labor',
+        commissioner_of_insurance: 'Commissioner of Insurance', nc_commissioner_of_insurance: 'Commissioner of Insurance',
+        commissioner_of_agriculture: 'Commissioner of Agriculture', nc_commissioner_of_agriculture: 'Commissioner of Agriculture',
+        superintendent_of_public_instruction: 'Superintendent of Public Instruction', nc_superintendent_of_public_instruction: 'Superintendent of Public Instruction'
+      };
+      if (office[key]) return office[key];
+      const name = (key + ' ' + raw).toLowerCase();
+      const isCoa = /appeals|\bct of appeals\b/.test(name);
+      const isSupreme = /supreme/.test(name);
+      if (isCoa || isSupreme) {
+        const isChief = isSupreme && /chief/.test(name);
+        const prefix = isCoa ? 'NC Court of Appeals Judge' : (isChief ? 'NC Supreme Court Chief Justice' : 'NC Supreme Court Associate Justice');
+        const seatMap = {
+          brady:1, newby:2, hudson:3, beasley:4, martin:5, edmunds:6,
+          wynn:1, calabria:2, mcgee:4, bryant:5, thigpen:6,
+          mccullough:7, davis:7, stephens:11, arrowood:12, dietz:12,
+          zachary:14, geer:15
+        };
+        let seat = key.match(/(?:^|_)seat_0*(\d+)$/);
+        if (seat) seat = Number(seat[1]);
+        else if (isChief && /parker/.test(key)) seat = 1;
+        else if (isCoa && /hunter/.test(key)) seat = Number(year) === 2016 ? 13 : 8;
+        else {
+          const match = key.match(/(?:judge|justice)_([a-z]+)(?:_seat)?$/);
+          seat = match && Object.prototype.hasOwnProperty.call(seatMap, match[1]) ? seatMap[match[1]] : null;
+          // Named seats only where the NC Election Atlas explicitly defines a mapping.
+          if (!/_seat$/.test(key)) seat = null;
+        }
+        if (seat) return `${prefix} Seat ${seat}`;
+        const incumbent = raw.match(/\(([^)]+)\)/);
+        if (incumbent) return `${prefix} (${incumbent[1].toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase())})`;
+        return prefix;
+      }
+      return raw ? raw.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()) : key.replace(/_/g, ' ').replace(/\b[a-z]/g, c => c.toUpperCase());
+    }
+
+    // Recompute Research Findings from the integrated backend, never from hard-coded margin values.
+    // This mirrors the newer NC Election Atlas: round each candidate share to 2 decimals,
+    // then subtract the displayed shares. Keep source margin_pct precision independent.
+    function updateResearchFindingsFromBackend(data) {
+      const years = data && data.results_by_year;
+      if (!years) return;
+      const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+      const displayShare = (votes, total) => {
+        const pct = Number(votes) * 100 / Number(total);
+        if (!Number.isFinite(pct)) return NaN;
+        // Same 2-decimal e-notation rounding convention as the NC Election Atlas.
+        return Number(Math.round(`${pct}e2`) + 'e-2');
+      };
+      for (const county of ['CABARRUS', 'ALAMANCE']) {
+        for (const year of ['2020', '2024']) {
+          const presidential = years[year] && years[year].presidential;
+          const contest = presidential && (presidential['us_president_' + year] || presidential['president_' + year]);
+          const result = contest && contest.results && contest.results[county];
+          if (!result || !(Number(result.total_votes) > 0)) continue;
+          const dem = displayShare(result.dem_votes, result.total_votes);
+          const rep = displayShare(result.rep_votes, result.total_votes);
+          if (!Number.isFinite(dem) || !Number.isFinite(rep)) continue;
+          const diff = Number(Math.round(`${Math.abs(rep - dem)}e2`) + 'e-2');
+          const party = rep > dem ? 'R' : (dem > rep ? 'D' : 'T');
+          const prefix = 'research-' + county.toLowerCase();
+          set(prefix + '-' + year, `${year}: ${party}+${diff.toFixed(2)}%`);
+          const republican = String(result.rep_candidate || 'Republican');
+          const democratic = String(result.dem_candidate || 'Democrat');
+          const shortLastName = name => atlasStripPresidentialRunningMate(name).trim().split(/\s+/).pop().replace(/[.,]/g, '');
+          set(prefix + '-share-' + year, `${shortLastName(republican)} ${rep.toFixed(2)}% vs ${shortLastName(democratic)} ${dem.toFixed(2)}%`);
+          if (county === 'ALAMANCE') set(prefix + '-dem-' + year, dem.toFixed(2) + '%');
+        }
+      }
+    }
+
+    // Match the newer atlas dropdown: strip redundant NC prefixes, retain years and seat numbers.
+    function formatAtlasDropdownLabel(name) {
+      return String(name || '').replace(/^NC\s+/i, '');
+    }
+
     function populateContestSelectFromElectionJSON(electionData) {
       try {
         console.log('[DIAGNOSTIC] populateContestSelectFromElectionJSON called', !!electionData);
@@ -2217,6 +2312,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         }
       } catch (e) { }
       // Robust population from nested `results_by_year` JSON (works with your provided file)
+      updateResearchFindingsFromBackend(electionData);
       const sel = document.getElementById('contestSelect');
       if (!sel) return;
   sel.innerHTML = '';
@@ -2273,7 +2369,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
           if (!contests) return;
           Object.keys(contests).forEach(contestKey => {
             const contest = contests[contestKey];
-            const contestName = (contest && contest.contest_name) || contestKey;
+            const contestName = atlasNormalizedContestName(contestKey, contest && contest.contest_name, year);
             
             // Skip nonpartisan judicial races (no DEM or REP candidates)
             // NOTE: previously this checked only the first county and could skip
@@ -2423,7 +2519,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
               if (item.contestName && !officeLabel.includes(item.contestName)) {
                 displayName = `${item.contestName} (${item.year})`;
               }
-              o.textContent = displayName;
+              o.textContent = formatAtlasDropdownLabel(displayName);
               og.appendChild(o);
             });
             sel.appendChild(og);
@@ -2600,11 +2696,14 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       sel.onchange = () => { applyContest(sel.value); };
     }
 
-    // Shared election arithmetic: truncate margins to 2 decimals (do not round up).
+    // Align the older county viewer with NC Election Atlas candidate-share display.
+    // Store full-precision vote-based margins in the backend, but show the difference
+    // between independently rounded major-party percentages (AtlasDisplay method).
     function atlasRound2(value) {
       const n = Number(value);
       if (!Number.isFinite(n)) return 0;
-      return Math.trunc(n * 100 + Math.sign(n) * 1e-9) / 100;
+      const epsilon = (Math.sign(n) || 1) * Number.EPSILON * 8;
+      return Math.round((n + epsilon) * 100) / 100;
     }
     function atlasVoteShares(dem, rep, other) {
       const votes = [dem, rep, other].map(v => Math.max(0, Number(v) || 0));
@@ -2618,14 +2717,82 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       for (let i = 0; i < left; i++) cents[order[i]]++;
       return cents.map(c => c / 100);
     }
-    // Use this signed margin directly from vote counts: never subtract rounded vote shares.
+    // Shared NC Election Atlas margin formatting: independently rounded shares.
+    // Preserve 3 decimals for races below 0.02 point rather than masking close outcomes.
+    function atlasMarginDisplayDigits(raw) {
+      return atlasRound2(Math.abs(Number(raw) || 0)) >= 0.02 ? 2 : 3;
+    }
+    function atlasRoundDisplay(n, digits) {
+      const value = Number(n);
+      if (!Number.isFinite(value)) return 0;
+      const factor = Math.pow(10, digits);
+      const nudge = (Math.sign(value) || 1) * Number.EPSILON * 8;
+      return Math.round((value + nudge) * factor) / factor;
+    }
     function atlasSignedMargin(dem, rep, totalVotes) {
+      const d = Number(dem) || 0, r = Number(rep) || 0;
       const total = Number(totalVotes) || 0;
-      return total > 0 ? Math.sign((Number(rep) || 0) - (Number(dem) || 0)) * Math.floor(Math.abs((Number(rep) || 0) - (Number(dem) || 0)) * 10000 / total + 1e-9) / 100 : 0;
+      if (total <= 0 || r === d) return 0;
+      const raw = (r - d) / total * 100;
+      const digits = atlasMarginDisplayDigits(raw);
+      const rp = atlasRoundDisplay(r / total * 100, digits);
+      const dp = atlasRoundDisplay(d / total * 100, digits);
+      const diff = atlasRoundDisplay(Math.abs(rp - dp), digits);
+      return Math.sign(raw) * (diff === 0 ? Math.abs(raw) : diff);
     }
     function atlasAllVoteMargin(dem, rep, totalVotes) {
-      const total = Number(totalVotes) || 0;
       return Math.abs(atlasSignedMargin(dem, rep, totalVotes));
+    }
+    function atlasFormatMargin(margin, dem, rep, totalVotes) {
+      const total = Number(totalVotes) || 0;
+      const raw = total > 0 ? ((Number(rep) || 0) - (Number(dem) || 0)) / total * 100 : Number(margin) || 0;
+      return Math.abs(Number(margin) || 0).toFixed(atlasMarginDisplayDigits(raw));
+    }
+
+    // Preserve original backend names; mirror NC Election Atlas presidential ticket display.
+    // Never strip nonpresidential names, including hyphenated surnames.
+    function atlasStripPresidentialRunningMate(name) {
+      const raw = String(name || '').trim();
+      if (!raw) return '';
+      const separators = [' / ', '/', ' & ', '&', ' + ', '+', ' - ', ' – ', ' — '];
+      let lead = raw;
+      for (const sep of separators) {
+        if (lead.includes(sep)) { lead = lead.split(sep, 1)[0].trim(); break; }
+      }
+      if (lead === raw && raw.includes('-')) {
+        const pieces = raw.split('-', 2).map(value => value.trim());
+        if (pieces[0] && pieces[1] && (pieces[1].includes('.') || pieces[1].includes(' '))) lead = pieces[0];
+      }
+      const legacy = {
+        'A. GORE': 'Al Gore', 'GORE': 'Al Gore',
+        'G. W. BUSH': 'George W. Bush', 'G.W. BUSH': 'George W. Bush',
+        'G W BUSH': 'George W. Bush', 'BUSH': 'George W. Bush'
+      };
+      return legacy[lead.toUpperCase()] || lead;
+    }
+    // NC Election Atlas nickname treatment, applied to judicial candidates only.
+    // The stored ballot name remains untouched; preserve exact seat and person identity.
+    function atlasJudicialCandidateDisplayName(name) {
+      const raw = String(name || '').trim().replace(/\s+/g, ' ');
+      if (!raw) return '';
+      const match = raw.match(/^(.+?)\s*\(([^)]+)\)\s*(.*)$/);
+      if (!match) return raw;
+      const nickname = match[2].trim();
+      const trailingName = match[3].trim();
+      if (!/^[A-Za-z][A-Za-z.'-]*$/.test(nickname) ||
+          /vote\s*for|unexpired|nonpartisan|partisan/i.test(nickname) ||
+          !trailingName) return raw;
+      return `${nickname} ${trailingName}`.replace(/\s+/g, ' ').trim();
+    }
+    function atlasDisplayedCandidateName(name, contestType) {
+      const key = String(contestType || '').toLowerCase();
+      if (/president/.test(key) && !/vice_president_only/.test(key)) {
+        return atlasStripPresidentialRunningMate(name);
+      }
+      if (/judicial|court|justice|judge/.test(key)) {
+        return atlasJudicialCandidateDisplayName(name);
+      }
+      return String(name || '').trim();
     }
 
     function updateStatewideResults(contestType, year, demVotes, repVotes, totalVotes) {
@@ -2644,7 +2811,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       const otherVotes = Math.max(0, totalVotes - demVotes - repVotes);
       const [demPct, repPct, otherPct] = atlasVoteShares(demVotes, repVotes, otherVotes);
       // Victory margin and competitiveness use all votes, including third-party votes.
-      const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes);
+      const statewideVoteLead = Math.abs(repVotes - demVotes);
+      const marginPct = atlasAllVoteMargin(demVotes, repVotes, totalVotes); // NC Election Atlas rounded candidate-share difference
       // Determine winner and get actual candidate name
       let demCandidate = currentContest?.data?.dem_candidate || '';
       let repCandidate = currentContest?.data?.rep_candidate || '';
@@ -2678,6 +2846,8 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       // Fallback labels if still missing
       if (!demCandidate) demCandidate = 'Democratic Candidate';
       if (!repCandidate) repCandidate = 'Republican Candidate';
+      demCandidate = atlasDisplayedCandidateName(demCandidate, currentContest?.contestType || contestType);
+      repCandidate = atlasDisplayedCandidateName(repCandidate, currentContest?.contestType || contestType);
       let winner = '';
       let winnerCandidate = '';
       if (demVotes > repVotes) {
@@ -2740,7 +2910,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
         <div class="statewide-margin" style="margin-bottom:0;">
           <div class="margin-text" style="color: ${winner === 'Republican' ? '#dc2626' : '#2563eb'};font-size:18px;font-weight:700;text-align:left;">
             Winner: <span style="color:${winner === 'Republican' ? '#dc2626' : '#2563eb'}">${winnerCandidate}${winner === 'Tie' ? '' : ` (${winner === 'Republican' ? 'R' : 'D'})`}</span><br>
-            Margin: <span style="color:${winner === 'Republican' ? '#dc2626' : '#2563eb'}">${winner === 'Tie' ? 'Tied' : (winner === 'Republican' ? 'R+' : 'D+') + marginPct.toFixed(2) + '%'}</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repVotes-demVotes).toLocaleString()} votes)</span>
+            Margin: <span style="color:${winner === 'Republican' ? '#dc2626' : '#2563eb'}">${winner === 'Tie' ? 'Tied' : (winner === 'Republican' ? 'R+' : 'D+') + atlasFormatMargin(marginPct, demVotes, repVotes, totalVotes) + '%'}</span> <span style="color:#64748b;font-size:14px;">(${Math.abs(repVotes-demVotes).toLocaleString()} votes)</span>
           </div>
           <div style="margin-top:8px;">
             ${barHTML}
@@ -2996,7 +3166,7 @@ function atlasMissingJudicialNotice() {
       }
       
       // Get contest info from the current contest
-      const contestName = currentContest.data.contest_name || 'Contest';
+      const contestName = atlasNormalizedContestName(currentContest.contestId || currentContest.key, currentContest.data.contest_name || 'Contest', currentContest.year);
       const year = currentContest.year;
       // Remove TN contests from sidebar display
       if ((contestName && contestName.toUpperCase().includes('TN')) || (currentContest.category && currentContest.category.toUpperCase().includes('TN'))) {
@@ -3093,6 +3263,8 @@ function atlasMissingJudicialNotice() {
       // Final fallback
       if (!demCandidate) demCandidate = 'Democratic Candidate';
       if (!repCandidate) repCandidate = 'Republican Candidate';
+      demCandidate = atlasDisplayedCandidateName(demCandidate, currentContest?.contestType || currentContest?.key || contestName);
+      repCandidate = atlasDisplayedCandidateName(repCandidate, currentContest?.contestType || currentContest?.key || contestName);
       
       // Margin calculation and winner determination
       const margin = demVotes - repVotes;
@@ -3284,7 +3456,7 @@ function atlasMissingJudicialNotice() {
           id: 'county-fill', 
           type: 'fill', 
           source: 'counties', 
-          paint: { 'fill-color': '#e0e0e0', 'fill-opacity': 0.75 } 
+          paint: { 'fill-color': '#e0e0e0', 'fill-opacity': 0.92 } 
         });
         map.addLayer({ 
           id: 'county-stroke', 
@@ -3327,6 +3499,16 @@ function atlasMissingJudicialNotice() {
             ]
           }
         });
+        // Lift Light basemap city/town labels above election fills (including at closer zoom).
+        // Do not relocate road labels, which could clutter the election map.
+        try {
+          for (const layer of map.getStyle().layers || []) {
+            if (layer.type === 'symbol' && /(?:settlement|place|locality|town|city|village|hamlet)/i.test(layer.id)) {
+              try { map.moveLayer(layer.id); } catch (_) {}
+              try { map.setLayoutProperty(layer.id, 'visibility', 'visible'); } catch (_) {}
+            }
+          }
+        } catch (_) {}
         // County label layer (restore font and background)
         map.addLayer({
           id: 'county-label',
@@ -4189,7 +4371,7 @@ function filterValidContests(contests) {
             map.setPaintProperty('county-fill', 'fill-color', '#f0f0f0');
           }
           // Restore neutral-fill state if swing is enabled
-          try { if (swingArrowsEnabled) setCountyFillNeutral(true); } catch (e) {}
+          try { if (swingArrowsEnabled) setCountyFillNeutral(false); } catch (e) {}
         // Clear swing arrows
           try {
             if (map.getSource && map.getSource('party-swing')) {
@@ -4267,7 +4449,7 @@ function filterValidContests(contests) {
 
           // Update contest name in statewide section (strip any leading TN/NC prefixes)
           if (contestNameEl) {
-            let label = rawLabel.replace(/^TN\s*/i, '').replace(/^NC\s*/i, '').trim();
+            let label = atlasNormalizedContestName(currentContest.contestId, rawLabel.replace(/^TN\s*/i, '').trim(), currentContest.year);
             contestNameEl.textContent = `${label} (${currentContest ? currentContest.year : ''})`;
           }
         }
@@ -4278,8 +4460,7 @@ function filterValidContests(contests) {
             ensureSwingLayer();
             populateCompareSelectFromContestSelect();
             updateSwingLayer();
-            // Keep choropleth neutral while swing is enabled
-            setCountyFillNeutral(true);
+            // Shift choropleth was applied by updateSwingLayer().
           }
         } catch (e) {}
         
@@ -4328,9 +4509,12 @@ function filterValidContests(contests) {
     if (map && map.getLayer('county-fill')) {
       map.setPaintProperty('county-fill', 'fill-color', colorExpression);
       // Also ensure proper opacity and visibility
-      map.setPaintProperty('county-fill', 'fill-opacity', 0.78);
+      map.setPaintProperty('county-fill', 'fill-opacity', 0.92);
       map.setLayoutProperty('county-fill', 'visibility', 'visible');
     }
+
+    // Reapply shift choropleth after ordinary map paints when shift mode is active.
+    if (swingArrowsEnabled && typeof updateSwingLayer === 'function') updateSwingLayer();
 
     // Verify the property was set
     try {
@@ -4434,11 +4618,11 @@ function filterValidContests(contests) {
         
         <div style="margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span><strong>${judicialDemLabel}:</strong> ${result.dem_candidate || 'Unknown'}</span>
+            <span><strong>${judicialDemLabel}:</strong> ${atlasDisplayedCandidateName(result.dem_candidate, currentContest?.contestType || currentContest?.data?.contest_name) || 'Unknown'}</span>
             <span>${result.dem_votes?.toLocaleString() || 0} votes</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <span><strong>${judicialRepLabel}:</strong> ${result.rep_candidate || 'Unknown'}</span>
+            <span><strong>${judicialRepLabel}:</strong> ${atlasDisplayedCandidateName(result.rep_candidate, currentContest?.contestType || currentContest?.data?.contest_name) || 'Unknown'}</span>
             <span>${result.rep_votes?.toLocaleString() || 0} votes</span>
           </div>
           ${result.other_votes > 0 ? `
@@ -4482,24 +4666,16 @@ function filterValidContests(contests) {
     }
 
     function categoryColorForMargin(marginPct, winner) {
-      // NC map criteria: exact same thresholds and colors
-      if (marginPct >= 40) {
-        return winner === 'R' ? '#67000d' : '#08306b'; // Annihilation
-      } else if (marginPct >= 30) {
-        return winner === 'R' ? '#a50f15' : '#08519c'; // Dominant
-      } else if (marginPct >= 20) {
-        return winner === 'R' ? '#cb181d' : '#3182bd'; // Stronghold
-      } else if (marginPct >= 10) {
-        return winner === 'R' ? '#ef3b2c' : '#6baed6'; // Safe
-      } else if (marginPct >= 5.5) {
-        return winner === 'R' ? '#fb6a4a' : '#9ecae1'; // Likely
-      } else if (marginPct >= 1) {
-        return winner === 'R' ? '#fcae91' : '#c6dbef'; // Lean
-      } else if (marginPct >= 0.5) {
-        return winner === 'R' ? '#fee8c8' : '#e1f5fe'; // Tilt
-      } else {
-        return '#f7f7f7'; // Tossup
-      }
+      // Match the 2026 NC Election Atlas palette and thresholds.
+      const m = Math.abs(Number(marginPct) || 0);
+      if (m >= 40) return winner === 'R' ? '#67000d' : '#08306b';
+      if (m >= 30) return winner === 'R' ? '#a50f15' : '#08519c';
+      if (m >= 20) return winner === 'R' ? '#cb181d' : '#2876b5';
+      if (m >= 10) return winner === 'R' ? '#e93a2d' : '#3f8fc9';
+      if (m >= 5.5) return winner === 'R' ? '#f7634b' : '#5b9fd0';
+      if (m >= 1) return winner === 'R' ? '#fcae91' : '#9ecae1';
+      if (m >= 0.5) return winner === 'R' ? '#f4c9c5' : '#c7ddf0';
+      return '#f7f7f7';
     }
 
     function applyContest(contestKey) {
@@ -4616,7 +4792,7 @@ function filterValidContests(contests) {
         
         // Force map repaint to ensure changes are visible
         if (map.getLayer('county-fill')) {
-          map.setPaintProperty('county-fill', 'fill-opacity', 0.78);
+          map.setPaintProperty('county-fill', 'fill-opacity', 0.92);
         }
         
         console.log('Color expression applied successfully');
@@ -5015,7 +5191,3 @@ if (topSearch) topSearch.parentNode.removeChild(topSearch);
     </script>
 </body>
 </html>
-
-
-
-

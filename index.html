@@ -2201,8 +2201,9 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       const key = String(contestKey || '').replace(/_\d{4}$/, '').toLowerCase();
       const raw = String(rawName || '').trim();
       const office = {
-        president: 'President of the United States', us_president: 'President of the United States',
-        president_vice_president: 'President of the United States',
+        president: 'U.S. President', us_president: 'U.S. President',
+        president_and_vice_president_of_the_united_states: 'U.S. President',
+        president_vice_president: 'U.S. President',
         governor: 'Governor', nc_governor: 'Governor',
         lieutenant_governor: 'Lieutenant Governor', nc_lieutenant_governor: 'Lieutenant Governor',
         us_senate: 'United States Senator', nc_us_senate: 'United States Senator',
@@ -2327,205 +2328,79 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
       }
 
 
-      // Map JSON category keys to human-friendly group labels
-      function getCategoryLabel(cat) {
-        const m = {
-          presidential: 'US President',
-          us_senate: 'US Senate',
-          us_house: 'US House',
-          council_of_state: 'Council of State',
-          judicial: 'Judicial',
-          congressional: 'Congressional',
-          county: 'County'
-        };
-        return m[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1));
-      }
-
-      // Explicit optgroup order including Council of State positions and judicial groups
-      const allowedOffices = [
-        'US President',
-        'US Senate',
-        'NC Governor',
-        'NC Lieutenant Governor',
-        'NC Attorney General',
-        'NC Secretary of State',
-        'NC Treasurer',
-        'Auditor',
-        'Labor Commissioner',
-        'Insurance Commissioner',
-        'Agriculture Commissioner',
-        'Superintendent of Public Instruction',
-        'NC Supreme Court',
-        'Court of Appeals'
+      // Complete NC Election Atlas-style dropdown. Display names only: never rewrite IDs.
+      const officeNames = {
+        governor: 'Governor', lieutenant_governor: 'Lieutenant Governor',
+        attorney_general: 'Attorney General', secretary_of_state: 'Secretary of State',
+        treasurer: 'State Treasurer', auditor: 'State Auditor',
+        commissioner_of_labor: 'Commissioner of Labor', commissioner_of_insurance: 'Commissioner of Insurance',
+        commissioner_of_agriculture: 'Commissioner of Agriculture',
+        superintendent_of_public_instruction: 'Superintendent of Public Instruction'
+      };
+      const officeOrder = [
+        'U.S. President', 'U.S. Senate', 'Governor', 'Lieutenant Governor',
+        'Attorney General', 'Secretary of State', 'State Treasurer', 'State Auditor',
+        'Commissioner of Agriculture', 'Commissioner of Labor', 'Commissioner of Insurance',
+        'Superintendent of Public Instruction', 'NC Supreme Court', 'NC Court of Appeals'
       ];
-      // Group contests by office label
-      const groupedByOffice = {};
-      const years = Object.keys(electionData.results_by_year).sort();
-      years.forEach(year => {
-        const yearObj = electionData.results_by_year[year];
-        if (!yearObj) return;
-        Object.keys(yearObj).forEach(cat => {
-          const contests = yearObj[cat];
-          if (!contests) return;
-          Object.keys(contests).forEach(contestKey => {
-            const contest = contests[contestKey];
-            const contestName = atlasNormalizedContestName(contestKey, contest && contest.contest_name, year);
-            
-            // Skip nonpartisan judicial races (no DEM or REP candidates)
-            // NOTE: previously this checked only the first county and could skip
-            // contests where the first county was nonpartisan even though other
-            // counties had partisan data. Use any() over counties to ensure we
-            // only skip truly nonpartisan contests.
-            if (cat === 'judicial' && contest && contest.results) {
-              const counties = Object.values(contest.results || {});
-              const hasPartisan = counties.some(c => c && (c.dem_candidate || c.rep_candidate));
-              if (!hasPartisan) {
-                return; // Skip this contest (all counties nonpartisan)
+      const grouped = new Map();
+      Object.entries(electionData.results_by_year).forEach(([year, categories]) => {
+        Object.entries(categories || {}).forEach(([category, contests]) => {
+          Object.entries(contests || {}).forEach(([contestKey, contest]) => {
+            if (!contest || !contest.results || !Object.keys(contest.results).length) return;
+            const sample = Object.values(contest.results);
+            // Retain historic nonpartisan contests, but skip genuinely unopposed races.
+            if (!sample.some(r => Number(r?.dem_votes || 0) > 0) ||
+                !sample.some(r => Number(r?.rep_votes || 0) > 0)) return;
+            const base = String(contestKey).replace(/_\d{4}$/, '').toLowerCase();
+            const raw = String(contest.contest_name || '');
+            let group = '';
+            let title = '';
+            if (category === 'presidential' || /^(us_)?president(?:_|$)/.test(base)) {
+              group = title = 'U.S. President';
+            } else if (category === 'us_senate' || base === 'us_senate') {
+              group = title = 'U.S. Senate';
+            } else if (category === 'council_of_state') {
+              group = officeNames[base] || atlasNormalizedContestName(contestKey, raw, year);
+              title = group;
+            } else if (category === 'judicial') {
+              const courtOfAppeals = /appeals/i.test(base + ' ' + raw);
+              group = courtOfAppeals ? 'NC Court of Appeals' : 'NC Supreme Court';
+              title = atlasNormalizedContestName(contestKey, raw, year);
+              // Numeric seat identifiers in the source take priority over inferred names.
+              const seat = base.match(/_seat_0*(\d+)$/);
+              if (seat) {
+                const chief = !courtOfAppeals && /chief/i.test(base + ' ' + raw);
+                title = `${courtOfAppeals ? 'NC Court of Appeals Judge' : chief ? 'NC Supreme Court Chief Justice' : 'NC Supreme Court Associate Justice'} Seat ${Number(seat[1])}`;
               }
-            }
-            
-            // Skip unopposed contests (only one party has candidates)
-            if (contest && contest.results) {
-              const counties = Object.values(contest.results || {});
-              const hasDem = counties.some(c => c && c.dem_candidate);
-              const hasRep = counties.some(c => c && c.rep_candidate);
-              if (!hasDem || !hasRep) {
-                return; // Skip unopposed contests
+              if (!/Seat \d+/.test(title) && /\([^)]+\)/.test(raw)) {
+                const match = raw.match(/\(([^)]+)\)/);
+                if (match) title = `${courtOfAppeals ? 'NC Court of Appeals Judge' : /chief/i.test(raw) ? 'NC Supreme Court Chief Justice' : 'NC Supreme Court Associate Justice'} (${match[1].toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase())})`;
               }
-            }
-            
-            // Normalize office label
-            let officeLabel = contestName;
-            const shortMap = {
-              'PRESIDENT AND VICE PRESIDENT OF THE UNITED STATES': 'US President',
-              'US PRESIDENT': 'US President',
-              'US SENATE': 'US Senate',
-              'NC GOVERNOR': 'NC Governor',
-              'GOVERNOR': 'NC Governor',
-              'NC LIEUTENANT GOVERNOR': 'NC Lieutenant Governor',
-              'LIEUTENANT GOVERNOR': 'NC Lieutenant Governor',
-              'NC ATTORNEY GENERAL': 'NC Attorney General',
-              'ATTORNEY GENERAL': 'NC Attorney General',
-              'NC TREASURER': 'NC Treasurer',
-              'TREASURER': 'NC Treasurer',
-              'NC SECRETARY OF STATE': 'NC Secretary of State',
-              'SECRETARY OF STATE': 'NC Secretary of State',
-              // Council of State specific positions mapped to explicit groups
-              'STATE AUDITOR': 'Auditor',
-              'AUDITOR': 'Auditor',
-              'STATE LABOR COMMISSIONER': 'Labor Commissioner',
-              'LABOR COMMISSIONER': 'Labor Commissioner',
-              'STATE INSURANCE COMMISSIONER': 'Insurance Commissioner',
-              'INSURANCE COMMISSIONER': 'Insurance Commissioner',
-              'STATE AGRICULTURE COMMISSIONER': 'Agriculture Commissioner',
-              'AGRICULTURE COMMISSIONER': 'Agriculture Commissioner',
-              'COMMISSIONER OF AGRICULTURE': 'Agriculture Commissioner',
-              'STATE SUPERINTENDENT': 'Superintendent of Public Instruction',
-              'SUPERINTENDENT OF PUBLIC INSTRUCTION': 'Superintendent of Public Instruction',
-              'SUPERINTENDENT': 'Superintendent of Public Instruction',
-              // Judicial mapping to finer groups
-              'SUPREME COURT JUSTICE': 'NC Supreme Court',
-              'SUPREME COURT': 'NC Supreme Court',
-              'COURT OF APPEALS JUDGE': 'Court of Appeals',
-              'COURT OF APPEALS': 'Court of Appeals',
-              'APPEALS COURT': 'Court of Appeals',
-              'JUDICIAL': 'NC Supreme Court'
-            };
-            const up = (contestName || '').toString().trim().toUpperCase();
-            if (shortMap[up]) officeLabel = shortMap[up];
-            else if (cat === 'council_of_state') officeLabel = 'Council of State';
-            else if (cat === 'judicial') officeLabel = 'Judicial';
-            else {
-              officeLabel = contestName.toLowerCase()
-                .replace(/(^|\s)(nc|us)\s/gi, '$1')
-                .split(' ')
-                .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-                .join(' ');
-            }
-            // If this was a generic Council of State / Judicial label, try to map into specific groups
-            if (officeLabel === 'Council of State' || officeLabel === 'Judicial') {
-              // Use the uppercased contest name for matching
-              const cn = up;
-              if (/AUDITOR/.test(cn)) officeLabel = 'Auditor';
-              else if (/LABOR/.test(cn)) officeLabel = 'Labor Commissioner';
-              else if (/INSURANCE/.test(cn)) officeLabel = 'Insurance Commissioner';
-              else if (/AGRICULTURE|COMMISSIONER OF AGRICULTURE/.test(cn)) officeLabel = 'Agriculture Commissioner';
-              else if (/SUPERINTENDENT|PUBLIC INSTRUCTION|SCHOOL SUPERINTENDENT/.test(cn)) officeLabel = 'Superintendent of Public Instruction';
-              else if (/SUPREME/.test(cn) || /JUSTICE/.test(cn) && /SUPREME/.test(cn)) officeLabel = 'NC Supreme Court';
-              else if (/COURT OF APPEALS|APPEALS|COURT OF APPEALS JUDGE/.test(cn)) officeLabel = 'Court of Appeals';
-              // If still generic 'Judicial' but contestName contains 'Supreme' map to NC Supreme Court
-              else if (officeLabel === 'Judicial' && /SUPREME/.test(cn)) officeLabel = 'NC Supreme Court';
-            }
-
-            // Skip 2012 Attorney General (unopposed Cooper)
-            if (officeLabel === 'NC Attorney General' && String(year) === '2012') return;
-            // Only include allowed offices (also accept Council of State and Judicial categories if they map)
-            if (!allowedOffices.includes(officeLabel)) {
-              // If it was grouped as generic Council of State or Judicial, try to include as-is
-              if (officeLabel === 'Council of State' || officeLabel === 'Judicial') {
-                // fall through only if we can map individual contest names below; otherwise skip
-              } else return;
-            }
-            // Exclude specific problematic contest names (case-insensitive, robust)
-            const unwantedContests = [
-              'CITY OF GREENSBORO WAR MEMORIAL AUDITORIUM BONDS',
-              'WAR MEMORIAL AUDITORIUM',
-              'GREENSBORO AUDITORIUM BONDS'
-            ];
-            if (contestName && unwantedContests.some(unwanted => contestName.toString().toUpperCase().includes(unwanted))) return;
-            if (!groupedByOffice[officeLabel]) groupedByOffice[officeLabel] = [];
-            groupedByOffice[officeLabel].push({ year, cat, contestKey, contestName });
-            // For Council of State and Judicial, show all contests
-            // (already grouped by officeLabel)
+            } else return;
+            if (!grouped.has(group)) grouped.set(group, []);
+            grouped.get(group).push({year: Number(year), category, contestKey, title});
           });
         });
       });
-  // Build optgroups for each allowed office, with years as options inside
+      officeOrder.forEach(group => {
+        const items = grouped.get(group);
+        if (!items?.length) return;
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = group;
+        items.sort((a,b) => a.year - b.year ||
+          (Number((a.title.match(/Seat (\d+)/) || [])[1] || 0) - Number((b.title.match(/Seat (\d+)/) || [])[1] || 0)) ||
+          a.title.localeCompare(b.title));
+        items.forEach(item => {
+          const option = document.createElement('option');
+          option.value = `${item.year}||${item.category}||${item.contestKey}`;
+          option.textContent = `${item.title} (${item.year})`;
+          optgroup.appendChild(option);
+        });
+        sel.appendChild(optgroup);
+      });
 
-        // Use the granular contest dropdown builder instead
-        buildGranularContestDropdown();
-
-        // --- Granular Contest Dropdown Builder ---
-        // This function builds grouped/nicknamed contest options for clarity
-        function buildGranularContestDropdown() {
-          const sel = document.getElementById('contestSelect');
-          sel.innerHTML = '<option value="">Select a contest...</option>';
-          // Use allowedOffices order to maintain consistent dropdown grouping
-          const labels = allowedOffices.filter(office => groupedByOffice[office]);
-          labels.forEach(officeLabel => {
-            const contests = groupedByOffice[officeLabel];
-            const og = document.createElement('optgroup');
-            og.label = officeLabel;
-            let sortedContests = contests;
-            // Sort judicial races numerically by seat/position and year
-            if (officeLabel === 'Judicial' || officeLabel === 'NC Supreme Court' || officeLabel === 'Court of Appeals') {
-              sortedContests = contests.slice().sort((a, b) => {
-                function extractSeatNum(name) {
-                  if (!name) return 0;
-                  const match = name.match(/(Seat|Position|Place|District|No\.?|Judge|Slot)\s*(\d+)/i);
-                  return match ? parseInt(match[2], 10) : 0;
-                }
-                const yearDiff = parseInt(a.year) - parseInt(b.year);
-                if (yearDiff !== 0) return yearDiff;
-                return extractSeatNum(a.contestName) - extractSeatNum(b.contestName);
-              });
-            } else {
-              sortedContests = contests.slice().sort((a, b) => parseInt(a.year) - parseInt(b.year));
-            }
-            sortedContests.forEach(item => {
-              const o = document.createElement('option');
-              o.value = `${item.year}||${item.cat}||${item.contestKey}`;
-              let displayName = `${officeLabel} (${item.year})`;
-              if (item.contestName && !officeLabel.includes(item.contestName)) {
-                displayName = `${item.contestName} (${item.year})`;
-              }
-              o.textContent = formatAtlasDropdownLabel(displayName);
-              og.appendChild(o);
-            });
-            sel.appendChild(og);
-          });
-          }
-        }
+    } // populateContestSelectFromElectionJSON
 
       // Remove duplicate sel.onchange assignment here to avoid conflicts.
 
@@ -3450,6 +3325,33 @@ function atlasMissingJudicialNotice() {
   detailsDiv.style.display = 'block';
 }
 
+    function reinforceAtlasSettlementLabels() {
+      const layers = map.getStyle()?.layers || [];
+      const hasSelection = !!String(document.getElementById('contestSelect')?.value || '').trim();
+      const heavyOverlay = hasSelection;
+      const settlementLabels = [];
+      for (const layer of layers) {
+        if (!layer || layer.type !== 'symbol' || !layer.layout || !Object.prototype.hasOwnProperty.call(layer.layout, 'text-field')) continue;
+        const id = String(layer.id || '').toLowerCase();
+        const settlement = /(settlement|place|city|town|village|locality|hamlet)/.test(id);
+        const county = /(county-label|(^|[-_])county([-_]|$)|(^|[-_])counties([-_]|$))/.test(id);
+        if (!settlement && !county) continue;
+        try {
+          map.setPaintProperty(layer.id, 'text-color', settlement ? 'rgba(15, 23, 42, 0.94)' : 'rgba(15, 23, 42, 0.96)');
+          map.setPaintProperty(layer.id, 'text-opacity', settlement ? (heavyOverlay ? 1 : 0.96) : 1);
+          map.setPaintProperty(layer.id, 'text-halo-color', settlement ? (heavyOverlay ? 'rgba(255, 255, 255, 0.97)' : 'rgba(255, 255, 255, 0.92)') : (heavyOverlay ? 'rgba(255, 255, 255, 0.94)' : 'rgba(255, 255, 255, 0.88)'));
+          map.setPaintProperty(layer.id, 'text-halo-width', settlement ? (heavyOverlay ? 2.25 : 1.9) : (heavyOverlay ? 2.0 : 1.7));
+          map.setPaintProperty(layer.id, 'text-halo-blur', settlement ? (heavyOverlay ? 0.7 : 0.58) : (heavyOverlay ? 0.62 : 0.52));
+          if (settlement) settlementLabels.push(layer.id);
+        } catch (_) {}
+      }
+      // Symbol layers may be obscured by the county polygon overlay unless brought forward.
+      settlementLabels.forEach(id => {
+        try { map.moveLayer(id); } catch (_) {}
+        try { map.setLayoutProperty(id, 'visibility', 'visible'); } catch (_) {}
+      });
+    }
+
     function addCountyLayers() {
       if (!map.getLayer('county-fill')) {
         map.addLayer({ 
@@ -3499,16 +3401,6 @@ function atlasMissingJudicialNotice() {
             ]
           }
         });
-        // Lift Light basemap city/town labels above election fills (including at closer zoom).
-        // Do not relocate road labels, which could clutter the election map.
-        try {
-          for (const layer of map.getStyle().layers || []) {
-            if (layer.type === 'symbol' && /(?:settlement|place|locality|town|city|village|hamlet)/i.test(layer.id)) {
-              try { map.moveLayer(layer.id); } catch (_) {}
-              try { map.setLayoutProperty(layer.id, 'visibility', 'visible'); } catch (_) {}
-            }
-          }
-        } catch (_) {}
         // County label layer (restore font and background)
         map.addLayer({
           id: 'county-label',
@@ -3527,6 +3419,9 @@ function atlasMissingJudicialNotice() {
             'text-halo-width': 2
           }
         });
+        // Match the current NC Election Atlas settlement and county label styling.
+        // Move settlement labels above election fill AND county labels so towns do not disappear.
+        reinforceAtlasSettlementLabels();
         // Add mouseleave event handler
         map.on('mouseleave', 'county-fill', () => {
           map.getCanvas().style.cursor = '';
@@ -4281,7 +4176,7 @@ function atlasMissingJudicialNotice() {
       }
       
       // Only show major statewide contests
-      const allowedContests = ['president', 'governor', 'us_senate'];
+      const allowedContests = ['president', 'presidential', 'governor', 'us_senate'];
       
       // Build options from years and contests
       const options = [];
@@ -4294,8 +4189,8 @@ function atlasMissingJudicialNotice() {
               let normalizedName = '';
               if (contestType === 'us_senate') {
                 normalizedName = `US Senate (${year})`;
-              } else if (contestType === 'president') {
-                normalizedName = `President (${year})`;
+              } else if (contestType === 'president' || contestType === 'presidential') {
+                normalizedName = `U.S. President (${year})`;
               } else if (contestType === 'governor') {
                 normalizedName = `Governor (${year})`;
               } else {

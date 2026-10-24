@@ -2341,6 +2341,10 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
               const courtOfAppeals = /appeals/i.test(base + ' ' + raw);
               group = courtOfAppeals ? 'NC Court of Appeals' : 'NC Supreme Court';
               title = atlasNormalizedContestName(contestKey, raw, year);
+              // Atlas meta.office is manually curated; preserve its exact judicial seat title.
+              if (contest.atlas_office_name) {
+                title = contest.atlas_office_name;
+              } else {
               // Numeric seat identifiers in the source take priority over inferred names.
               const seat = base.match(/_seat_0*(\d+)$/);
               if (seat) {
@@ -2350,6 +2354,7 @@ function mergeGeoElectionData(boundaryGeoJSON, electionData, countyKey='County',
               if (!/Seat \d+/.test(title) && /\([^)]+\)/.test(raw)) {
                 const match = raw.match(/\(([^)]+)\)/);
                 if (match) title = `${courtOfAppeals ? 'NC Court of Appeals Judge' : /chief/i.test(raw) ? 'NC Supreme Court Chief Justice' : 'NC Supreme Court Associate Justice'} (${match[1].toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase())})`;
+              }
               }
             } else return;
             if (!grouped.has(group)) grouped.set(group, []);
@@ -3197,8 +3202,8 @@ function atlasMissingJudicialNotice() {
         precincts = countyData.precincts || countyData.Precincts || countyData.PRECINCTS;
       }
       const isNonpartisanIdeology = countyData.contest_partisan_style === 'nonpartisan_ideology';
-      const demDisplayLabel = isNonpartisanIdeology ? (countyData.dem_label || 'Liberal') : 'D';
-      const repDisplayLabel = isNonpartisanIdeology ? (countyData.rep_label || 'Conservative') : 'R';
+      const demDisplayLabel = isNonpartisanIdeology ? (countyData.dem_label || 'D-aligned') : 'D';
+      const repDisplayLabel = isNonpartisanIdeology ? (countyData.rep_label || 'R-aligned') : 'R';
       // Card-style layout
       sidebarContent += '<div class="result-summary">';
       sidebarContent += '<h3 class="sidebar-section-title">📊 Election Results</h3>';
@@ -3213,7 +3218,7 @@ function atlasMissingJudicialNotice() {
   sidebarContent += '<h3 class="sidebar-section-title">📈 Margin</h3>';
   // Margin text follows the winning side, not the competitiveness tier.
   const marginColor = winner === 'Republican' ? '#dc2626' : winner === 'Democratic' ? '#2563eb' : '#64748b';
-  sidebarContent += `<p class="sidebar-margin" style="color: ${marginColor}; font-weight: bold;">${isNonpartisanIdeology ? (winner === 'Republican' ? 'Conservative +' : 'Liberal +') : (winner === 'Republican' ? 'R+' : 'D+')}${marginPct.toFixed(2)}%</p>`;
+  sidebarContent += `<p class="sidebar-margin" style="color: ${marginColor}; font-weight: bold;">${winner === 'Republican' ? 'R+' : 'D+'}${marginPct.toFixed(2)}%</p>`;
   sidebarContent += `<p class="sidebar-margin-details" style="color: #6b7280;">(${Math.abs(margin).toLocaleString()} vote margin)</p>`;
   sidebarContent += `</div>`;
   sidebarContent += `<div class="vote-breakdown">`;
@@ -4469,9 +4474,13 @@ function filterValidContests(contests) {
         return;
       }
 
-      const judicialDemLabel = result.party_alignment_status === 'unverified' ? 'Candidate A (alignment unverified)' : result.contest_partisan_style === 'nonpartisan_ideology' ? (result.dem_label || 'Liberal') : 'Democratic';
-      const judicialRepLabel = result.party_alignment_status === 'unverified' ? 'Candidate B (alignment unverified)' : result.contest_partisan_style === 'nonpartisan_ideology' ? (result.rep_label || 'Conservative') : 'Republican';
+      const judicialDemLabel = result.party_alignment_status === 'unverified' ? 'Candidate A (alignment unverified)' : result.contest_partisan_style === 'nonpartisan_ideology' ? (result.dem_label || 'D-aligned') : 'Democratic';
+      const judicialRepLabel = result.party_alignment_status === 'unverified' ? 'Candidate B (alignment unverified)' : result.contest_partisan_style === 'nonpartisan_ideology' ? (result.rep_label || 'R-aligned') : 'Republican';
+      const judicialAlignmentNote = result.ballot_partisanship === 'nonpartisan' && result.party_alignment_status === 'atlas_dem_rep_aligned'
+        ? '<div style="font-size:12px;color:#64748b;margin-bottom:10px;">Nonpartisan ballot · D/R alignments from NC Atlas JSON</div>'
+        : '';
       const html = `
+        ${judicialAlignmentNote}
         <div style="margin-bottom: 16px;">
           <strong>${currentContest.data.contest_name}</strong><br>
           <small>${currentContest.year}</small>

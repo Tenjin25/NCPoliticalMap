@@ -772,86 +772,59 @@ function setupAccessibilityToggle() {
   var accBtn = document.getElementById('accessibility-toggle');
   
   function updateLegendColors() {
-    var colorblind = document.body.classList.contains('colorblind-mode');
-    var legendColors = document.querySelectorAll('.legend-color');
-    
-    // Complete bidirectional color mapping
-    var standardColors = {
-      'rep-annihilation': '#67000d',
-      'rep-dominant': '#a50f15',
-      'rep-stronghold': '#cb181d',
-      'rep-safe': '#ef3b2c',
-      'rep-likely': '#fb6a4a',
-      'rep-lean': '#fcae91',
-      'rep-tilt': '#fee8c8',
-      'tossup': '#f7f7f7',
-      'dem-tilt': '#e1f5fe',
-      'dem-lean': '#c6dbef',
-      'dem-likely': '#9ecae1',
-      'dem-safe': '#6baed6',
-      'dem-stronghold': '#3182bd',
-      'dem-dominant': '#08519c',
-      'dem-annihilation': '#08306b'
+    // A stable semantic tier, not the previous hex value, determines each swatch.
+    // This makes the legend survive theme, accessibility and swing-mode changes.
+    const standardColors = {
+      'rep-annihilation':'#67000d','rep-dominant':'#a50f15','rep-stronghold':'#cb181d',
+      'rep-safe':'#e93a2d','rep-likely':'#f7634b','rep-lean':'#fcae91','rep-tilt':'#f4c9c5',
+      'tossup':'#f7f7f7','dem-tilt':'#c7ddf0','dem-lean':'#9ecae1',
+      'dem-likely':'#5b9fd0','dem-safe':'#3f8fc9','dem-stronghold':'#2876b5',
+      'dem-dominant':'#08519c','dem-annihilation':'#08306b'
     };
-    
-    var colorblindColors = {
-      'rep-annihilation': '#cc5500',
-      'rep-dominant': '#ff6600',
-      'rep-stronghold': '#ff8833',
-      'rep-safe': '#ffaa55',
-      'rep-likely': '#ffcc77',
-      'rep-lean': '#ffdd99',
-      'rep-tilt': '#ffeecc',
-      'tossup': '#cccccc',
-      'dem-tilt': '#b3d9ff',
-      'dem-lean': '#99ccff',
-      'dem-likely': '#66b3ff',
-      'dem-safe': '#3399ff',
-      'dem-stronghold': '#0080ff',
-      'dem-dominant': '#0066cc',
-      'dem-annihilation': '#004d99'
+    const colorblindColors = {
+      'rep-annihilation':'#cc5500','rep-dominant':'#ff6600','rep-stronghold':'#ff8833',
+      'rep-safe':'#ffaa55','rep-likely':'#ffcc77','rep-lean':'#ffdd99','rep-tilt':'#ffeecc',
+      'tossup':'#cccccc','dem-tilt':'#b3d9ff','dem-lean':'#99ccff',
+      'dem-likely':'#66b3ff','dem-safe':'#3399ff','dem-stronghold':'#0080ff',
+      'dem-dominant':'#0066cc','dem-annihilation':'#004d99'
     };
-    
-    // Helper to convert RGB to hex
-    function rgbToHex(rgb) {
-      if (!rgb || rgb.indexOf('rgb') === -1) return rgb;
-      var parts = rgb.match(/\d+/g);
-      if (!parts || parts.length < 3) return rgb;
-      return '#' + parts.slice(0, 3).map(function(x) {
-        return ('0' + parseInt(x).toString(16)).slice(-2);
-      }).join('');
+    const colorblind = document.body.classList.contains('colorblind-mode');
+    const swing = typeof swingArrowsEnabled !== 'undefined' && swingArrowsEnabled;
+    const palette = colorblind ? colorblindColors : standardColors;
+    document.querySelectorAll('#legend-content .legend-color[data-margin-tier]').forEach(el => {
+      const key = el.dataset.marginTier;
+      const value = palette[key];
+      if (value) el.style.backgroundColor = value;
+    });
+    // Swing choropleth is a different metric: don't show margin tier labels as its legend.
+    const existing = document.getElementById('nc-shift-legend');
+    const marginRows = document.querySelectorAll('#legend-content .legend-item');
+    if (swing) {
+      marginRows.forEach(row => row.style.display = 'none');
+      let panel = existing;
+      if (!panel) {
+        panel = document.createElement('div');
+        panel.id = 'nc-shift-legend';
+        panel.innerHTML = '<div style="font-weight:700;margin-bottom:8px">Swing (percentage points)</div>' +
+          '<div id="nc-shift-legend-swatches" style="display:grid;grid-template-columns:auto auto;gap:6px 14px"></div>';
+        document.getElementById('legend-content')?.appendChild(panel);
+      }
+      panel.style.display = 'block';
+      const reds = ['#fee2e2','#fecaca','#fca5a5','#f87171','#ef4444','#dc2626','#7f1d1d'];
+      const blues = ['#dbeafe','#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1e3a8a'];
+      const tiers = ['0.5–0.99','1–4.99','5–9.99','10–14.99','15–19.99','20–24.99','25+'];
+      const rows = tiers.map((tier,i) => [blues[i], 'D shift '+tier, reds[i], 'R shift '+tier]);
+      const swatches = document.getElementById('nc-shift-legend-swatches');
+      if (swatches) swatches.innerHTML = rows.flatMap(row => [0,2].map(i =>
+        '<div style="display:flex;align-items:center;gap:6px"><span style="display:inline-block;width:18px;height:15px;border-radius:3px;border:1px solid #a1a1aa;background:'+row[i]+'"></span>'+row[i+1]+' pp</div>'
+      )).join('') + '<div style="grid-column:1/-1;color:#64748b">Less than 0.5 pp: near-white</div>';
+    } else {
+      marginRows.forEach(row => row.style.display = '');
+      if (existing) existing.style.display = 'none';
     }
-    
-    // Reverse lookup maps
-    var standardToKey = {};
-    var colorblindToKey = {};
-    Object.keys(standardColors).forEach(function(key) {
-      standardToKey[standardColors[key].toLowerCase()] = key;
-      colorblindToKey[colorblindColors[key].toLowerCase()] = key;
-    });
-    
-    legendColors.forEach(function(el) {
-      // Get current color and convert to hex if needed
-      var currentStyle = el.style.background || el.style.backgroundColor;
-      var currentColor = rgbToHex(currentStyle).toLowerCase();
-      
-      // Store original if not stored
-      if (!el.getAttribute('data-orig-bg')) {
-        el.setAttribute('data-orig-bg', currentColor);
-      }
-      
-      // Find which category this color belongs to
-      var categoryKey = standardToKey[currentColor] || colorblindToKey[currentColor];
-      
-      if (categoryKey) {
-        // Apply the appropriate color scheme
-        var newColor = colorblind ? colorblindColors[categoryKey] : standardColors[categoryKey];
-        el.style.background = newColor;
-        console.log('Updated legend color:', categoryKey, 'from', currentColor, 'to', newColor);
-      }
-    });
   }
-  
+  window.updateNCCountyLegend = updateLegendColors;
+
   if (accBtn) {
     accBtn.onclick = function(e) {
       e.preventDefault();
@@ -919,7 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Toggle county labels on/off
-let countyLabelsVisible = true;
+let countyLabelsVisible = false; // Default off: county selection/details appear in sidebar
 function toggleCountyLabels() {
   if (!map || !map.getLayer('county-label')) {
     console.log('County labels layer not yet loaded');
@@ -1823,6 +1796,7 @@ function toggleSwingArrows() {
   const controls = document.getElementById('swing-controls');
   if (controls) controls.style.display = swingArrowsEnabled ? 'block' : 'none';
 
+  if (typeof window.updateNCCountyLegend === 'function') window.updateNCCountyLegend();
   if (!map) return;
   ensureSwingLayer();
   setSwingVisibility(false);
@@ -1982,21 +1956,21 @@ window.toggleSwingArrows = toggleSwingArrows;
             <button class="minimize-btn" onclick="toggleLegend()" id="legend-minimize-btn">−</button>
         </div>
         <div class="legend-content" id="legend-content">
-            <div class="legend-item"><div class="legend-color" style="background: #67000d;"></div>Annihilation Republican (≥40.00%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #a50f15;"></div>Dominant Republican (30.00-39.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #cb181d;"></div>Stronghold Republican (20.00-29.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #ef3b2c;"></div>Safe Republican (10.00-19.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #fb6a4a;"></div>Likely Republican (5.50-9.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #fcae91;"></div>Lean Republican (1.00-5.49%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #fee8c8;"></div>Tilt Republican (0.50-0.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #f7f7f7; border: 1px solid #999;"></div>Tossup (<0.50%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #e1f5fe;"></div>Tilt Democratic (0.50-0.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #c6dbef;"></div>Lean Democratic (1.00-5.49%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #9ecae1;"></div>Likely Democratic (5.50-9.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #6baed6;"></div>Safe Democratic (10.00-19.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #3182bd;"></div>Stronghold Democratic (20.00-29.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #08519c;"></div>Dominant Democratic (30.00-39.99%)</div>
-            <div class="legend-item"><div class="legend-color" style="background: #08306b;"></div>Annihilation Democratic (≥40.00%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-annihilation" style="background: #67000d;"></div>Annihilation Republican (≥40.00%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-dominant" style="background: #a50f15;"></div>Dominant Republican (30.00-39.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-stronghold" style="background: #cb181d;"></div>Stronghold Republican (20.00-29.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-safe" style="background: #e93a2d;"></div>Safe Republican (10.00-19.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-likely" style="background: #f7634b;"></div>Likely Republican (5.50-9.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-lean" style="background: #fcae91;"></div>Lean Republican (1.00-5.49%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="rep-tilt" style="background: #f4c9c5;"></div>Tilt Republican (0.50-0.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="tossup" style="background: #f7f7f7; border: 1px solid #999;"></div>Tossup (<0.50%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-tilt" style="background: #c7ddf0;"></div>Tilt Democratic (0.50-0.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-lean" style="background: #9ecae1;"></div>Lean Democratic (1.00-5.49%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-likely" style="background: #5b9fd0;"></div>Likely Democratic (5.50-9.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-safe" style="background: #3f8fc9;"></div>Safe Democratic (10.00-19.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-stronghold" style="background: #2876b5;"></div>Stronghold Democratic (20.00-29.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-dominant" style="background: #08519c;"></div>Dominant Democratic (30.00-39.99%)</div>
+            <div class="legend-item"><div class="legend-color" data-margin-tier="dem-annihilation" style="background: #08306b;"></div>Annihilation Democratic (≥40.00%)</div>
         </div>
     </div>
 
@@ -3407,6 +3381,7 @@ function atlasMissingJudicialNotice() {
           type: 'symbol',
           source: 'counties',
           layout: {
+            'visibility': 'none', // Hide county text by default; retain the label toggle
             'text-field': ['coalesce', ['get', 'NAME20'], ['get', 'NAMELSAD20'], ['get', 'county_name'], ['get', 'County'], ['get', 'COUNTYNAME'], ['get', 'NAME'], ['get', 'name']],
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
@@ -3419,6 +3394,13 @@ function atlasMissingJudicialNotice() {
             'text-halo-width': 2
           }
         });
+        // Keep the county label button synchronized with the hidden-by-default layer.
+        const countyLabelsBtn = document.getElementById('labels-toggle');
+        if (countyLabelsBtn) {
+          countyLabelsBtn.style.opacity = '0.5';
+          countyLabelsBtn.title = 'Show County Labels';
+          countyLabelsBtn.setAttribute('aria-label', 'Show County Labels');
+        }
         // Match the current NC Election Atlas settlement and county label styling.
         // Move settlement labels above election fill AND county labels so towns do not disappear.
         reinforceAtlasSettlementLabels();

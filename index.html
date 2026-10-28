@@ -754,102 +754,105 @@ body {
       display: none !important;
     }
   /* Removed empty ruleset for #map.sidebar-minimized */
-  /* Midnight Atlas visual layer. The election color palette and data logic are retained. */
+  /* Midnight Atlas Balanced: preserve ORIGINAL panel geometry and interactions.
+     Only surfaces, typography, controls and card treatments are themed. */
   :root {
-    color-scheme: dark;
-    --atlas-surface: #172235;
-    --atlas-elevated: #223149;
-    --atlas-hover: #2b405b;
-    --atlas-border: #344760;
-    --atlas-text: #edf3fb;
-    --atlas-muted: #a5b7cc;
-    --atlas-accent: #45bde9;
-    --atlas-shadow: 0 16px 48px rgba(4,10,22,.34);
+    --midnight-panel: #172235;
+    --midnight-raised: #24354d;
+    --midnight-border: #3a5069;
+    --midnight-text: #edf4fc;
+    --midnight-muted: #b1c1d2;
+    --midnight-accent: #62bce6;
   }
-  body { background: #0b1220; color: var(--atlas-text); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  #map { background: #dce6eb; }
-  .main-controls, .legend, .sidebar:not(.minimized), .status-panel {
-    background: rgba(23,34,53,.97) !important;
-    color: var(--atlas-text) !important;
-    border: 1px solid var(--atlas-border) !important;
-    border-radius: 16px;
-    box-shadow: var(--atlas-shadow) !important;
-    backdrop-filter: blur(18px);
+  body { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .main-controls, .sidebar:not(.minimized), .legend, .status-panel {
+    background: var(--midnight-panel) !important;
+    border-color: var(--midnight-border) !important;
+    color: var(--midnight-text) !important;
+    box-shadow: 0 9px 30px rgba(8,17,32,.3) !important;
   }
-  .main-controls { top: 18px; left: 18px; padding: 20px 22px; min-width: 0; max-width: min(420px, calc(100vw - 36px)); }
-  .main-controls::before {
-    content: "POLITICAL REALIGNMENT ATLAS / 2000—2024";
-    display: block; margin-bottom: 9px;
-    color: var(--atlas-accent); font-size: 10px; font-weight: 800; letter-spacing: .14em;
-  }
-  .controls-header { gap: 12px; }
-  .controls-header h3, .sidebar-header h3, .legend-header h4 { color: var(--atlas-text) !important; line-height: 1.32; letter-spacing: -.025em; }
-  .controls-header h3 { font-size: 18px; font-weight: 750; }
-  .sidebar:not(.minimized) {
-    top: 12px; right: 12px; height: calc(100vh - 24px); width: min(415px, calc(100vw - 24px));
-    overflow-x: hidden; scrollbar-color: #526781 transparent;
-  }
+  .main-controls, .legend { border-radius: 12px; }
+  /* Keep the original 400px sidebar, its card order, padding and full-height behavior. */
   .sidebar:not(.minimized) .sidebar-header, .sidebar-header, .legend-header {
-    background: var(--atlas-surface) !important; border-bottom: 1px solid var(--atlas-border) !important;
+    background: #1d2b40 !important;
+    border-bottom-color: var(--midnight-border) !important;
   }
-  .sidebar-header, .sidebar:not(.minimized) .sidebar-header { padding: 20px 22px; }
-  .sidebar-content { padding: 20px 22px 28px; }
-  .legend { left: 18px; bottom: 18px; min-width: 270px; max-width: min(340px, calc(100vw - 36px)); }
-  .legend-header { padding: 13px 17px; border-radius: 15px 15px 0 0; }
-  .legend-content { padding: 13px 17px; max-height: min(49vh, 460px); overflow-y: auto; scrollbar-color: #526781 transparent; }
-  .legend-item { color: var(--atlas-muted); font-size: 12px; line-height: 1.4; gap: 3px; }
-  .legend-color { width: 17px; height: 13px; border-radius: 3px; border: 1px solid rgba(255,255,255,.12); }
-  .control-group label, .sidebar-content label, .legend-header h4 { color: var(--atlas-muted) !important; font-size: 12px; font-weight: 750; letter-spacing: .035em; }
-  .control-group select, .sidebar input, .sidebar select, #county-search,
-  #metricSelect, #compareSelect, #partySelect {
-    box-sizing: border-box; background: var(--atlas-elevated) !important;
-    color: var(--atlas-text) !important; border: 1px solid var(--atlas-border) !important;
-    border-radius: 10px !important; min-height: 42px; padding: 10px 12px !important;
-    font: inherit; font-size: 13px;
-  }
-  select option { background: var(--atlas-surface); color: var(--atlas-text); }
-  button { font-family: inherit; }
-  .minimize-btn, .sidebar.minimized .minimize-btn {
-    background: var(--atlas-elevated) !important; color: var(--atlas-text) !important;
-    border: 1px solid var(--atlas-border) !important; border-radius: 10px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,.18);
-  }
-  .minimize-btn:hover, .sidebar.minimized .minimize-btn:hover { background: var(--atlas-hover) !important; border-color: var(--atlas-accent) !important; }
-  #accessibility-toggle, #labels-toggle, #swing-toggle {
-    background: var(--atlas-elevated) !important; border: 1px solid var(--atlas-border) !important;
-    color: var(--atlas-text) !important; border-radius: 9px !important; box-shadow: none !important;
-  }
-  .view-toggle { background: var(--atlas-elevated); }
-  .county-details, .statewide-results, .finding-card, .statewide-margin,
-  .winner-section, .margin-section, .vote-breakdown, .competitiveness-section, .result-summary {
-    background: var(--atlas-elevated) !important; color: var(--atlas-text) !important;
-    border: 1px solid var(--atlas-border) !important; border-radius: 12px !important; box-shadow: none !important;
-  }
-  .county-details, .statewide-results, .finding-card { padding: 16px; }
-  .finding-card { margin-bottom: 12px; }
+  .controls-header h3, .sidebar-header h3, .legend-header h4,
   .sidebar-content h3, .sidebar-content h4, .sidebar-content h5,
   .sidebar-section-title, .county-details h4, .statewide-results h4,
-  .findings-section h4, .finding-card h5, #statewide, #contest-name { color: var(--atlas-text) !important; }
-  .finding-card h5 { border-color: var(--atlas-accent); }
-  .sidebar-content p, .finding-card p, .sidebar-content div { line-height: 1.55; }
-  .finding-card p { color: var(--atlas-muted) !important; }
-  .sidebar-content > div, #county-info-content { color: var(--atlas-muted); }
-  .metric { background: #183b59; color: #a8dfff; border-color: #335f81; }
+  .findings-section h4, .finding-card h5, #statewide, #contest-name {
+    color: var(--midnight-text) !important;
+  }
+  .control-group label, .sidebar-content label { color: var(--midnight-muted) !important; }
+  .control-group select, #county-search, #metricSelect, #compareSelect, #partySelect {
+    background: var(--midnight-raised) !important;
+    color: var(--midnight-text) !important;
+    border: 1px solid var(--midnight-border) !important;
+    border-radius: 8px !important;
+    font-family: inherit;
+  }
+  select option { background: var(--midnight-panel); color: var(--midnight-text); }
+  .minimize-btn, .sidebar.minimized .minimize-btn,
+  #accessibility-toggle, #labels-toggle, #swing-toggle {
+    background: var(--midnight-raised) !important;
+    color: var(--midnight-text) !important;
+    border: 1px solid var(--midnight-border) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+  .minimize-btn:hover, .sidebar.minimized .minimize-btn:hover {
+    background: #31506d !important;
+    border-color: var(--midnight-accent) !important;
+  }
+  /* Preserve a usable flex header when collapsing the contest dropdown panel. */
+  .main-controls.minimized {
+    min-width: 60px !important;
+    max-width: 60px !important;
+    width: 60px !important;
+    box-sizing: border-box;
+    padding: 12px !important;
+  }
+  .main-controls.minimized .controls-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+  .main-controls.minimized .controls-header h3 { display: none !important; }
+  .main-controls.minimized .controls-header > div { display: flex; flex: 0 0 auto; }
+  .main-controls.minimized #controls-minimize-btn { flex: 0 0 36px; height: 36px; width: 36px; }
+  .view-toggle { background: var(--midnight-raised); }
+  .county-details, .statewide-results, .finding-card, .statewide-margin,
+  .winner-section, .margin-section, .vote-breakdown, .competitiveness-section,
+  .result-summary {
+    background: #213149 !important;
+    border-color: var(--midnight-border) !important;
+    color: var(--midnight-text) !important;
+  }
+  .finding-card p { color: #c8d5e3 !important; }
+  .finding-card h5 { border-bottom-color: var(--midnight-accent); }
+  .sidebar-content, .sidebar-content > div, #county-info-content { color: var(--midnight-muted); }
+  .metric { background: #183b59; color: #b7dfff; border-color: #426985; }
   .metric.result { background: #4f2535; color: #ffb7c1; border-color: #784052; }
   .metric.result.dem { background: #183e68; color: #b6dcff; border-color: #315d8b; }
-  .sidebar-footer { background: var(--atlas-surface) !important; color: var(--atlas-muted) !important; border-top: 1px solid var(--atlas-border) !important; }
-  .hover-tooltip, .quick-tooltip { background: rgba(11,18,32,.96); color: var(--atlas-text); border: 1px solid var(--atlas-border); border-radius: 12px; box-shadow: var(--atlas-shadow); }
-  .status-panel { color: var(--atlas-text) !important; }
-  #status-exit { background: var(--atlas-elevated) !important; color: var(--atlas-text); }
-  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--atlas-accent); outline-offset: 2px; }
-  @media (max-width: 650px) {
-    .main-controls { top: 10px; left: 10px; padding: 14px; width: min(340px, calc(100vw - 20px)); max-width: calc(100vw - 20px); }
-    .controls-header h3 { font-size: 15px; }
-    .sidebar:not(.minimized) { top: 0; right: 0; height: 100dvh; width: min(100vw, 400px); border-radius: 0; }
-    .sidebar-content { padding: 15px; }
-    .legend { left: 10px; bottom: 10px; min-width: 0; width: min(290px, calc(100vw - 20px)); }
-    .legend-content { max-height: 34vh; }
-    .sidebar.minimized .minimize-btn { top: 10px; right: 10px; }
+  .sidebar-footer { background: #1d2b40 !important; color: var(--midnight-muted) !important; border-top-color: var(--midnight-border) !important; }
+  .legend-item { color: #d2dce7; }
+  .legend-color { border: 1px solid rgba(255,255,255,.15); }
+  .hover-tooltip, .quick-tooltip {
+    background: rgba(15,24,39,.96); color: var(--midnight-text);
+    border: 1px solid var(--midnight-border); border-radius: 9px;
+  }
+  .status-panel { color: var(--midnight-text) !important; }
+  #status-exit { background: var(--midnight-raised) !important; color: var(--midnight-text); }
+  button:focus-visible, select:focus-visible, input:focus-visible {
+    outline: 2px solid var(--midnight-accent); outline-offset: 2px;
+  }
+  @media (max-width: 768px) {
+    /* The original bottom-sheet, minimization and flex behavior stays active. */
+    .legend { background: var(--midnight-panel) !important; }
+    .legend-header { background: #1d2b40 !important; }
+    .main-controls.minimized { min-width: 64px !important; max-width: 64px !important; width: 64px !important; right: auto !important; }
+    .sidebar:not(.minimized) { background: var(--midnight-panel) !important; }
   }
     </style>
 <style id="nc-atlas-trend-arrow-style">
@@ -2113,8 +2116,8 @@ window.toggleSwingArrows = toggleSwingArrows;
       if (!hasOutline && !hasOutlineGlow) return;
 
       if (!selectedCountyOutlineName) {
-        if (hasOutline) map.setFilter('county-outline', ['==', 1, 0]);
-        if (hasOutlineGlow) map.setFilter('county-outline-glow', ['==', 1, 0]);
+        if (hasOutline) map.setFilter('county-outline', ['==', ['get', 'NAME20'], '__NO_SELECTED_COUNTY__']);
+        if (hasOutlineGlow) map.setFilter('county-outline-glow', ['==', ['get', 'NAME20'], '__NO_SELECTED_COUNTY__']);
         return;
       }
 
@@ -3448,7 +3451,7 @@ function atlasMissingJudicialNotice() {
           id: 'county-outline-glow',
           type: 'line',
           source: 'counties',
-          filter: ['==', 1, 0],
+          filter: ['==', ['get', 'NAME20'], '__NO_SELECTED_COUNTY__'],
           paint: {
             'line-color': '#ffffff',
             'line-opacity': 0.9,
@@ -3466,7 +3469,7 @@ function atlasMissingJudicialNotice() {
           id: 'county-outline',
           type: 'line',
           source: 'counties',
-          filter: ['==', 1, 0],
+          filter: ['==', ['get', 'NAME20'], '__NO_SELECTED_COUNTY__'],
           paint: {
             'line-color': '#0f172a',
             'line-opacity': 0.95,

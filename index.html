@@ -844,15 +844,27 @@ body {
   }
   .status-panel { color: var(--midnight-text) !important; }
   .county-flip-notice {
-    display: flex; align-items: center; gap: 9px;
-    padding: 10px 12px; margin: 0 0 12px;
-    border-radius: 9px; border: 1px solid var(--midnight-border);
-    color: var(--midnight-text); background: #293b53;
-    font-size: 13px; line-height: 1.4;
+    display: inline-flex; align-items: center; gap: 7px;
+    width: fit-content; max-width: 100%; box-sizing: border-box;
+    margin-top: 7px; padding: 6px 11px;
+    border: 1.5px solid rgba(220, 38, 38, .65);
+    border-radius: 999px;
+    background: rgba(220, 38, 38, .17);
+    color: #fee2e2;
+    font-size: 12px; font-weight: 850; line-height: 1.25;
+    letter-spacing: .025em;
   }
-  .county-flip-notice.flip-dem { border-left: 4px solid #60a5fa; }
-  .county-flip-notice.flip-rep { border-left: 4px solid #f87171; }
-  .county-flip-notice strong { white-space: nowrap; }
+  .county-flip-notice.flip-dem {
+    border-color: rgba(59,130,246,.65);
+    background: rgba(37,99,235,.18);
+    color: #dbeafe;
+  }
+  .county-flip-notice .flip-party-dot {
+    height: 9px; width: 9px; flex: none; border-radius: 50%; background: #ef4444;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+  }
+  .county-flip-notice.flip-dem .flip-party-dot { background: #60a5fa; }
+  .county-flip-notice .flip-years { opacity: .78; font-size: 11px; font-weight: 750; }
   #status-exit { background: var(--midnight-raised) !important; color: var(--midnight-text); }
   button:focus-visible, select:focus-visible, input:focus-visible {
     outline: 2px solid var(--midnight-accent); outline-offset: 2px;
@@ -1244,9 +1256,8 @@ function countyFlipNotice(countyName, currentResult) {
   };
   const before = winner(prior), now = winner(currentResult);
   if (!before || !now || before === now) return '';
-  const label = now === 'D' ? 'Flipped Democratic' : 'Flipped Republican';
   const css = now === 'D' ? 'flip-dem' : 'flip-rep';
-  return `<div class="county-flip-notice ${css}" role="status"><strong>↗ ${label}</strong><span>${before} → ${now} since ${prev.year}</span></div>`;
+  return `<div class="county-flip-notice ${css}" role="status" title="Flipped from ${before === 'D' ? 'Democratic' : 'Republican'} in ${prev.year} to ${now === 'D' ? 'Democratic' : 'Republican'} in ${info.year}"><span class="flip-party-dot" aria-hidden="true"></span>Flipped ${before}→${now}<span class="flip-years">(${String(prev.year).slice(-2)}→${String(info.year).slice(-2)})</span></div>`;
 }
 
 function partyPct(result, party) {
@@ -3351,8 +3362,7 @@ function atlasMissingJudicialNotice() {
       const isNonpartisanIdeology = countyData.contest_partisan_style === 'nonpartisan_ideology';
       const demDisplayLabel = isNonpartisanIdeology ? (countyData.dem_label || 'D-aligned') : 'D';
       const repDisplayLabel = isNonpartisanIdeology ? (countyData.rep_label || 'R-aligned') : 'R';
-      // Card-style layout: keep the original cards and add only a concise flip notice.
-      sidebarContent += countyFlipNotice(countyName, countyData);
+      // Card-style layout: retain the original results card sequence.
       sidebarContent += '<div class="result-summary">';
       sidebarContent += '<h3 class="sidebar-section-title">📊 Election Results</h3>';
       if (precincts) sidebarContent += `<div style="font-size:14px;"><b>Precincts:</b> ${precincts}</div>`;
@@ -3434,6 +3444,8 @@ function atlasMissingJudicialNotice() {
   sidebarContent += `<div class="competitiveness-section">`;
   sidebarContent += '<h3 class="sidebar-section-title">🎯 Competitiveness</h3>';
   sidebarContent += `<p style="color: ${finalCompColor}; font-weight: bold;">${finalCompLabel}</p>`;
+  // A county flip belongs with the rating, not above Election Results.
+  sidebarContent += countyFlipNotice(countyName, countyData);
   // Add short, emphasized cues for very-close and extremely-close contests (matches CLEAN map UX)
   try {
     if (typeof countyCompLabel === 'string') {
